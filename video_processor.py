@@ -37,7 +37,7 @@ def dtrb_to_persian(text):
 def format_plate_persian(text):
     persian_text = dtrb_to_persian(text)
     if len(persian_text) >= 8:
-        return persian_text[:2] + persian_text[2] + persian_text[3:6] + "-" + persian_text[6:8]
+        return persian_text[:2] + " " + persian_text[2] + " " + persian_text[3:6] + "-" + persian_text[6:8]
     return persian_text
 
 
