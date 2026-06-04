@@ -4,9 +4,51 @@ import numpy as np
 import threading
 import time
 from datetime import datetime
+from PIL import Image, ImageDraw, ImageFont
 
 OUTPUT_DIR = "io/output"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+FONT_PATH = "C:/Windows/Fonts/arial.ttf"
+FONT_PATH_ALT = "C:/Windows/Fonts/tahoma.ttf"
+
+DTRB_TO_PERSIAN = {
+    'a': 'ا', 'b': 'ب', 'c': 'چ', 'd': 'د', 'e': 'ه',
+    'f': 'ف', 'g': 'گ', 'h': 'ح', 'i': 'ی', 'j': 'ج',
+    'k': 'ک', 'l': 'ل', 'm': 'م', 'n': 'ن', 'o': 'و',
+    'p': 'پ', 'q': 'ق', 'r': 'ر', 's': 'س', 't': 'ت',
+    'u': 'و', 'v': 'و', 'w': 'و', 'x': 'خ', 'y': 'ی',
+    'z': 'ز',
+}
+
+
+def dtrb_to_persian(text):
+    result = []
+    for ch in text:
+        if ch.isdigit():
+            result.append(ch)
+        elif ch in DTRB_TO_PERSIAN:
+            result.append(DTRB_TO_PERSIAN[ch])
+        else:
+            result.append(ch)
+    return "".join(result)
+
+
+def format_plate_persian(text):
+    persian_text = dtrb_to_persian(text)
+    if len(persian_text) >= 8:
+        return persian_text[:2] + persian_text[2] + persian_text[3:6] + "-" + persian_text[6:8]
+    return persian_text
+
+
+def get_persian_font(size=24):
+    try:
+        return ImageFont.truetype(FONT_PATH, size)
+    except:
+        try:
+            return ImageFont.truetype(FONT_PATH_ALT, size)
+        except:
+            return ImageFont.load_default()
 
 
 def group_detections(detections, y_iou_thresh=0.3):
@@ -42,22 +84,71 @@ def group_detections(detections, y_iou_thresh=0.3):
     return result
 
 
-def draw_detections(image, plates, dtrb_results):
+def draw_plate_template(image_np, plates, dtrb_results):
+    img_rgb = cv2.cvtColor(image_np, cv2.COLOR_BGR2RGB)
+    pil_img = Image.fromarray(img_rgb).convert("RGBA")
+    draw = ImageDraw.Draw(pil_img)
+
+    h, w = image_np.shape[:2]
+
     for idx, plate in enumerate(plates):
         x1, y1, x2, y2 = plate["bbox"]
         dtrb_text = dtrb_results[idx] if idx < len(dtrb_results) else "?"
-        display_text = dtrb_text
-        cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 3)
-        label_size = cv2.getTextSize(display_text, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2)[0]
-        cv2.rectangle(image, (x1, y1 - label_size[1] - 10),
-                      (x1 + label_size[0], y1), (0, 255, 0), -1)
-        cv2.putText(image, display_text, (x1, y1 - 5),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 2)
+        persian_plate = format_plate_persian(dtrb_text)
+        confidence = plate["confidence"]
+
+        pad = 8
+        bx1 = max(0, x1 - pad)
+        by1 = max(0, y1 - pad)
+        bx2 = min(w, x2 + pad)
+        by2 = min(h, y2 + pad)
+
+        odraw = ImageDraw.Draw(pil_img)
+        odraw.rectangle([bx1, by1, bx2, by2], outline=(0, 200, 50), width=3)
+
         for ch in plate["chars"]:
             cx1, cy1, cx2, cy2 = ch["bbox"]
-            cv2.rectangle(image, (cx1, cy1), (cx2, cy2), (255, 0, 0), 2)
-            cv2.putText(image, ch["char"], (cx1, cy1 - 5),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
+            odraw.rectangle([cx1, cy1, cx2, cy2], outline=(50, 255, 100), width=2)
+
+        label_font = get_persian_font(28)
+        conf_font = get_persian_font(16)
+
+        label_bbox = draw.textbbox((0, 0), persian_plate, font=label_font)
+        label_w = label_bbox[2] - label_bbox[0]
+        label_h = label_bbox[3] - label_bbox[1]
+
+        conf_text = f"{confidence:.2%}"
+        conf_bbox = draw.textbbox((0, 0), conf_text, font=conf_font)
+        conf_w = conf_bbox[2] - conf_bbox[0]
+        conf_h = conf_bbox[3] - conf_bbox[1]
+
+        panel_w = label_w + 30
+        panel_h = label_h + conf_h + 24
+        panel_x = min(bx1, w - panel_w - 10)
+        panel_y = max(0, by1 - panel_h - 10)
+
+        panel = Image.new("RGBA", pil_img.size, (0, 0, 0, 0))
+        pdraw = ImageDraw.Draw(panel)
+        pdraw.rectangle(
+            [panel_x, panel_y, panel_x + panel_w, panel_y + panel_h],
+            fill=(0, 0, 0, 180),
+        )
+        pil_img = Image.alpha_composite(pil_img, panel)
+        draw = ImageDraw.Draw(pil_img)
+
+        draw.text(
+            (panel_x + 15, panel_y + 8),
+            persian_plate,
+            font=label_font, fill=(0, 255, 100),
+        )
+        draw.text(
+            (panel_x + 15, panel_y + label_h + 12),
+            conf_text,
+            font=conf_font, fill=(200, 200, 200),
+        )
+
+    result = cv2.cvtColor(np.array(pil_img), cv2.COLOR_RGB2BGR)
+    return result
 
 
 def process_frame(image, detector, recognizer, opt, fast_mode=False):
@@ -72,13 +163,14 @@ def process_frame(image, detector, recognizer, opt, fast_mode=False):
             conf = result.boxes.conf[i].item()
             if conf > opt.threshold:
                 cls_id = int(result.boxes.cls[i].item())
+                label = detector.names[cls_id]
                 bbox = result.boxes.xyxy[i].cpu().detach().numpy().astype(int)
                 x1, y1, x2, y2 = bbox
                 char_detections.append({
                     "bbox": (x1, y1, x2, y2),
                     "confidence": conf,
                     "class_id": cls_id,
-                    "char": str(cls_id),
+                    "char": label,
                 })
 
     plates = group_detections(char_detections)
@@ -98,8 +190,8 @@ def process_frame(image, detector, recognizer, opt, fast_mode=False):
         dtrb_label = recognizer.predict(plate_gray, opt)
         dtrb_results.append(dtrb_label)
 
-    draw_detections(image, plates, dtrb_results)
-    return image, plates, dtrb_results
+    annotated = draw_plate_template(image, plates, dtrb_results)
+    return annotated, plates, dtrb_results
 
 
 class VideoProcessor:
@@ -122,6 +214,7 @@ class VideoProcessor:
             self.live_detections = []
             self.status = "idle"
             self.error = None
+            self.last_overlay = None
 
     def process_video(self, input_path, skip_frames=30, fast_mode=False):
         self.stop()
@@ -179,6 +272,8 @@ class VideoProcessor:
 
             plate_log = []
             frame_idx = 0
+            cached_plates = []
+            cached_dtrb = []
 
             while self.running:
                 ret, frame = cap.read()
@@ -190,6 +285,14 @@ class VideoProcessor:
                         frame, self.detector, self.recognizer,
                         self.opt, fast_mode,
                     )
+                    if plates:
+                        cached_plates = list(plates)
+                        cached_dtrb = list(dtrb_results)
+                        self.last_overlay = {
+                            "plates": list(plates),
+                            "dtrb": list(dtrb_results),
+                        }
+
                     writer.write(annotated)
 
                     live_lines = []
@@ -202,8 +305,9 @@ class VideoProcessor:
                             "dtrb_text": dtrb_text,
                             "confidence": plate["confidence"],
                         })
+                        persian_display = format_plate_persian(dtrb_text)
                         live_lines.append(
-                            f"Frame {frame_idx:>6d}  |  {dtrb_text:12s}  |  "
+                            f"Frame {frame_idx:>6d}  |  {persian_display:16s}  |  "
                             f"conf: {plate['confidence']:.4f}  |  "
                             f"@ {frame_idx / fps:.2f}s"
                         )
@@ -215,7 +319,13 @@ class VideoProcessor:
                         if len(self.live_detections) > 500:
                             self.live_detections = self.live_detections[-500:]
                 else:
-                    writer.write(frame)
+                    if cached_plates and self.last_overlay:
+                        frame_with_overlay = draw_plate_template(
+                            frame, cached_plates, cached_dtrb
+                        )
+                        writer.write(frame_with_overlay)
+                    else:
+                        writer.write(frame)
 
                 frame_idx += 1
 
@@ -230,6 +340,8 @@ class VideoProcessor:
                 self.running = False
 
         except Exception as e:
+            import traceback
+            traceback.print_exc()
             with self.lock:
                 self.error = str(e)
                 self.status = "error"
@@ -332,9 +444,10 @@ class RTSPStreamProcessor:
                     for idx, plate in enumerate(plates):
                         dtrb_text = dtrb_results[idx] if idx < len(dtrb_results) else "-"
                         self._add_to_history(plate, dtrb_text)
+                        persian_display = format_plate_persian(dtrb_text)
                         line = (
                             f"[{datetime.now().strftime('%H:%M:%S')}]  "
-                            f"{dtrb_text:12s}  |  conf: "
+                            f"{persian_display:16s}  |  conf: "
                             f"{plate['confidence']:.4f}"
                         )
                         self.live_detections.append(line)
