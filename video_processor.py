@@ -22,6 +22,16 @@ DTRB_TO_PERSIAN = {
 }
 
 
+def should_sample(frame_index: int, skip_frames: int) -> bool:
+    """Return True if this frame index should be submitted for plate recognition.
+
+    Every frame whose zero-based index is a multiple of skip_frames is sampled.
+    This pure function is extracted so it can be property-tested independently.
+    Requirements: 8.5, 16.5
+    """
+    return frame_index % skip_frames == 0
+
+
 def dtrb_to_persian(text):
     result = []
     for ch in text:
@@ -195,10 +205,11 @@ def process_frame(image, detector, recognizer, opt, fast_mode=False):
 
 
 class VideoProcessor:
-    def __init__(self, detector, recognizer, opt):
+    def __init__(self, detector, recognizer, opt, on_detection=None):
         self.detector = detector
         self.recognizer = recognizer
         self.opt = opt
+        self.on_detection = on_detection
         self.lock = threading.Lock()
         self.reset()
 
@@ -280,7 +291,7 @@ class VideoProcessor:
                 if not ret:
                     break
 
-                if frame_idx % skip_frames == 0:
+                if should_sample(frame_idx, skip_frames):
                     annotated, plates, dtrb_results = process_frame(
                         frame, self.detector, self.recognizer,
                         self.opt, fast_mode,
@@ -318,6 +329,11 @@ class VideoProcessor:
                         self.live_detections.extend(live_lines)
                         if len(self.live_detections) > 500:
                             self.live_detections = self.live_detections[-500:]
+
+                    if self.on_detection and plates:
+                        for idx, plate in enumerate(plates):
+                            dtrb_text = dtrb_results[idx] if idx < len(dtrb_results) else "-"
+                            self.on_detection("video", dtrb_text, plate["confidence"], input_path, frame_idx, f"{frame_idx / fps:.2f}s")
                 else:
                     if cached_plates and self.last_overlay:
                         frame_with_overlay = draw_plate_template(
@@ -374,13 +390,14 @@ class VideoProcessor:
 
 class RTSPStreamProcessor:
     def __init__(self, detector, recognizer, opt, source,
-                 fast_mode=False, skip_frames=15):
+                 fast_mode=False, skip_frames=15, on_detection=None):
         self.detector = detector
         self.recognizer = recognizer
         self.opt = opt
         self.source = source
         self.fast_mode = fast_mode
         self.skip_frames = skip_frames
+        self.on_detection = on_detection
 
         self.cap = None
         self.running = False
@@ -430,7 +447,7 @@ class RTSPStreamProcessor:
                 break
 
             self.frame_count += 1
-            if self.frame_count % self.skip_frames != 0:
+            if not should_sample(self.frame_count, self.skip_frames):
                 continue
 
             try:
@@ -453,6 +470,11 @@ class RTSPStreamProcessor:
                         self.live_detections.append(line)
                         if len(self.live_detections) > 500:
                             self.live_detections = self.live_detections[-500:]
+
+                    if self.on_detection and plates:
+                        for idx, plate in enumerate(plates):
+                            dtrb_text = dtrb_results[idx] if idx < len(dtrb_results) else "-"
+                            self.on_detection("rtsp", dtrb_text, plate["confidence"], self.source, self.frame_count, "")
             except Exception as e:
                 with self.lock:
                     self.status = f"error: {e}"
