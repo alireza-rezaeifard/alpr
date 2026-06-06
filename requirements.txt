@@ -9,4 +9,3 @@ six
 torch
 torchvision
 ultralytics
-warpctc_pytorch

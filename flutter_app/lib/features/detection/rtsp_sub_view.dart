@@ -1,11 +1,14 @@
 // lib/features/detection/rtsp_sub_view.dart
 // Single RTSP stream detection sub-view.
-// Requirements: 10.1–10.7
+// Requirements: 10.1–10.7, 3.2, 3.3
 
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/rtsp_task_model.dart';
+import '../../data/models/enhanced_rtsp_history_entry.dart';
+import '../../data/models/enhanced_plate_log_entry.dart';
+import '../../shared/widgets/plate_detail_card.dart';
 import 'rtsp_poll_controller.dart';
 
 class RtspSubView extends ConsumerStatefulWidget {
@@ -199,15 +202,110 @@ class _AnnotatedFrameWidget extends StatelessWidget {
 }
 
 // ── Live detections panel ────────────────────────────────────────────────
+// Requirements: 3.2, 3.3
 
-class _LiveDetectionsWidget extends StatelessWidget {
+class _LiveDetectionsWidget extends StatefulWidget {
   final RtspTaskStatus? status;
   const _LiveDetectionsWidget({this.status});
 
   @override
+  State<_LiveDetectionsWidget> createState() => _LiveDetectionsWidgetState();
+}
+
+class _LiveDetectionsWidgetState extends State<_LiveDetectionsWidget> {
+  final ScrollController _liveScrollCtrl = ScrollController();
+  final ScrollController _historyScrollCtrl = ScrollController();
+  int _lastLiveCount = 0;
+  int _lastHistoryCount = 0;
+  bool _liveUserScrolledAway = false;
+  bool _historyUserScrolledAway = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _liveScrollCtrl.addListener(_onLiveScroll);
+    _historyScrollCtrl.addListener(_onHistoryScroll);
+  }
+
+  @override
+  void dispose() {
+    _liveScrollCtrl.removeListener(_onLiveScroll);
+    _historyScrollCtrl.removeListener(_onHistoryScroll);
+    _liveScrollCtrl.dispose();
+    _historyScrollCtrl.dispose();
+    super.dispose();
+  }
+
+  void _onLiveScroll() {
+    if (!_liveScrollCtrl.hasClients) return;
+    final maxScroll = _liveScrollCtrl.position.maxScrollExtent;
+    final currentScroll = _liveScrollCtrl.offset;
+    _liveUserScrolledAway = (maxScroll - currentScroll) > 50;
+  }
+
+  void _onHistoryScroll() {
+    if (!_historyScrollCtrl.hasClients) return;
+    final maxScroll = _historyScrollCtrl.position.maxScrollExtent;
+    final currentScroll = _historyScrollCtrl.offset;
+    _historyUserScrolledAway = (maxScroll - currentScroll) > 50;
+  }
+
+  @override
+  void didUpdateWidget(covariant _LiveDetectionsWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final lines = widget.status?.liveDetections ?? <String>[];
+    final history = widget.status?.history ?? <EnhancedRtspHistoryEntry>[];
+
+    // Auto-scroll live detections (Req 3.2)
+    if (lines.length > _lastLiveCount && !_liveUserScrolledAway) {
+      _lastLiveCount = lines.length;
+      _scrollToBottom(_liveScrollCtrl);
+    } else {
+      _lastLiveCount = lines.length;
+    }
+
+    // Auto-scroll history when new entries arrive
+    if (history.length > _lastHistoryCount && !_historyUserScrolledAway) {
+      _lastHistoryCount = history.length;
+      _scrollToBottom(_historyScrollCtrl);
+    } else {
+      _lastHistoryCount = history.length;
+    }
+  }
+
+  void _scrollToBottom(ScrollController ctrl) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (ctrl.hasClients) {
+        ctrl.animateTo(
+          ctrl.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
+  /// Converts an EnhancedRtspHistoryEntry to an EnhancedPlateLogEntry
+  /// so it can be displayed with PlateDetailCard.
+  EnhancedPlateLogEntry _adaptRtspEntry(EnhancedRtspHistoryEntry h) {
+    return EnhancedPlateLogEntry(
+      frame: 0,
+      time: h.lastSeen,
+      timeSec: 0.0,
+      plateText: h.yoloText,
+      dtrbText: h.dtrbText,
+      confidence: h.confidence,
+      bbox: const [0, 0, 0, 0],
+      persianDisplay: h.persianDisplay,
+      isValidIranian: h.isValidIranian,
+      metadata: h.metadata,
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final lines = status?.liveDetections ?? <String>[];
-    final history = status?.history ?? <PlateHistoryEntry>[];
+    final lines = widget.status?.liveDetections ?? <String>[];
+    final history = widget.status?.history ?? <EnhancedRtspHistoryEntry>[];
 
     return Card(
       child: Padding(
@@ -219,31 +317,123 @@ class _LiveDetectionsWidget extends StatelessWidget {
                 style: Theme.of(context).textTheme.labelLarge),
             const Divider(),
             Expanded(
+              flex: 1,
               child: lines.isEmpty
                   ? const Center(
                       child: Text('No detections yet',
                           style: TextStyle(color: Colors.grey)))
-                  : ListView.builder(
-                      reverse: true,
-                      itemCount: lines.length,
-                      itemBuilder: (_, i) => Text(
-                        lines[lines.length - 1 - i],
-                        style: const TextStyle(fontSize: 11),
-                      ),
+                  : Stack(
+                      children: [
+                        ListView.builder(
+                          controller: _liveScrollCtrl,
+                          itemCount: lines.length,
+                          itemBuilder: (_, i) => Text(
+                            lines[i],
+                            style: const TextStyle(fontSize: 11),
+                          ),
+                        ),
+                        if (_liveUserScrolledAway)
+                          Positioned(
+                            bottom: 4,
+                            right: 4,
+                            child: FloatingActionButton.small(
+                              heroTag: 'live_scroll_btn',
+                              onPressed: () {
+                                _liveUserScrolledAway = false;
+                                _scrollToBottom(_liveScrollCtrl);
+                              },
+                              child:
+                                  const Icon(Icons.arrow_downward, size: 16),
+                            ),
+                          ),
+                      ],
                     ),
             ),
             if (history.isNotEmpty) ...[
               const Divider(),
               Text('History (${history.length})',
-                  style: Theme.of(context).textTheme.labelSmall),
-              ...history.take(5).map<Widget>((h) => Text(
-                    '${h.dtrbText}  ×${h.count}',
-                    style: const TextStyle(fontSize: 11),
-                  )),
+                  style: Theme.of(context).textTheme.labelLarge),
+              const SizedBox(height: 4),
+              Expanded(
+                flex: 2,
+                child: Stack(
+                  children: [
+                    ListView.builder(
+                      controller: _historyScrollCtrl,
+                      itemCount: history.length,
+                      itemBuilder: (_, i) {
+                        final h = history[i];
+                        final adapted = _adaptRtspEntry(h);
+                        return _RtspPlateCardWithBadge(
+                          entry: adapted,
+                          count: h.count,
+                        );
+                      },
+                    ),
+                    if (_historyUserScrolledAway)
+                      Positioned(
+                        bottom: 4,
+                        right: 4,
+                        child: FloatingActionButton.small(
+                          heroTag: 'history_scroll_btn',
+                          onPressed: () {
+                            _historyUserScrolledAway = false;
+                            _scrollToBottom(_historyScrollCtrl);
+                          },
+                          child: const Icon(Icons.arrow_downward, size: 16),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
             ],
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Wraps PlateDetailCard with a count badge overlay for repeated RTSP detections (Req 3.3).
+class _RtspPlateCardWithBadge extends StatelessWidget {
+  final EnhancedPlateLogEntry entry;
+  final int count;
+
+  const _RtspPlateCardWithBadge({
+    required this.entry,
+    required this.count,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final card = PlateDetailCard(entry: entry);
+
+    if (count <= 1) return card;
+
+    // Show count badge for repeated detections
+    return Stack(
+      children: [
+        card,
+        Positioned(
+          top: 4,
+          right: 4,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              '×$count',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onPrimary,
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

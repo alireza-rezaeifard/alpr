@@ -5,6 +5,7 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/video_task_model.dart';
+import '../../data/models/enhanced_plate_log_entry.dart';
 import '../../data/repositories/detect_repo.dart';
 import '../../core/api_client.dart';
 
@@ -50,6 +51,10 @@ class VideoTaskState {
 
   /// Progress 0-100 or null when indeterminate (Req 8.2, 8.11).
   int? get progressPercent => status?.progressPercent;
+
+  /// The list of enhanced plate log entries parsed from the latest poll response.
+  /// These include iranian validation info and metadata (Req 2.1, 2.2).
+  List<EnhancedPlateLogEntry> get plateEntries => status?.plateLog ?? const [];
 
   /// True when the phase is a terminal state.
   bool get isTerminal =>

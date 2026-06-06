@@ -149,7 +149,7 @@ together.
       with the same plate (assert identical metadata), and one free-zone plate (assert special_note)
     - _Requirements: 16.1, 14.5, 14.7, 14.8_
 
-- [~] 6. Checkpoint — backend complete
+- [ ] 6. Checkpoint — backend complete
   - Ensure all `pytest` tests pass. Confirm `api.py` starts without errors. Ask the user if any backend
     behavior needs adjustment before moving to the Flutter client.
 

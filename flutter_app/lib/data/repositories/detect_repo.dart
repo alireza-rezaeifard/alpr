@@ -82,6 +82,13 @@ class DetectRepo {
     return RtspTaskStatus.fromJson(res.data as Map<String, dynamic>);
   }
 
+  /// Lightweight frame-only poll for smooth video. Returns latest frame + recent detections.
+  Future<RtspTaskStatus> pollRtspFrame(String taskId) async {
+    final res = await _dio.get('/detect/rtsp/$taskId/frame',
+        options: ApiClient.withTimeout(const Duration(seconds: 5)));
+    return RtspTaskStatus.fromJson(res.data as Map<String, dynamic>);
+  }
+
   Future<void> stopRtsp(String taskId) async {
     await _dio.post('/detect/rtsp/$taskId/stop',
         options: ApiClient.withTimeout(ApiClient.viewTimeout));

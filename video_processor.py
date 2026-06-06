@@ -3,8 +3,13 @@ import cv2
 import numpy as np
 import threading
 import time
+import logging
 from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
+
+from plate_validator import validate_iranian_plate, format_plate_persian as validator_format_persian
+
+logger = logging.getLogger(__name__)
 
 OUTPUT_DIR = "io/output"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -157,11 +162,17 @@ def draw_plate_template(image_np, plates, dtrb_results):
             font=conf_font, fill=(200, 200, 200),
         )
 
-    result = cv2.cvtColor(np.array(pil_img), cv2.COLOR_RGB2BGR)
+    result = cv2.cvtColor(np.array(pil_img.convert("RGB")), cv2.COLOR_RGB2BGR)
     return result
 
 
-def process_frame(image, detector, recognizer, opt, fast_mode=False):
+def detect_plates(image, detector, recognizer, opt, fast_mode=False):
+    """Run detection + recognition WITHOUT drawing overlays.
+
+    Returns (image_copy, plates, dtrb_results) so callers can validate/filter
+    plates before deciding which boxes to draw. This keeps invalid (non-Iranian)
+    detections from being burned into the annotated frame.
+    """
     image = image.copy()
     results = detector.predict(image, verbose=False)
 
@@ -190,17 +201,37 @@ def process_frame(image, detector, recognizer, opt, fast_mode=False):
         x1, y1, x2, y2 = plate["bbox"]
         plate_crop = image[y1:y2, x1:x2].copy()
         if plate_crop.size == 0:
-            dtrb_results.append("-")
+            dtrb_results.append(("-", 0.0))
             continue
         if fast_mode:
-            dtrb_results.append(plate["plate_text"])
+            dtrb_results.append((plate["plate_text"], plate["confidence"]))
             continue
         plate_resized = cv2.resize(plate_crop, (opt.imgW, opt.imgH))
         plate_gray = cv2.cvtColor(plate_resized, cv2.COLOR_BGR2GRAY)
-        dtrb_label = recognizer.predict(plate_gray, opt)
-        dtrb_results.append(dtrb_label)
+        result = recognizer.predict(plate_gray, opt)
+        # Handle both old (str) and new (str, float) return formats
+        if isinstance(result, tuple):
+            dtrb_label, dtrb_conf = result
+        else:
+            dtrb_label = result
+            dtrb_conf = plate["confidence"]
+        dtrb_results.append((dtrb_label, dtrb_conf))
 
-    annotated = draw_plate_template(image, plates, dtrb_results)
+    return image, plates, dtrb_results
+
+
+def process_frame(image, detector, recognizer, opt, fast_mode=False):
+    """Detect plates and draw overlays for ALL detections.
+
+    Kept for the image endpoint. Real-time video/RTSP paths use detect_plates +
+    explicit validation so only valid Iranian plates get drawn.
+    """
+    img, plates, dtrb_results = detect_plates(
+        image, detector, recognizer, opt, fast_mode
+    )
+    # Extract text strings for drawing (dtrb_results are now (text, conf) tuples)
+    dtrb_texts = [r[0] if isinstance(r, tuple) else r for r in dtrb_results]
+    annotated = draw_plate_template(img, plates, dtrb_texts)
     return annotated, plates, dtrb_results
 
 
@@ -262,7 +293,7 @@ class VideoProcessor:
             if fps <= 0:
                 fps = 30
 
-            output_fps = fps / max(skip_frames, 1)
+            output_fps = fps  # Full frame rate for smooth playback
             output_name = f"processed_{os.path.basename(input_path)}"
             output_path = os.path.join(OUTPUT_DIR, output_name)
 
@@ -292,56 +323,118 @@ class VideoProcessor:
                     break
 
                 if should_sample(frame_idx, skip_frames):
-                    annotated, plates, dtrb_results = process_frame(
+                    # Detect without drawing — we only draw VALID Iranian plates.
+                    img_copy, plates, dtrb_results = detect_plates(
                         frame, self.detector, self.recognizer,
                         self.opt, fast_mode,
                     )
-                    if plates:
-                        cached_plates = list(plates)
-                        cached_dtrb = list(dtrb_results)
-                        self.last_overlay = {
-                            "plates": list(plates),
-                            "dtrb": list(dtrb_results),
-                        }
-
-                    writer.write(annotated)
 
                     live_lines = []
+                    valid_plates = []
+                    valid_dtrb = []
                     for idx, plate in enumerate(plates):
-                        dtrb_text = dtrb_results[idx] if idx < len(dtrb_results) else "-"
+                        dtrb_entry = dtrb_results[idx] if idx < len(dtrb_results) else ("-", 0.0)
+                        if isinstance(dtrb_entry, tuple):
+                            dtrb_text, dtrb_conf = dtrb_entry
+                        else:
+                            dtrb_text, dtrb_conf = dtrb_entry, plate["confidence"]
+                        px1, py1, px2, py2 = plate["bbox"]
+
+                        # Use the higher confidence between YOLO and DTRB
+                        best_conf = max(plate["confidence"], dtrb_conf)
+
+                        # Validate against Iranian plate format
+                        validation = validate_iranian_plate(dtrb_text, best_conf)
+
+                        # Skip everything that is not a valid Iranian plate:
+                        # no log entry, no box drawn, no DB save.
+                        if not validation.is_valid:
+                            continue
+
+                        persian_display = validator_format_persian(dtrb_text)
+
+                        # Collect for drawing the overlay (valid plates only)
+                        valid_plates.append(plate)
+                        valid_dtrb.append(dtrb_text)
+
+                        md = validation.metadata
+                        metadata_dict = {
+                            "classified": md.classified,
+                            "category": md.category,
+                            "category_display": md.category_display,
+                            "color_scheme": md.color_scheme,
+                            "region_code": md.region_code,
+                            "region_name": md.region_name,
+                            "special_note": md.special_note,
+                        } if md is not None else None
+
                         plate_log.append({
                             "frame": frame_idx,
                             "time": f"{frame_idx / fps:.2f}s",
+                            "time_sec": round(frame_idx / fps, 3),
                             "plate_text": plate["plate_text"],
                             "dtrb_text": dtrb_text,
-                            "confidence": plate["confidence"],
+                            "confidence": best_conf,
+                            # Normalized bbox (0-1) so the client can scale to any size
+                            "bbox": [
+                                round(float(px1) / width, 4),
+                                round(float(py1) / height, 4),
+                                round(float(px2) / width, 4),
+                                round(float(py2) / height, 4),
+                            ],
+                            "persian_display": persian_display,
+                            "is_valid_iranian": True,
+                            "metadata": metadata_dict,
                         })
-                        persian_display = format_plate_persian(dtrb_text)
+
                         live_lines.append(
                             f"Frame {frame_idx:>6d}  |  {persian_display:16s}  |  "
                             f"conf: {plate['confidence']:.4f}  |  "
                             f"@ {frame_idx / fps:.2f}s"
                         )
 
+                        # IMMEDIATE save for valid plates only
+                        if self.on_detection:
+                            try:
+                                self.on_detection("video", dtrb_text, best_conf, input_path, frame_idx, f"{frame_idx / fps:.2f}s")
+                            except Exception as e:
+                                logger.error(f"DB write failed for plate '{dtrb_text}' at frame {frame_idx}: {e}")
+
+                    # Draw overlay boxes only for valid Iranian plates
+                    annotated = draw_plate_template(img_copy, valid_plates, valid_dtrb)
+
+                    # Cache valid overlays so skipped frames keep showing the box
+                    if valid_plates:
+                        cached_plates = list(valid_plates)
+                        cached_dtrb = list(valid_dtrb)
+                        self.last_overlay = {
+                            "plates": list(valid_plates),
+                            "dtrb": list(valid_dtrb),
+                        }
+
+                    writer.write(annotated)
+
                     with self.lock:
                         self.current_frame = annotated
                         self.frame_idx = frame_idx
+                        self.plate_log = plate_log
                         self.live_detections.extend(live_lines)
                         if len(self.live_detections) > 500:
                             self.live_detections = self.live_detections[-500:]
-
-                    if self.on_detection and plates:
-                        for idx, plate in enumerate(plates):
-                            dtrb_text = dtrb_results[idx] if idx < len(dtrb_results) else "-"
-                            self.on_detection("video", dtrb_text, plate["confidence"], input_path, frame_idx, f"{frame_idx / fps:.2f}s")
                 else:
                     if cached_plates and self.last_overlay:
                         frame_with_overlay = draw_plate_template(
                             frame, cached_plates, cached_dtrb
                         )
                         writer.write(frame_with_overlay)
+                        with self.lock:
+                            self.current_frame = frame_with_overlay
+                            self.frame_idx = frame_idx
                     else:
                         writer.write(frame)
+                        with self.lock:
+                            self.current_frame = frame
+                            self.frame_idx = frame_idx
 
                 frame_idx += 1
 
@@ -404,6 +497,7 @@ class RTSPStreamProcessor:
         self.frame_count = 0
         self.latest_frame = None
         self.latest_annotated = None
+        self.latest_jpeg = None  # Pre-encoded JPEG bytes for fast serving
         self.plate_history = []
         self.live_detections = []
         self.status = "initialized"
@@ -426,7 +520,11 @@ class RTSPStreamProcessor:
                 pass
 
     def _run(self):
-        self.status = "connecting"
+        from plate_validator import validate_iranian_plate, format_plate_persian as _format_persian
+        import time as _time
+
+        with self.lock:
+            self.status = "connecting"
         self.cap = cv2.VideoCapture(self.source)
         self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
 
@@ -436,7 +534,11 @@ class RTSPStreamProcessor:
             self.running = False
             return
 
-        self.status = "connected"
+        with self.lock:
+            self.status = "streaming"
+
+        _last_jpeg_time = 0.0  # Throttle JPEG encoding to ~10 FPS
+        _last_annotated_with_boxes = None  # Keep last frame with plate boxes
 
         while self.running:
             ret, frame = self.cap.read()
@@ -448,33 +550,88 @@ class RTSPStreamProcessor:
 
             self.frame_count += 1
             if not should_sample(self.frame_count, self.skip_frames):
+                # Update JPEG at most every 100ms for smooth video
+                now = _time.time()
+                if now - _last_jpeg_time >= 0.1:
+                    # Use last annotated frame with boxes if available, else raw frame
+                    display_frame = _last_annotated_with_boxes if _last_annotated_with_boxes is not None else frame
+                    _, buf = cv2.imencode(".jpg", display_frame, [cv2.IMWRITE_JPEG_QUALITY, 60])
+                    with self.lock:
+                        self.latest_annotated = display_frame
+                        self.latest_jpeg = buf.tobytes()
+                    _last_jpeg_time = now
                 continue
 
             try:
-                annotated, plates, dtrb_results = process_frame(
+                img_copy, plates, dtrb_results = detect_plates(
                     frame, self.detector, self.recognizer,
                     self.opt, self.fast_mode,
                 )
                 with self.lock:
-                    self.latest_annotated = annotated
                     self.status = "streaming"
+                    valid_plates = []
+                    valid_dtrb = []
                     for idx, plate in enumerate(plates):
-                        dtrb_text = dtrb_results[idx] if idx < len(dtrb_results) else "-"
-                        self._add_to_history(plate, dtrb_text)
-                        persian_display = format_plate_persian(dtrb_text)
+                        dtrb_text, dtrb_conf = dtrb_results[idx] if idx < len(dtrb_results) else ("-", 0.0)
+
+                        # Use the higher confidence between YOLO and DTRB
+                        best_conf = max(plate["confidence"], dtrb_conf)
+
+                        # Validate against Iranian plate format
+                        validation = validate_iranian_plate(dtrb_text, best_conf)
+
+                        # Skip non-Iranian detections entirely:
+                        # no history, no box, no live line, no DB save.
+                        if not validation.is_valid:
+                            continue
+
+                        persian_display = _format_persian(dtrb_text)
+                        valid_plates.append(plate)
+                        valid_dtrb.append(dtrb_text)
+
+                        # Add to history with enriched metadata
+                        self._add_to_history(
+                            plate, dtrb_text, persian_display,
+                            True,
+                            validation.metadata,
+                            best_conf,
+                        )
+
                         line = (
                             f"[{datetime.now().strftime('%H:%M:%S')}]  "
                             f"{persian_display:16s}  |  conf: "
-                            f"{plate['confidence']:.4f}"
+                            f"{best_conf:.4f}"
                         )
                         self.live_detections.append(line)
                         if len(self.live_detections) > 500:
                             self.live_detections = self.live_detections[-500:]
 
-                    if self.on_detection and plates:
-                        for idx, plate in enumerate(plates):
-                            dtrb_text = dtrb_results[idx] if idx < len(dtrb_results) else "-"
-                            self.on_detection("rtsp", dtrb_text, plate["confidence"], self.source, self.frame_count, "")
+                        # Immediate DB save for valid plates only
+                        if self.on_detection:
+                            try:
+                                self.on_detection(
+                                    "rtsp", dtrb_text, best_conf,
+                                    self.source, self.frame_count, "",
+                                )
+                            except Exception:
+                                pass  # graceful: DB write failure must not stop processing
+
+                    # Always update annotated frame (with or without plate boxes)
+                    if valid_plates:
+                        annotated_frame = draw_plate_template(
+                            img_copy, valid_plates, valid_dtrb
+                        )
+                        _last_annotated_with_boxes = annotated_frame
+                    else:
+                        # No plates — use raw frame, clear persistent overlay
+                        annotated_frame = img_copy
+                        _last_annotated_with_boxes = frame
+                    # Pre-encode JPEG for fast serving
+                    _, buf = cv2.imencode(".jpg", annotated_frame, [cv2.IMWRITE_JPEG_QUALITY, 65])
+                    self.latest_annotated = annotated_frame
+                    self.latest_jpeg = buf.tobytes()
+                    _last_jpeg_time = _time.time()
+
             except Exception as e:
                 with self.lock:
                     self.status = f"error: {e}"
@@ -482,20 +639,49 @@ class RTSPStreamProcessor:
         if self.cap:
             self.cap.release()
 
-    def _add_to_history(self, plate, dtrb_text):
+    def _add_to_history(self, plate, dtrb_text, persian_display, is_valid_iranian, metadata, confidence=None):
+        """Add or deduplicate a detection in the history list.
+
+        Deduplication: if same dtrb_text already exists, increment count.
+        Extends entries with persian_display, is_valid_iranian, and metadata dict.
+        Requirements: 3.3, 7.2, 7.3
+        """
         now = datetime.now().strftime("%H:%M:%S")
+        conf = confidence if confidence is not None else plate["confidence"]
+
+        # Build metadata dict from PlateMetadata dataclass (or None)
+        metadata_dict = None
+        if is_valid_iranian and metadata is not None:
+            metadata_dict = {
+                "classified": metadata.classified,
+                "category": metadata.category,
+                "category_display": metadata.category_display,
+                "color_scheme": metadata.color_scheme,
+                "region_code": metadata.region_code,
+                "region_name": metadata.region_name,
+                "special_note": metadata.special_note,
+            }
+
+        # Deduplication: increment count for repeated plate text
         for p in self.plate_history:
             if p["dtrb_text"] == dtrb_text:
                 p["count"] += 1
                 p["last_seen"] = now
+                # Update confidence if new detection has higher confidence
+                if conf > p["confidence"]:
+                    p["confidence"] = conf
                 return
+
         self.plate_history.append({
             "dtrb_text": dtrb_text,
             "yolo_text": plate["plate_text"],
-            "confidence": plate["confidence"],
+            "confidence": conf,
             "first_seen": now,
             "last_seen": now,
             "count": 1,
+            "persian_display": persian_display,
+            "is_valid_iranian": is_valid_iranian,
+            "metadata": metadata_dict,
         })
 
     def get_state(self):

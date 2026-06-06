@@ -32,16 +32,20 @@ class CameraRuntime:
 
 
 class CameraManager:
-    def __init__(self, ensure_models_fn: Callable):
+    def __init__(self, ensure_models_fn: Callable, tasks_registry: dict | None = None, tasks_lock=None):
         """
         :param ensure_models_fn: callable returning (detector, recognizer, opt) —
                                  used to lazy-load ML models when starting a processor.
+        :param tasks_registry: reference to the global _tasks dict in api.py for task registration.
+        :param tasks_lock: reference to the global _tasks_lock in api.py.
         """
         self._lock = threading.RLock()
         self._cameras: dict[int, CameraRuntime] = {}
         self._queue: deque[int] = deque()
         self._concurrency_limit: int = get_concurrency_limit()
         self._ensure_models = ensure_models_fn
+        self._tasks_registry = tasks_registry
+        self._tasks_lock = tasks_lock
 
     # ------------------------------------------------------------------
     # CRUD (write-through to DB)
@@ -295,18 +299,15 @@ class CameraManager:
 
         # Register in the global _tasks dict so the existing
         # /api/detect/rtsp/{task_id} status endpoint continues to work.
-        try:
-            import api as _api
-            with _api._tasks_lock:
-                _api._tasks[task_id] = {
+        if self._tasks_registry is not None and self._tasks_lock is not None:
+            with self._tasks_lock:
+                self._tasks_registry[task_id] = {
                     "processor": processor,
                     "session_id": session_id,
                     "status": "running",
                     "url": rt.url,
                     "camera_id": camera_id,
                 }
-        except Exception:
-            pass  # best-effort; the watcher + get_status still work without this
 
         # Daemon watcher thread: mirrors processor state → camera status,
         # promotes the queue when the processor stops or errors.
@@ -324,36 +325,39 @@ class CameraManager:
         """
         import time
 
-        _STATUS_MAP = {
-            "connecting": "connecting",
-            "connected": "connected",
-            "streaming": "streaming",
-        }
-
         while True:
             time.sleep(1)
+
+            # Get the processor reference while holding the manager lock briefly
             with self._lock:
                 if camera_id not in self._cameras:
                     return
                 rt = self._cameras[camera_id]
                 if rt.processor is None:
                     return
+                processor = rt.processor
 
-                try:
-                    state = rt.processor.get_state()
-                except Exception:
-                    # Processor became inaccessible — treat as error
-                    state = {"status": "error: inaccessible"}
+            # Read processor status WITHOUT holding manager lock (avoids deadlock)
+            try:
+                with processor.lock:
+                    proc_status = processor.status
+            except Exception:
+                proc_status = "error: inaccessible"
 
-                proc_status: str = state.get("status", "unknown")
+            # Now update the camera runtime status
+            with self._lock:
+                if camera_id not in self._cameras:
+                    return
+                rt = self._cameras[camera_id]
 
                 if proc_status.startswith("error"):
-                    # Error isolation: only this camera is affected (Req 12.4)
                     if rt.status not in ("stopped", "error"):
                         rt.status = "error"
                         if rt.session_id:
                             try:
-                                history = state.get("history", [])
+                                history = []
+                                with processor.lock:
+                                    history = list(processor.plate_history)
                                 end_session(
                                     rt.session_id,
                                     0,
@@ -368,12 +372,19 @@ class CameraManager:
                     return
 
                 if proc_status in ("done", "stopped"):
-                    if rt.status not in ("stopped",):
+                    if rt.status != "stopped":
                         rt.status = "stopped"
                     return
 
-                # Map live processor status to camera status
-                rt.status = _STATUS_MAP.get(proc_status, rt.status)
+                # Direct status mapping
+                if proc_status == "streaming":
+                    rt.status = "streaming"
+                elif proc_status == "connected":
+                    rt.status = "connected"
+                elif proc_status == "connecting" or proc_status == "initialized":
+                    rt.status = "connecting"
+                else:
+                    rt.status = "streaming"  # Default to streaming if frames are flowing
 
     def _stop_camera_locked(self, camera_id: int, end_sess: bool) -> None:
         """Stop the processor for *camera_id* and optionally close its session.

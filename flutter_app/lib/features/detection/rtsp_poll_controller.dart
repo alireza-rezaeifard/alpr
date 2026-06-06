@@ -5,6 +5,7 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/rtsp_task_model.dart';
+import '../../data/models/enhanced_rtsp_history_entry.dart';
 import '../../data/repositories/detect_repo.dart';
 import '../../core/api_client.dart';
 
@@ -38,6 +39,11 @@ class RtspState {
 
   bool get isActive =>
       phase == RtspPhase.starting || phase == RtspPhase.streaming;
+
+  /// The list of enhanced RTSP history entries parsed from the latest poll response.
+  /// These include iranian validation info, metadata, and deduplication count (Req 3.1, 3.2).
+  List<EnhancedRtspHistoryEntry> get historyEntries =>
+      status?.history ?? const [];
 }
 
 class RTSPPollController extends StateNotifier<RtspState> {

@@ -1,23 +1,26 @@
 """
 plate_reference.py
 Static reference data for Iranian license plate classification.
-Sources: Vehicle registration plates of Iran (Wikipedia, content rephrased for compliance).
+Synced with the official plate dataset (Vehicle registration plates of Iran).
 
 Plate structure: [DD][L][DDD][RR]
   DD  = 2-digit prefix (display left)
   L   = 1 series letter
   DDD = 3-digit number
   RR  = 2-digit region code (rightmost, determines province)
+
+Serial format shown on plate: ## X ### - NN
 """
 
 # ---------------------------------------------------------------------------
 # Letter → canonical category key
-# The DTRB model outputs latin letters. Both Persian and latin equivalents
-# resolve to the same category key so encoding is irrelevant.
+# The DTRB model outputs latin letters (0-9a-z). Both Persian and latin
+# equivalents resolve to the same category key so encoding is irrelevant.
+# Latin equivalents follow the official transliteration table.
 # ---------------------------------------------------------------------------
 
 LETTER_TO_CATEGORY: dict[str, str] = {
-    # Private / personal vehicles (white plates, black text)
+    # Private / personal vehicles (black on white)
     "b": "Private",   # ب
     "j": "Private",   # ج
     "d": "Private",   # د
@@ -25,55 +28,52 @@ LETTER_TO_CATEGORY: dict[str, str] = {
     "l": "Private",   # ل
     "m": "Private",   # م
     "n": "Private",   # ن
-    "v": "Private",   # و  (maps o/u/v/w -> و in DTRB)
+    "v": "Private",   # و
     "o": "Private",   # و  (alternative latin for و)
     "u": "Private",   # و  (alternative latin for و)
     "w": "Private",   # و  (alternative latin for و)
-    "h": "Private",   # ه
+    "h": "Private",   # هـ
     "y": "Private",   # ی
     "i": "Private",   # ی  (alternative latin for ی)
     "q": "Private",   # ق
     "r": "Private",   # ر
     "x": "Private",   # خ
 
-    # Taxi / public transport (yellow plates, black text)
+    # Taxi (black on yellow) — letter ت, plate also shows English "TAXI"
     "t": "Taxi",       # ت
 
-    # Agricultural (yellow plates)
+    # Agricultural (black on yellow)
     "k": "Agricultural",  # ک
 
-    # Government (red plates, white text)
-    "a": "Government",   # ا / الف
+    # Government (white on red)
+    "a": "Government",   # الف
 
-    # Police / FARAJA (green plates, white text)
+    # Police / FARAJA (white on dark green)
     "p": "Police",        # پ
 
-    # Military – IRGC (green plates)
+    # IRGC (white on dark green)
     "c": "Military_IRGC", # ث  (DTRB maps ث -> c)
 
-    # Military – Army (black plates, light text)
-    "e": "Military_Army", # ه  (also Private; Army uses specific series – treated by context)
+    # Army – IRIA (black on light brown)
+    "e": "Military_Army", # ش / ه
 
-    # Military – Ministry of Defence (blue plates)
+    # Ministry of Defence (white on light blue)
     "z": "Military_Defence",  # ز
 
-    # Military – General Staff (blue plates)
+    # General Staff of Armed Forces (white on light blue)
     "f": "Military_GeneralStaff",  # ف
 
-    # Temporary / Transit
+    # Temporary passage / transit (new imports)
     "g": "Temporary_Transit",  # گ
 
-    # Disabled (light-blue plates, blue icon)
-    # Disabled plates use special ژ letter; DTRB has no direct equivalent,
-    # stored as the Persian key below.
+    # Private vehicles of people with disabilities (black on white)
     "ژ": "Disabled",
 
-    # Diplomatic / Political (black plates, gold text)
-    # D-series / تشریفات; stored as special markers
+    # Diplomatic / Consular
     "diplomatic": "Diplomatic",
 }
 
-# Persian-letter direct lookup (for plates that come in Persian encoding)
+# Persian-letter direct lookup (for plates that arrive in Persian encoding)
 PERSIAN_LETTER_TO_CATEGORY: dict[str, str] = {
     "ب": "Private",
     "ج": "Private",
@@ -90,8 +90,8 @@ PERSIAN_LETTER_TO_CATEGORY: dict[str, str] = {
     "ی": "Private",
     "ر": "Private",
     "خ": "Private",
-    "ت": "Taxi",
-    "ع": "Taxi",       # also public/ع (yellow)
+    "ت": "Taxi",          # تاکسی
+    "ع": "Public",        # عمومی (public vehicles, yellow)
     "ک": "Agricultural",
     "ا": "Government",
     "پ": "Police",
@@ -105,41 +105,44 @@ PERSIAN_LETTER_TO_CATEGORY: dict[str, str] = {
 
 # ---------------------------------------------------------------------------
 # Category → color scheme (one of: white | yellow | green | red | blue | black)
+# Derived from the official plate-type colour table.
 # ---------------------------------------------------------------------------
 
 CATEGORY_TO_COLOR: dict[str, str] = {
-    "Private":              "white",
-    "Taxi":                 "yellow",
-    "Agricultural":         "yellow",
-    "Government":           "red",
-    "Police":               "green",
-    "Military_IRGC":        "green",
-    "Military_Army":        "black",
-    "Military_Defence":     "blue",
-    "Military_GeneralStaff": "blue",
-    "Temporary_Transit":    "white",
-    "Disabled":             "blue",
-    "Diplomatic":           "black",
-    "FreeZone_Arvand":      "white",
-    "Unknown":              "white",
+    "Private":               "white",   # black on white
+    "Taxi":                  "yellow",  # black on yellow
+    "Public":                "yellow",  # black on yellow
+    "Agricultural":          "yellow",  # black on yellow
+    "Government":            "red",     # white on red
+    "Police":                "green",   # white on dark green
+    "Military_IRGC":         "green",   # white on dark green
+    "Military_Army":         "black",   # black on light brown
+    "Military_Defence":      "blue",    # white on light blue
+    "Military_GeneralStaff": "blue",    # white on light blue
+    "Temporary_Transit":     "white",
+    "Disabled":              "white",   # black on white (with ♿ symbol)
+    "Diplomatic":            "black",
+    "FreeZone_Arvand":       "white",   # black on white
+    "Unknown":               "white",
 }
 
-# Category → human-readable display name
+# Category → human-readable display name (Persian + English)
 CATEGORY_DISPLAY: dict[str, str] = {
-    "Private":              "شخصی (Private)",
-    "Taxi":                 "تاکسی / عمومی (Taxi / Public)",
-    "Agricultural":         "کشاورزی (Agricultural)",
-    "Government":           "دولتی (Government)",
-    "Police":               "انتظامی (Police / FARAJA)",
-    "Military_IRGC":        "سپاه پاسداران (Military – IRGC)",
-    "Military_Army":        "ارتش (Military – Army)",
-    "Military_Defence":     "وزارت دفاع (Military – MoD)",
-    "Military_GeneralStaff": "ستاد کل (Military – General Staff)",
-    "Temporary_Transit":    "تعبوری / موقت (Temporary / Transit)",
-    "Disabled":             "معلولین (Disabled)",
-    "Diplomatic":           "سیاسی / دیپلماتیک (Diplomatic)",
-    "FreeZone_Arvand":      "منطقه آزاد (Free Zone / Arvand)",
-    "Unknown":              "نامشخص (Unknown)",
+    "Private":               "شخصی (Private)",
+    "Taxi":                  "تاکسی (Taxi)",
+    "Public":                "عمومی (Public)",
+    "Agricultural":          "کشاورزی (Agricultural)",
+    "Government":            "دولتی (Government)",
+    "Police":                "انتظامی (Police / FARAJA)",
+    "Military_IRGC":         "سپاه پاسداران (IRGC)",
+    "Military_Army":         "ارتش (Army – IRIA)",
+    "Military_Defence":      "وزارت دفاع (Ministry of Defence)",
+    "Military_GeneralStaff": "ستاد کل (General Staff)",
+    "Temporary_Transit":     "گذر موقت (Temporary / Transit)",
+    "Disabled":              "معلولین و جانبازان (Disabled)",
+    "Diplomatic":            "سیاسی / دیپلماتیک (Diplomatic)",
+    "FreeZone_Arvand":       "منطقه آزاد (Free Zone)",
+    "Unknown":               "نامشخص (Unknown)",
 }
 
 # ---------------------------------------------------------------------------
@@ -157,7 +160,9 @@ FREE_ZONE_PREFIXES: dict[str, str] = {
 }
 
 # ---------------------------------------------------------------------------
-# Region code → province / region name  (2-digit string)
+# Region code → province / region name (2-digit string)
+# Synced with the official province_codes allocation table.
+# Codes 39, 70, 80, 90 are not allocated and are intentionally absent.
 # ---------------------------------------------------------------------------
 
 REGION_CODE_TO_PROVINCE: dict[str, str] = {
@@ -169,12 +174,14 @@ REGION_CODE_TO_PROVINCE: dict[str, str] = {
     "33": "تهران (Tehran)",
     "40": "تهران (Tehran)",
     "44": "تهران (Tehran)",
+    "50": "تهران (Tehran)",
     "55": "تهران (Tehran)",
+    "60": "تهران (Tehran)",
     "66": "تهران (Tehran)",
     "77": "تهران (Tehran)",
     "88": "تهران (Tehran)",
     "99": "تهران (Tehran)",
-    # Alborz
+    # Tehran / Alborz
     "21": "البرز (Alborz)",
     "30": "البرز (Alborz)",
     "38": "البرز (Alborz)",
@@ -197,10 +204,53 @@ REGION_CODE_TO_PROVINCE: dict[str, str] = {
     "73": "فارس (Fars)",
     "83": "فارس (Fars)",
     "93": "فارس (Fars)",
+    # Mazandaran
+    "62": "مازندران (Mazandaran)",
+    "72": "مازندران (Mazandaran)",
+    "82": "مازندران (Mazandaran)",
+    "92": "مازندران (Mazandaran)",
     # Khuzestan
     "14": "خوزستان (Khuzestan)",
     "24": "خوزستان (Khuzestan)",
     "34": "خوزستان (Khuzestan)",
+    # Gilan
+    "46": "گیلان (Gilan)",
+    "56": "گیلان (Gilan)",
+    "76": "گیلان (Gilan)",
+    # Kermanshah
+    "19": "کرمانشاه (Kermanshah)",
+    "29": "کرمانشاه (Kermanshah)",
+    # Lorestan
+    "31": "لرستان (Lorestan)",
+    "41": "لرستان (Lorestan)",
+    # North Khorasan
+    "26": "خراسان شمالی (North Khorasan)",
+    # South Khorasan
+    "52": "خراسان جنوبی (South Khorasan)",
+    # Bushehr
+    "48": "بوشهر (Bushehr)",
+    "58": "بوشهر (Bushehr)",
+    # Golestan
+    "59": "گلستان (Golestan)",
+    "69": "گلستان (Golestan)",
+    # Chaharmahal and Bakhtiari
+    "71": "چهارمحال و بختیاری (Chaharmahal and Bakhtiari)",
+    "81": "چهارمحال و بختیاری (Chaharmahal and Bakhtiari)",
+    # Hormozgan
+    "84": "هرمزگان (Hormozgan)",
+    "94": "هرمزگان (Hormozgan)",
+    # Qazvin
+    "79": "قزوین (Qazvin)",
+    "89": "قزوین (Qazvin)",
+    # Markazi
+    "47": "مرکزی (Markazi)",
+    "57": "مرکزی (Markazi)",
+    # Zanjan
+    "87": "زنجان (Zanjan)",
+    "97": "زنجان (Zanjan)",
+    # Hamadan
+    "18": "همدان (Hamadan)",
+    "28": "همدان (Hamadan)",
     # East Azerbaijan
     "15": "آذربایجان شرقی (East Azerbaijan)",
     "25": "آذربایجان شرقی (East Azerbaijan)",
@@ -209,75 +259,28 @@ REGION_CODE_TO_PROVINCE: dict[str, str] = {
     "17": "آذربایجان غربی (West Azerbaijan)",
     "27": "آذربایجان غربی (West Azerbaijan)",
     "37": "آذربایجان غربی (West Azerbaijan)",
-    # Qom
-    "16": "قم (Qom)",
-    "26": "قم (Qom)",
-    # Gilan
-    "18": "گیلان (Gilan)",
-    "28": "گیلان (Gilan)",
-    "48": "گیلان (Gilan)",
-    # Mazandaran
-    "19": "مازندران (Mazandaran)",
-    "29": "مازندران (Mazandaran)",
-    "39": "مازندران (Mazandaran)",
-    "49": "مازندران (Mazandaran)",
+    # Sistan and Baluchestan
+    "85": "سیستان و بلوچستان (Sistan and Baluchestan)",
+    "95": "سیستان و بلوچستان (Sistan and Baluchestan)",
+    # Yazd
+    "54": "یزد (Yazd)",
+    "64": "یزد (Yazd)",
+    # Semnan
+    "86": "سمنان (Semnan)",
+    "96": "سمنان (Semnan)",
     # Kerman
     "45": "کرمان (Kerman)",
-    "56": "کرمان (Kerman)",
+    "65": "کرمان (Kerman)",
     "75": "کرمان (Kerman)",
-    # Khorasan North
-    "31": "خراسان شمالی (North Khorasan)",
-    # Khorasan South
-    "41": "خراسان جنوبی (South Khorasan)",
-    "51": "خراسان جنوبی (South Khorasan)",
-    # Kermanshah
-    "46": "کرمانشاه (Kermanshah)",
-    "57": "کرمانشاه (Kermanshah)",
-    # Lorestan
-    "47": "لرستان (Lorestan)",
-    "58": "لرستان (Lorestan)",
-    # Hamadan
-    "52": "همدان (Hamadan)",
-    "62": "همدان (Hamadan)",
-    # Golestan
-    "54": "گلستان (Golestan)",
-    "64": "گلستان (Golestan)",
-    # Semnan
-    "59": "سمنان (Semnan)",
-    "69": "سمنان (Semnan)",
-    # Yazd
-    "61": "یزد (Yazd)",
-    "71": "یزد (Yazd)",
-    # Chaharmahal and Bakhtiari
-    "72": "چهارمحال و بختیاری (Chaharmahal and Bakhtiari)",
-    # Zanjan
-    "79": "زنجان (Zanjan)",
-    "89": "زنجان (Zanjan)",
-    # Sistan and Baluchestan
-    "81": "سیستان و بلوچستان (Sistan and Baluchestan)",
-    "91": "سیستان و بلوچستان (Sistan and Baluchestan)",
-    # Bushehr
-    "82": "بوشهر (Bushehr)",
-    "92": "بوشهر (Bushehr)",
-    # Ilam
-    "84": "ایلام (Ilam)",
-    "98": "ایلام (Ilam)",
-    # Kurdistan
-    "85": "کردستان (Kurdistan)",
-    "95": "کردستان (Kurdistan)",
     # Kohgiluyeh and Boyer-Ahmad
-    "86": "کهگیلویه و بویراحمد (Kohgiluyeh and Boyer-Ahmad)",
-    "96": "کهگیلویه و بویراحمد (Kohgiluyeh and Boyer-Ahmad)",
-    # North Khorasan
-    "87": "خراسان شمالی (North Khorasan)",
-    "97": "خراسان شمالی (North Khorasan)",
+    "49": "کهگیلویه و بویراحمد (Kohgiluyeh and Boyer-Ahmad)",
+    # Qom
+    "16": "قم (Qom)",
+    # Kurdistan
+    "51": "کردستان (Kurdistan)",
+    "61": "کردستان (Kurdistan)",
+    # Ilam
+    "98": "ایلام (Ilam)",
     # Ardabil
-    "76": "اردبیل (Ardabil)",
-    "65": "اردبیل (Ardabil)",
-    # Markazi
-    "60": "مرکزی (Markazi)",
-    "70": "مرکزی (Markazi)",
-    # Hormozgan
-    "80": "هرمزگان (Hormozgan)",
-    "90": "هرمزگان (Hormozgan)",
+    "91": "اردبیل (Ardabil)",
 }

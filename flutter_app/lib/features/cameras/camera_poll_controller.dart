@@ -1,5 +1,6 @@
 // lib/features/cameras/camera_poll_controller.dart
 // Independent per-camera polling controller. One instance per running camera.
+// Uses fast frame-only endpoint for smooth ~4-5 FPS playback.
 // Requirements: 13.1, 13.3, 13.4
 
 import 'dart:async';
@@ -30,31 +31,43 @@ class CameraPollState {
       );
 }
 
-/// Polls /api/detect/rtsp/{taskId} at 1000ms for a single camera.
-/// Call [start] with the camera's task_id to begin polling.
+/// Polls /api/detect/rtsp/{taskId}/frame at ~500ms for smooth video.
+/// Falls back to full status poll every 3 seconds for complete history.
 /// Requirements: 13.3
 class CameraPollController extends StateNotifier<CameraPollState> {
   final DetectRepo _repo;
-  Timer? _timer;
+  Timer? _frameTimer;
+  Timer? _fullTimer;
+  bool _polling = false;
 
   CameraPollController(this._repo) : super(const CameraPollState());
 
   void start(String taskId) {
-    _stopTimer();
-    _timer = Timer.periodic(const Duration(milliseconds: 1000), (_) {
-      _poll(taskId);
+    _stopTimers();
+    // Frame polling at 500ms (matches ~10 FPS server-side JPEG rate)
+    _frameTimer = Timer.periodic(const Duration(milliseconds: 500), (_) {
+      _pollFrame(taskId);
     });
+    // Full status poll every 3 seconds (for complete history)
+    _fullTimer = Timer.periodic(const Duration(seconds: 3), (_) {
+      _pollFull(taskId);
+    });
+    // Immediate first poll
+    _pollFrame(taskId);
   }
 
-  void _stopTimer() {
-    _timer?.cancel();
-    _timer = null;
+  void _stopTimers() {
+    _frameTimer?.cancel();
+    _frameTimer = null;
+    _fullTimer?.cancel();
+    _fullTimer = null;
   }
 
-  Future<void> _poll(String taskId) async {
+  Future<void> _pollFrame(String taskId) async {
+    if (_polling) return; // Skip if previous poll still in flight
+    _polling = true;
     try {
-      final status = await _repo.pollRtsp(taskId);
-      // Retain last annotated frame (Req 13.4, 13.7)
+      final status = await _repo.pollRtspFrame(taskId);
       final annotated = status.annotated?.isNotEmpty == true
           ? status.annotated
           : state.lastAnnotated;
@@ -62,8 +75,7 @@ class CameraPollController extends StateNotifier<CameraPollState> {
           status.status == 'done' ||
           status.status == 'stopped';
       if (terminal) {
-        // Req 13.4 — stop polling on terminal state, retain last frame
-        _stopTimer();
+        _stopTimers();
       }
       state = state.copyWith(
         status: status,
@@ -72,17 +84,39 @@ class CameraPollController extends StateNotifier<CameraPollState> {
       );
     } catch (_) {
       // Transient error — keep polling
+    } finally {
+      _polling = false;
     }
+  }
+
+  Future<void> _pollFull(String taskId) async {
+    try {
+      final status = await _repo.pollRtsp(taskId);
+      final annotated = status.annotated?.isNotEmpty == true
+          ? status.annotated
+          : state.lastAnnotated;
+      final terminal = status.hasError ||
+          status.status == 'done' ||
+          status.status == 'stopped';
+      if (terminal) {
+        _stopTimers();
+      }
+      state = state.copyWith(
+        status: status,
+        lastAnnotated: annotated,
+        terminal: terminal,
+      );
+    } catch (_) {}
   }
 
   @override
   void dispose() {
-    _stopTimer();
+    _stopTimers();
     super.dispose();
   }
 }
 
-// Family provider: one controller per (cameraId, taskId) pair
+// Family provider: one controller per taskId
 final _cameraPollRepoProvider = Provider((_) => DetectRepo());
 
 final cameraPollProvider = StateNotifierProvider.family.autoDispose<

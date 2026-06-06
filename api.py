@@ -60,8 +60,13 @@ def _ensure_models():
     return _detector, _recognizer, _opt
 
 
+# ── Background task state ──
+_tasks: dict[str, dict] = {}
+_tasks_lock = threading.Lock()
+
+
 # ── Camera Manager (process-wide singleton) ──
-_camera_manager = CameraManager(ensure_models_fn=_ensure_models)
+_camera_manager = CameraManager(ensure_models_fn=_ensure_models, tasks_registry=_tasks, tasks_lock=_tasks_lock)
 
 from contextlib import asynccontextmanager
 
@@ -72,10 +77,6 @@ async def _lifespan(app):
 
 app.router.lifespan_context = _lifespan
 
-
-# ── Background task state ──
-_tasks: dict[str, dict] = {}
-_tasks_lock = threading.Lock()
 
 OUTPUT_DIR = "io/output"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -153,17 +154,22 @@ async def detect_image(file: UploadFile = File(...)):
     sid = start_session("image", file.filename or "upload")
     plates_out = []
     for idx, plate in enumerate(plates):
-        dtrb_text = dtrb_results[idx] if idx < len(dtrb_results) else "-"
+        dtrb_entry = dtrb_results[idx] if idx < len(dtrb_results) else ("-", 0.0)
+        if isinstance(dtrb_entry, tuple):
+            dtrb_text, dtrb_conf = dtrb_entry
+        else:
+            dtrb_text, dtrb_conf = dtrb_entry, plate["confidence"]
+        best_conf = max(float(plate["confidence"]), dtrb_conf)
         persian = format_plate_persian(dtrb_text)
         # Convert numpy types to native Python for JSON serialization
         bbox = tuple(int(x) for x in plate["bbox"])
         plates_out.append({
             "plate_dtrb": dtrb_text,
             "plate_persian": persian,
-            "confidence": float(plate["confidence"]),
+            "confidence": best_conf,
             "bbox": bbox,
         })
-        save_detection(sid, "image", dtrb_text, persian, plate["confidence"], file.filename)
+        save_detection(sid, "image", dtrb_text, persian, best_conf, file.filename)
     end_session(sid, 0, len(plates), len(set(p["plate_dtrb"] for p in plates_out)))
 
     # Encode annotated image to base64
@@ -202,12 +208,19 @@ async def detect_video(
         def on_det(src, text, conf, sf, frame, ftime):
             save_detection(sid, src, text, format_plate_persian(text), conf, sf, frame, ftime)
         vp = VideoProcessor(detector, recognizer, opt, on_detection=on_det)
+        with _tasks_lock:
+            _tasks[task_id]["processor"] = vp
         vp.process_video(inp, skip_frames=skip, fast_mode=fast)
         # Wait for completion
         while True:
+            # Check if cancelled externally
+            with _tasks_lock:
+                if _tasks.get(task_id, {}).get("status") == "cancelled":
+                    vp.stop()
+                    break
             state = vp.get_state()
             with _tasks_lock:
-                _tasks[task_id] = state
+                _tasks[task_id].update(state)
             if state["status"] in ("done", "error"):
                 break
             threading.Event().wait(0.5)
@@ -215,10 +228,10 @@ async def detect_video(
             unique = len(set(e["dtrb_text"] for e in state["plate_log"]))
             end_session(sid, state["total_frames"], len(state["plate_log"]), unique)
 
-    threading.Thread(target=run_video, args=(task_id, session_id, input_path, skip_frames, fast_mode), daemon=True).start()
-
     with _tasks_lock:
         _tasks[task_id] = {"status": "queued", "session_id": session_id}
+
+    threading.Thread(target=run_video, args=(task_id, session_id, input_path, skip_frames, fast_mode), daemon=True).start()
 
     return JSONResponse({"task_id": task_id, "session_id": session_id})
 
@@ -258,12 +271,11 @@ def stop_video_task(task_id: str):
         state = _tasks.get(task_id)
     if state is None:
         return JSONResponse({"error": "Task not found"}, status_code=404)
-    if state.get("status") == "processing":
-        from video_processor import VideoProcessor
-        # The processor stores running flag; we set it to false via the task state approach
-        # For simplicity, we mark it cancelled
-        with _tasks_lock:
-            _tasks[task_id] = {**_tasks[task_id], "status": "cancelled"}
+    processor = state.get("processor")
+    if processor:
+        processor.stop()
+    with _tasks_lock:
+        _tasks[task_id]["status"] = "cancelled"
     return {"status": "stopped"}
 
 
@@ -318,6 +330,82 @@ def rtsp_status(task_id: str):
         "live_detections": state.get("live_detections", []),
         "annotated": annotated_b64,
     }
+
+
+@app.get("/api/detect/rtsp/{task_id}/frame")
+def rtsp_frame_only(task_id: str):
+    """Lightweight endpoint: returns only the latest pre-encoded frame + status.
+    
+    Optimized for fast polling (~300ms). Frame is pre-encoded by the processor thread.
+    """
+    with _tasks_lock:
+        entry = _tasks.get(task_id)
+    if entry is None:
+        return JSONResponse({"error": "Task not found"}, status_code=404)
+    processor = entry.get("processor")
+    if processor is None:
+        return {"status": "error"}
+
+    # Get pre-encoded JPEG and recent data directly
+    with processor.lock:
+        status = processor.status
+        jpeg_bytes = processor.latest_jpeg
+        recent_live = processor.live_detections[-3:] if processor.live_detections else []
+        recent_history = processor.plate_history[-5:] if processor.plate_history else []
+
+    # Use pre-encoded JPEG — no encoding needed here
+    annotated_b64 = None
+    if jpeg_bytes is not None:
+        annotated_b64 = f"data:image/jpeg;base64,{base64.b64encode(jpeg_bytes).decode('utf-8')}"
+
+    return {
+        "status": status,
+        "annotated": annotated_b64,
+        "live_detections": list(recent_live),
+        "history": list(recent_history),
+    }
+
+
+@app.get("/api/detect/rtsp/{task_id}/mjpeg")
+async def rtsp_mjpeg_stream(task_id: str):
+    """MJPEG stream endpoint for smooth real-time video in the browser/app.
+    
+    Streams annotated frames as multipart JPEG at ~10 FPS.
+    """
+    from starlette.responses import StreamingResponse
+    import time as _time
+
+    with _tasks_lock:
+        entry = _tasks.get(task_id)
+    if entry is None:
+        return JSONResponse({"error": "Task not found"}, status_code=404)
+    processor = entry.get("processor")
+    if processor is None:
+        return JSONResponse({"error": "Processor not found"}, status_code=404)
+
+    def generate_frames():
+        while True:
+            try:
+                with processor.lock:
+                    status = processor.status
+                    jpeg_bytes = processor.latest_jpeg
+                if status.startswith("error") or status in ("done", "stopped"):
+                    break
+                if jpeg_bytes is not None:
+                    yield (
+                        b"--frame\r\n"
+                        b"Content-Type: image/jpeg\r\n"
+                        b"Content-Length: " + str(len(jpeg_bytes)).encode() + b"\r\n\r\n"
+                        + jpeg_bytes + b"\r\n"
+                    )
+                _time.sleep(0.1)  # ~10 FPS
+            except Exception:
+                break
+
+    return StreamingResponse(
+        generate_frames(),
+        media_type="multipart/x-mixed-replace; boundary=frame",
+    )
 
 
 @app.post("/api/detect/rtsp/{task_id}/stop")
@@ -440,6 +528,459 @@ def plate_metadata_api(plate: str = ""):
         special_note=result.special_note,
         reason=result.reason,
     ).model_dump()
+
+
+# ── Network Camera Scanner ──
+
+_scan_lock = threading.Lock()
+_scan_state: dict = {"running": False, "results": [], "progress": 0, "total": 0}
+
+
+def _ip_to_int(ip: str) -> int:
+    parts = [int(p) for p in ip.split(".")]
+    return (parts[0] << 24) | (parts[1] << 16) | (parts[2] << 8) | parts[3]
+
+
+def _int_to_ip(n: int) -> str:
+    return f"{(n >> 24) & 0xFF}.{(n >> 16) & 0xFF}.{(n >> 8) & 0xFF}.{n & 0xFF}"
+
+
+def _is_rtsp_camera(ip: str, port: int = 554, timeout: float = 2.0) -> dict | None:
+    """Check if host is an actual RTSP IP camera by attempting an RTSP OPTIONS request."""
+    import socket
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(timeout)
+        sock.connect((ip, port))
+        # Send RTSP OPTIONS to identify camera
+        sock.sendall(f"OPTIONS rtsp://{ip}:{port}/ RTSP/1.0\r\nCSeq: 1\r\n\r\n".encode())
+        response = sock.recv(2048).decode(errors="ignore")
+        sock.close()
+        if "RTSP" in response:
+            brand = "Unknown"
+            server_info = ""
+            resp_lower = response.lower()
+
+            # Extract Server header for detailed info
+            for line in response.split("\r\n"):
+                if line.lower().startswith("server:"):
+                    server_info = line.split(":", 1)[1].strip()
+                    break
+
+            # Brand detection from response content
+            if "hikvision" in resp_lower or "hikvis" in resp_lower:
+                brand = "Hikvision"
+            elif "dahua" in resp_lower or "dh-" in resp_lower:
+                brand = "Dahua"
+            elif "axis" in resp_lower:
+                brand = "Axis"
+            elif "uniview" in resp_lower or "unv" in resp_lower:
+                brand = "Uniview"
+            elif "reolink" in resp_lower:
+                brand = "Reolink"
+            elif "amcrest" in resp_lower:
+                brand = "Amcrest"
+            elif "foscam" in resp_lower:
+                brand = "Foscam"
+            elif "onvif" in resp_lower:
+                brand = "ONVIF Camera"
+            elif "hanwha" in resp_lower or "samsung" in resp_lower or "wisenet" in resp_lower:
+                brand = "Hanwha/Samsung"
+            elif "vivotek" in resp_lower:
+                brand = "Vivotek"
+            elif "bosch" in resp_lower:
+                brand = "Bosch"
+            elif "panasonic" in resp_lower or "i-pro" in resp_lower:
+                brand = "Panasonic"
+            elif "geovision" in resp_lower or "gv-" in resp_lower:
+                brand = "GeoVision"
+            elif "tiandy" in resp_lower:
+                brand = "Tiandy"
+            elif "sunell" in resp_lower:
+                brand = "Sunell"
+            elif "tp-link" in resp_lower or "tplink" in resp_lower:
+                brand = "TP-Link"
+            elif "imou" in resp_lower:
+                brand = "Imou"
+            elif "ezviz" in resp_lower:
+                brand = "EZVIZ"
+
+            # If brand still unknown, try to get it from server header
+            if brand == "Unknown" and server_info:
+                brand = f"RTSP ({server_info[:30]})"
+
+            return {"ip": ip, "port": port, "brand": brand, "server": server_info}
+        return None
+    except Exception:
+        return None
+
+
+# Common RTSP ports to scan
+_RTSP_PORTS = [554, 8554, 1554, 5554, 80, 8080]
+
+
+def _scan_network_for_cameras(start_ip: str, end_ip: str, timeout: float = 0.8):
+    """Scan IP range for hosts with open RTSP port using concurrent threads."""
+    import socket
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+
+    start = _ip_to_int(start_ip)
+    end = _ip_to_int(end_ip)
+    ip_count = end - start + 1
+    # Total = IPs × ports
+    total = ip_count * len(_RTSP_PORTS)
+
+    with _scan_lock:
+        _scan_state["running"] = True
+        _scan_state["results"] = []
+        _scan_state["progress"] = 0
+        _scan_state["total"] = total
+
+    def _check_single_ip_port(ip_int: int, port: int) -> dict | None:
+        ip = _int_to_ip(ip_int)
+        try:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.settimeout(timeout)
+            if sock.connect_ex((ip, port)) == 0:
+                sock.close()
+                return _is_rtsp_camera(ip, port, timeout=2.0)
+            else:
+                sock.close()
+        except Exception:
+            pass
+        return None
+
+    # Use thread pool for concurrent scanning (50 threads max)
+    max_workers = min(50, total)
+    progress_counter = 0
+
+    # Track which IPs already found (to avoid duplicate entries per IP if multiple ports respond)
+    found_ip_ports = set()
+
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = {}
+        for ip_int in range(start, end + 1):
+            with _scan_lock:
+                if not _scan_state["running"]:
+                    break
+            for port in _RTSP_PORTS:
+                future = executor.submit(_check_single_ip_port, ip_int, port)
+                futures[future] = (ip_int, port)
+
+        for future in as_completed(futures):
+            with _scan_lock:
+                if not _scan_state["running"]:
+                    # Cancel remaining futures
+                    for f in futures:
+                        f.cancel()
+                    break
+                progress_counter += 1
+                _scan_state["progress"] = progress_counter
+            result = future.result()
+            if result:
+                key = (result["ip"], result["port"])
+                if key not in found_ip_ports:
+                    found_ip_ports.add(key)
+                    with _scan_lock:
+                        _scan_state["results"].append(result)
+
+    with _scan_lock:
+        _scan_state["running"] = False
+
+
+@app.post("/api/scanner/scan")
+def start_scan(start_ip: str = Form(""), end_ip: str = Form(""), timeout: float = Form(0.8)):
+    with _scan_lock:
+        if _scan_state["running"]:
+            return JSONResponse({"error": "Scan already running"}, status_code=409)
+    s_ip = start_ip.strip() or "192.168.1.1"
+    e_ip = end_ip.strip() or "192.168.1.254"
+    threading.Thread(target=_scan_network_for_cameras, args=(s_ip, e_ip, timeout), daemon=True).start()
+    return {"status": "scanning", "start_ip": s_ip, "end_ip": e_ip}
+
+
+@app.get("/api/scanner/status")
+def scan_status():
+    with _scan_lock:
+        return {
+            "running": _scan_state["running"],
+            "results": list(_scan_state["results"]),
+            "progress": _scan_state["progress"],
+            "total": _scan_state["total"],
+        }
+
+
+@app.post("/api/scanner/stop")
+def stop_scan():
+    with _scan_lock:
+        _scan_state["running"] = False
+    return {"status": "stopped"}
+
+
+@app.post("/api/scanner/test")
+def test_rtsp_connection(url: str = Form(...)):
+    """Test if an RTSP URL is reachable and returns frames."""
+    cap = cv2.VideoCapture(url)
+    cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+    try:
+        if not cap.isOpened():
+            return {"success": False, "error": "Cannot connect"}
+        ret, _ = cap.read()
+        if not ret:
+            return {"success": False, "error": "Connected but no frames received"}
+        return {"success": True}
+    finally:
+        cap.release()
+
+
+# Common RTSP stream paths by brand
+_BRAND_STREAMS: dict[str, list[dict]] = {
+    "Hikvision": [
+        {"path": "/Streaming/Channels/101", "label": "Main Stream (Ch1)"},
+        {"path": "/Streaming/Channels/102", "label": "Sub Stream (Ch1)"},
+        {"path": "/Streaming/Channels/103", "label": "Third Stream (Ch1)"},
+        {"path": "/Streaming/Channels/201", "label": "Main Stream (Ch2)"},
+        {"path": "/ISAPI/Streaming/Channels/101", "label": "ISAPI Main"},
+        {"path": "/h264/ch1/main/av_stream", "label": "H264 Main"},
+        {"path": "/h264/ch1/sub/av_stream", "label": "H264 Sub"},
+    ],
+    "Dahua": [
+        {"path": "/cam/realmonitor?channel=1&subtype=0", "label": "Main Stream (Ch1)"},
+        {"path": "/cam/realmonitor?channel=1&subtype=1", "label": "Sub Stream (Ch1)"},
+        {"path": "/cam/realmonitor?channel=1&subtype=2", "label": "Third Stream (Ch1)"},
+        {"path": "/cam/realmonitor?channel=2&subtype=0", "label": "Main Stream (Ch2)"},
+        {"path": "/live", "label": "Live"},
+    ],
+    "Axis": [
+        {"path": "/axis-media/media.amp", "label": "Main Stream"},
+        {"path": "/axis-media/media.amp?videocodec=h264", "label": "H264 Stream"},
+        {"path": "/axis-media/media.amp?resolution=640x480", "label": "Low Res"},
+        {"path": "/mpeg4/media.amp", "label": "MPEG4"},
+    ],
+    "Uniview": [
+        {"path": "/media/video1", "label": "Main Stream"},
+        {"path": "/media/video2", "label": "Sub Stream"},
+        {"path": "/media/video3", "label": "Third Stream"},
+        {"path": "/unicast/c1/s0/live", "label": "Unicast Main"},
+        {"path": "/unicast/c1/s1/live", "label": "Unicast Sub"},
+    ],
+    "Reolink": [
+        {"path": "/h264Preview_01_main", "label": "Main Stream"},
+        {"path": "/h264Preview_01_sub", "label": "Sub Stream"},
+        {"path": "/Preview_01_main", "label": "Preview Main"},
+        {"path": "/Preview_01_sub", "label": "Preview Sub"},
+    ],
+    "Amcrest": [
+        {"path": "/cam/realmonitor?channel=1&subtype=0", "label": "Main Stream"},
+        {"path": "/cam/realmonitor?channel=1&subtype=1", "label": "Sub Stream"},
+    ],
+    "Foscam": [
+        {"path": "/videoMain", "label": "Main Stream"},
+        {"path": "/videoSub", "label": "Sub Stream"},
+        {"path": "/video1", "label": "Video 1"},
+        {"path": "/video2", "label": "Video 2"},
+    ],
+    "Hanwha/Samsung": [
+        {"path": "/profile1/media.smp", "label": "Profile 1"},
+        {"path": "/profile2/media.smp", "label": "Profile 2"},
+        {"path": "/profile3/media.smp", "label": "Profile 3"},
+    ],
+    "Vivotek": [
+        {"path": "/live.sdp", "label": "Main Stream"},
+        {"path": "/live2.sdp", "label": "Sub Stream"},
+        {"path": "/video.mp4", "label": "MP4 Stream"},
+    ],
+    "Bosch": [
+        {"path": "/rtsp_tunnel", "label": "RTSP Tunnel"},
+        {"path": "/video", "label": "Video"},
+    ],
+    "Panasonic": [
+        {"path": "/MediaInput/h264", "label": "H264 Main"},
+        {"path": "/MediaInput/h264/stream_1", "label": "Stream 1"},
+        {"path": "/MediaInput/h264/stream_2", "label": "Stream 2"},
+        {"path": "/nphMpeg4/nil-320x240", "label": "MPEG4 Low"},
+    ],
+    "GeoVision": [
+        {"path": "/CH001.sdp", "label": "Channel 1"},
+        {"path": "/CH002.sdp", "label": "Channel 2"},
+        {"path": "/media/video1", "label": "Video 1"},
+    ],
+    "TP-Link": [
+        {"path": "/stream1", "label": "Main Stream"},
+        {"path": "/stream2", "label": "Sub Stream"},
+    ],
+    "Imou": [
+        {"path": "/cam/realmonitor?channel=1&subtype=0", "label": "Main Stream"},
+        {"path": "/cam/realmonitor?channel=1&subtype=1", "label": "Sub Stream"},
+    ],
+    "EZVIZ": [
+        {"path": "/h264_stream", "label": "H264 Main"},
+        {"path": "/Streaming/Channels/101", "label": "Channel 101"},
+    ],
+    "Tiandy": [
+        {"path": "/Streaming/Channels/101", "label": "Main Stream"},
+        {"path": "/Streaming/Channels/102", "label": "Sub Stream"},
+    ],
+    "Sunell": [
+        {"path": "/media/video1", "label": "Main Stream"},
+        {"path": "/media/video2", "label": "Sub Stream"},
+    ],
+}
+
+# Generic paths tried for all unknown brands
+_GENERIC_STREAMS: list[dict] = [
+    {"path": "/stream1", "label": "Stream 1"},
+    {"path": "/stream2", "label": "Stream 2"},
+    {"path": "/live", "label": "Live"},
+    {"path": "/h264", "label": "H264"},
+    {"path": "/media/video1", "label": "Media Video 1"},
+    {"path": "/Streaming/Channels/101", "label": "Channel 101"},
+    {"path": "/cam/realmonitor?channel=1&subtype=0", "label": "Realmonitor Main"},
+    {"path": "/video1", "label": "Video 1"},
+    {"path": "/1", "label": "Path /1"},
+    {"path": "/0", "label": "Path /0"},
+    {"path": "/ch0_0.h264", "label": "CH0 H264"},
+]
+
+
+def _probe_rtsp_stream(ip: str, port: int, path: str, username: str, password: str, timeout: float = 3.0) -> bool:
+    """Try opening an RTSP stream path and check if it returns frames.
+    
+    Uses a quick RTSP DESCRIBE check first to avoid the 30s FFmpeg default timeout
+    on paths that don't exist.
+    """
+    import socket
+
+    # Step 1: Quick RTSP DESCRIBE to check if the path is valid (avoids 30s FFmpeg timeout)
+    cred_rtsp = ""
+    if username:
+        import base64
+        cred_rtsp = base64.b64encode(f"{username}:{password}".encode()).decode()
+
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(timeout)
+        sock.connect((ip, port))
+        # Send DESCRIBE request to check if path exists
+        describe = f"DESCRIBE rtsp://{ip}:{port}{path} RTSP/1.0\r\nCSeq: 2\r\n"
+        if cred_rtsp:
+            describe += f"Authorization: Basic {cred_rtsp}\r\n"
+        describe += "\r\n"
+        sock.sendall(describe.encode())
+        response = sock.recv(1024).decode(errors="ignore")
+        sock.close()
+
+        # If we get 404, 453, 451, or no RTSP response, path doesn't exist
+        if "404" in response or "453" in response or "451" in response:
+            return False
+        if "RTSP" not in response:
+            return False
+        # 401 means path exists but needs auth (or wrong auth) - still valid path
+        # 200 means path exists and is accessible
+        if "200" not in response and "401" not in response:
+            return False
+    except Exception:
+        return False
+
+    # Step 2: Only if DESCRIBE succeeded, do the actual OpenCV check
+    cred = f"{username}:{password}@" if username else ""
+    url = f"rtsp://{cred}{ip}:{port}{path}"
+    # Set FFmpeg timeout via options string
+    cap = cv2.VideoCapture(url, cv2.CAP_FFMPEG, [
+        cv2.CAP_PROP_OPEN_TIMEOUT_MSEC, int(timeout * 1000),
+        cv2.CAP_PROP_READ_TIMEOUT_MSEC, int(timeout * 1000),
+    ])
+    cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+    try:
+        if not cap.isOpened():
+            return False
+        ret, _ = cap.read()
+        return ret
+    except Exception:
+        return False
+    finally:
+        cap.release()
+
+
+@app.post("/api/scanner/probe")
+def probe_camera_streams(
+    ip: str = Form(...),
+    port: int = Form(554),
+    brand: str = Form("Unknown"),
+    username: str = Form(""),
+    password: str = Form(""),
+):
+    """Probe a discovered camera for available RTSP stream paths across all RTSP ports.
+    
+    Tries brand-specific paths first, then generic paths. Each path is tested on
+    the detected port AND all other common RTSP ports. Returns list of working
+    streams with the port each works on.
+    """
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+
+    # Build candidate list: brand-specific first, then generic
+    candidates = []
+    brand_clean = brand.strip()
+    if brand_clean in _BRAND_STREAMS:
+        candidates.extend(_BRAND_STREAMS[brand_clean])
+    # Always add generic paths (skip duplicates)
+    seen_paths = {c["path"] for c in candidates}
+    for g in _GENERIC_STREAMS:
+        if g["path"] not in seen_paths:
+            candidates.append(g)
+            seen_paths.add(g["path"])
+
+    # Ports to try: detected port first, then other common ports
+    ports_to_try = [port] + [p for p in _RTSP_PORTS if p != port]
+
+    working_streams = []
+
+    def _test_path_port(candidate: dict, test_port: int) -> dict | None:
+        import socket
+        # Quick check: is the port even open?
+        try:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.settimeout(1.0)
+            if sock.connect_ex((ip, test_port)) != 0:
+                sock.close()
+                return None
+            sock.close()
+        except Exception:
+            return None
+
+        path = candidate["path"]
+        if _probe_rtsp_stream(ip, test_port, path, username, password, timeout=3.0):
+            return {"path": path, "label": candidate["label"], "port": test_port}
+        return None
+
+    # Probe concurrently (up to 10 at a time to avoid overwhelming the camera)
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        futures = {}
+        for candidate in candidates:
+            for test_port in ports_to_try:
+                future = executor.submit(_test_path_port, candidate, test_port)
+                futures[future] = (candidate["path"], test_port)
+
+        # Track found path+port combos to avoid duplicates
+        found = set()
+        for future in as_completed(futures):
+            result = future.result()
+            if result:
+                key = (result["path"], result["port"])
+                if key not in found:
+                    found.add(key)
+                    working_streams.append(result)
+
+    # Sort by port, then path
+    working_streams.sort(key=lambda s: (s["port"], s["path"]))
+
+    return {
+        "ip": ip,
+        "port": port,
+        "brand": brand_clean,
+        "streams": working_streams,
+        "total_tried": len(candidates) * len(ports_to_try),
+    }
 
 
 # ── Static file serving ──

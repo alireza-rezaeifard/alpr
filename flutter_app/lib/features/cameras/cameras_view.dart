@@ -9,6 +9,8 @@ import '../../data/models/camera_model.dart';
 import '../../data/repositories/camera_repo.dart';
 import '../../core/api_client.dart';
 import 'camera_panel.dart';
+import 'camera_live_monitor.dart' show CameraLiveMonitor, SingleCameraMonitor;
+import 'scanner_view.dart';
 
 // ── Providers ──────────────────────────────────────────────────────────────
 
@@ -28,72 +30,41 @@ class CamerasView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final camerasAsync = ref.watch(cameraListProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Cameras'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () => ref.invalidate(cameraListProvider),
-            tooltip: 'Refresh',
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          // ── Top toolbar: concurrency + start/stop-all ─────────────────
-          _TopToolbar(),
-          // ── Camera list ───────────────────────────────────────────────
-          Expanded(
-            flex: 1,
-            child: camerasAsync.when(
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, _) => Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Failed to load cameras: ${_errMsg(e)}'),
-                    const SizedBox(height: 8),
-                    ElevatedButton(
-                      onPressed: () => ref.invalidate(cameraListProvider),
-                      child: const Text('Retry'),
-                    ),
-                  ],
-                ),
-              ),
-              data: (cameras) => _CameraList(cameras: cameras),
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Cameras'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: () => ref.invalidate(cameraListProvider),
+              tooltip: 'Refresh',
             ),
+          ],
+          bottom: const TabBar(
+            tabs: [
+              Tab(icon: Icon(Icons.videocam), text: 'My Cameras'),
+              Tab(icon: Icon(Icons.monitor), text: 'Monitor'),
+              Tab(icon: Icon(Icons.radar), text: 'Scanner'),
+            ],
           ),
-          const Divider(height: 1),
-          // ── Live grid ────────────────────────────────────────────────
-          Expanded(
-            flex: 2,
-            child: camerasAsync.when(
-              loading: () => const SizedBox.shrink(),
-              error: (_, __) => const SizedBox.shrink(),
-              data: (cameras) {
-                final running = cameras
-                    .where((c) =>
-                        c.status == 'connecting' ||
-                        c.status == 'connected' ||
-                        c.status == 'streaming')
-                    .toList();
-                if (running.isEmpty) {
-                  return const Center(
-                    child: Text('No cameras running',
-                        style: TextStyle(color: Colors.grey)),
-                  );
-                }
-                return _CameraGrid(cameras: running);
-              },
-            ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        icon: const Icon(Icons.add),
-        label: const Text('Add Camera'),
-        onPressed: () => _showAddCameraDialog(context, ref),
+        ),
+        body: TabBarView(
+          children: [
+            // Tab 1: existing cameras management
+            _CamerasTab(camerasAsync: camerasAsync, ref: ref),
+            // Tab 2: multi-camera live monitor
+            const CameraLiveMonitor(),
+            // Tab 3: network scanner
+            const ScannerView(),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton.extended(
+          icon: const Icon(Icons.add),
+          label: const Text('Add Camera'),
+          onPressed: () => _showAddCameraDialog(context, ref),
+        ),
       ),
     );
   }
@@ -164,6 +135,67 @@ class CamerasView extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+// ── Cameras tab content ────────────────────────────────────────────────
+
+class _CamerasTab extends StatelessWidget {
+  final AsyncValue<List<CameraModel>> camerasAsync;
+  final WidgetRef ref;
+
+  const _CamerasTab({required this.camerasAsync, required this.ref});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        _TopToolbar(),
+        Expanded(
+          flex: 1,
+          child: camerasAsync.when(
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (e, _) => Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Failed to load cameras: ${_errMsg(e)}'),
+                  const SizedBox(height: 8),
+                  ElevatedButton(
+                    onPressed: () => ref.invalidate(cameraListProvider),
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            ),
+            data: (cameras) => _CameraList(cameras: cameras),
+          ),
+        ),
+        const Divider(height: 1),
+        Expanded(
+          flex: 2,
+          child: camerasAsync.when(
+            loading: () => const SizedBox.shrink(),
+            error: (_, __) => const SizedBox.shrink(),
+            data: (cameras) {
+              final running = cameras
+                  .where((c) =>
+                      c.status == 'connecting' ||
+                      c.status == 'connected' ||
+                      c.status == 'streaming')
+                  .toList();
+              if (running.isEmpty) {
+                return const Center(
+                  child: Text('No cameras running',
+                      style: TextStyle(color: Colors.grey)),
+                );
+              }
+              return _CameraGrid(cameras: running);
+            },
+          ),
+        ),
+      ],
     );
   }
 }
@@ -257,6 +289,17 @@ class _CameraList extends ConsumerWidget {
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
+              // Live monitor
+              if (cam.taskId != null && cam.taskId!.isNotEmpty)
+                IconButton(
+                  icon: const Icon(Icons.monitor, color: Colors.green),
+                  tooltip: 'Live Monitor',
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => SingleCameraMonitor(camera: cam),
+                    ),
+                  ),
+                ),
               // Start/Stop per camera
               if (cam.status == 'stopped' || cam.status == 'error')
                 IconButton(
