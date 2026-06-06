@@ -1,0 +1,301 @@
+{
+  "country": "Iran",
+  "source_url": "https://en.wikipedia.org/wiki/Vehicle_registration_plates_of_Iran",
+  "current_standard": {
+    "country_code": "IR",
+    "size_mm": [520, 110],
+    "size_inches": [20.5, 4.3],
+    "serial_format": "12A234-56",
+    "colors": {
+      "front": "black on white",
+      "rear": "black on white"
+    }
+  },
+  "plate_format": {
+    "general_format": "## X ### - NN",
+    "registration_code": "## ###",
+    "series_letter": "X",
+    "province_code": "NN",
+    "notes": [
+      "The format is written in the Persian alphabet.",
+      "The province code is the two-digit NN block at the right end of standard plates."
+    ]
+  },
+  "persian_digits": {
+    "۰": "0",
+    "۱": "1",
+    "۲": "2",
+    "۳": "3",
+    "۴": "4",
+    "۵": "5",
+    "۶": "6",
+    "۷": "7",
+    "۸": "8",
+    "۹": "9"
+  },
+  "letter_series": {
+    "private_vehicle_letters": [
+      { "persian": "ب", "latin": "B", "vehicle_type": "private vehicles" },
+      { "persian": "ج", "latin": "J", "vehicle_type": "private vehicles" },
+      { "persian": "د", "latin": "D", "vehicle_type": "private vehicles" },
+      { "persian": "س", "latin": "S", "vehicle_type": "private vehicles" },
+      { "persian": "ص", "latin": "Ṣ", "vehicle_type": "private vehicles" },
+      { "persian": "ط", "latin": "Ṭ", "vehicle_type": "private vehicles" },
+      { "persian": "ق", "latin": "Q", "vehicle_type": "private vehicles" },
+      { "persian": "ل", "latin": "L", "vehicle_type": "private vehicles" },
+      { "persian": "م", "latin": "M", "vehicle_type": "private vehicles" },
+      { "persian": "ن", "latin": "N", "vehicle_type": "private vehicles" },
+      { "persian": "و", "latin": "V", "vehicle_type": "private vehicles" },
+      { "persian": "هـ", "latin": "H", "vehicle_type": "diplomatic" },
+      { "persian": "ی", "latin": "Y", "vehicle_type": "private vehicles" }
+    ],
+    "special_letters": [
+      { "persian": "الف", "latin": "A", "vehicle_type": "governmental vehicles" },
+      { "persian": "پ", "latin": "P", "vehicle_type": "police vehicles" },
+      { "persian": "ت", "latin": "T", "vehicle_type": "taxis" },
+      { "persian": "ث", "latin": "Ṯ", "vehicle_type": "IRGC vehicles" },
+      { "persian": "ز", "latin": "Z", "vehicle_type": "Ministry of Defence vehicles" },
+      {
+        "persian": "ژ",
+        "latin": "Ž",
+        "vehicle_type": "private vehicles of people with disabilities",
+        "note": "The wheelchair symbol is shown on the plate; the police database uses ژ as a placeholder."
+      },
+      { "persian": "ش", "latin": "Š", "vehicle_type": "Islamic Republic of Iran Army vehicles" },
+      { "persian": "ع", "latin": "O", "vehicle_type": "public vehicles" },
+      { "persian": "ف", "latin": "F", "vehicle_type": "General Staff of Armed Forces vehicles" },
+      { "persian": "ک", "latin": "K", "vehicle_type": "agricultural vehicles" },
+      { "persian": "گ", "latin": "G", "vehicle_type": "temporary passage" },
+      { "persian": "ژ", "latin": "S", "vehicle_type": "consular and international services" }
+    ]
+  },
+  "plate_types": {
+    "private_vehicles": {
+      "colors": { "background": "white", "text": "black" },
+      "distinguishing_mark": "province code square on the right",
+      "jurisdiction": "issued provincially",
+      "notes": [
+        "The letter can depend on the owner's principal address.",
+        "The article says the system has a recycling policy for numbers since 2021.",
+        "It estimates total capacity at about 62 million numbers, with 55 million issued, about 60% no longer in circulation, and about 23 million on the streets."
+      ]
+    },
+    "private_vehicles_of_people_with_disabilities": {
+      "colors": { "background": "white", "text": "black" },
+      "distinguishing_mark": "wheelchair symbol",
+      "jurisdiction": "issued provincially",
+      "notes": [
+        "Numbers 11 ♿︎ 111 - XX and upwards are assigned to veterans with disabilities.",
+        "Numbers 51 ♿︎ 111 - XX are assigned to everyone else with disabilities."
+      ]
+    },
+    "taxis": {
+      "colors": { "background": "yellow", "text": "black" },
+      "distinguishing_mark": "letter ت and the English word TAXI",
+      "jurisdiction": "issued provincially",
+      "notes": [
+        "The letter ت stands for تاکسی."
+      ]
+    },
+    "public_vehicles": {
+      "colors": { "background": "yellow", "text": "black" },
+      "distinguishing_mark": "letter ع",
+      "jurisdiction": "issued provincially",
+      "notes": [
+        "The letter ع stands for عمومی."
+      ]
+    },
+    "agricultural_vehicles": {
+      "colors": { "background": "yellow", "text": "black" },
+      "distinguishing_mark": "letter ک",
+      "jurisdiction": "issued provincially",
+      "notes": [
+        "The letter ک stands for کشاورزی."
+      ]
+    },
+    "government_vehicles": {
+      "colors": { "background": "red", "text": "white" },
+      "distinguishing_mark": "word الف",
+      "jurisdiction": "issued provincially"
+    },
+    "protocol_vehicles": {
+      "colors": { "background": "red", "text": "white" },
+      "distinguishing_mark": "word تشریفات plus English translation",
+      "plate_content": "four-digit number",
+      "jurisdiction": "not described as provincial"
+    },
+    "police_faraaja": {
+      "colors": { "background": "dark green", "text": "white" },
+      "distinguishing_mark": "letter پ",
+      "jurisdiction": "issued nationally starting from regional code 11",
+      "introduction_date": "2012-09-30"
+    },
+    "irgc_vehicle_plates": {
+      "colors": { "background": "dark green", "text": "white" },
+      "distinguishing_mark": "letter ث",
+      "jurisdiction": "issued nationally starting from regional code 11"
+    },
+    "islamic_republic_of_iran_army": {
+      "colors": { "background": "light brown", "text": "black" },
+      "distinguishing_mark": "letter ش",
+      "jurisdiction": "issued nationally starting from regional code 11"
+    },
+    "ministry_of_defence": {
+      "colors": { "background": "light blue", "text": "white" },
+      "distinguishing_mark": "letter ز",
+      "jurisdiction": "issued nationally starting from regional code 11"
+    },
+    "general_staff_of_armed_forces": {
+      "colors": { "background": "light blue", "text": "white" },
+      "distinguishing_mark": "letter ف",
+      "jurisdiction": "issued nationally starting from regional code 11"
+    }
+  },
+  "military_and_law_enforcement": {
+    "timeline": {
+      "police_plates_introduced": "2012-09-30",
+      "other_military_and_law_enforcement_plates_introduced": "2016-05-30",
+      "planned_full_replacement_by": "2017-03"
+    }
+  },
+  "historic_vehicles": {
+    "colors": { "background": "brown", "text": "white" },
+    "distinguishing_mark": "word تاریخی",
+    "plate_content": "five-digit number",
+    "left_side": [
+      "Iranian flag",
+      "picture of Bagh-e Melli in Tehran"
+    ],
+    "size": "American standard"
+  },
+  "political_and_service_plates": {
+    "introduced_on": "2016-03-06",
+    "format": "country_or_organization_code + embassy_sequence",
+    "country_or_organization_code_length": 3,
+    "example_reserved_code": 214,
+    "example_country": "Germany",
+    "numbered_countries_or_organizations": 133,
+    "embassy_sequence_rules": [
+      "The first two digits increase for each embassy plate sequence.",
+      "Examples mentioned in the article include 11D, 12D, 11S, and 12S."
+    ],
+    "jurisdiction": "issued nationally starting from regional code 11"
+  },
+  "temporary_passage": {
+    "current_format_note": "Used for cars that are newly made.",
+    "example": "12 گ 365",
+    "previous_format_note": "Used for new cars that entered Iran.",
+    "letter_series": "گ"
+  },
+  "province_code_rules": {
+    "general_rule": "Provincial codes are generally assigned to each province.",
+    "exceptions": [
+      "City of Tehran is treated as if it were an independent province for vehicle registration.",
+      "Tehran province and Alborz province are treated as one province for assigning plate codes.",
+      "Khorasan province was split into Razavi Khorasan, North Khorasan, and South Khorasan, and the plate system was readjusted.",
+      "Tabas County kept Yazd's provincial code even after moving between provinces."
+    ],
+    "numbering_notes": [
+      "Zero is only used in the provincial code, only in newly granted provincial codes after 99 is exhausted.",
+      "Zero has not been used in the five-digit registration number."
+    ]
+  },
+  "province_code_summary": [
+    { "province": "City of Tehran", "codes_seen_in_article": [10, 11, 20, 22, 40, 55, 77, 88, 99], "note": "treated as an independent province for registration" },
+    { "province": "Tehran / Alborz", "codes_seen_in_article": [21, 30, 38, 78], "note": "treated as one province for code assignment" },
+    { "province": "Razavi Khorasan", "codes_seen_in_article": [12, 32, 42], "examples": ["Mashhad", "Torqabeh/Shandiz"] },
+    { "province": "Isfahan", "codes_seen_in_article": [13, 23, 43, 53], "examples": ["Isfahan", "Kashan", "Najafabad", "Shahreza", "Khomeinishahr", "Golpayegan", "Natanz", "Ardestan", "Khansar", "Nain", "Khur & Biabanak", "Semirom", "Fereydunshahr", "Falavarjan", "Lenjan"] },
+    { "province": "Khuzestan", "codes_seen_in_article": [14, 24, 34], "examples": ["Ahvaz", "Abadan", "Khorramshahr", "Dezful", "Behbahan", "Aghajari", "Masjed Soleyman", "Mahshahr", "Dasht-e Azadegan", "Hoveyzeh", "Ramhormoz", "Ramshir", "Haftkel", "Andimeshk", "Shushtar", "Gotvand", "Shush", "Karkheh", "Shadegan"] },
+    { "province": "East Azerbaijan", "codes_seen_in_article": [15, 25, 35], "examples": ["Tabriz", "Maragheh", "Marand", "Miyaneh", "Ahar", "Hurand", "Sarab", "Jolfa", "Hashtrud", "Bonab", "Bostanabad", "Shabestar", "Kaleybar", "Khoda Afarin", "Heris", "Azarshahr"] },
+    { "province": "Qom", "codes_seen_in_article": [16] },
+    { "province": "West Azerbaijan", "codes_seen_in_article": [17, 27, 37], "examples": ["Khoy", "Chaypareh", "Mahabad", "Maku", "Poldasht", "Showt", "Salmas", "Naqadeh", "Miandoab", "Takab", "Shahin Dezh", "Sardasht", "Bukan", "Piranshahr", "Chaldoran", "Oshnavieh"] },
+    { "province": "Hamedan", "codes_seen_in_article": [18, 28], "examples": ["Nahavand", "Malayer", "Tuyserkan", "Asadabad", "Bahar", "Kabudarahang", "Famenin", "Razan", "Hamadan"] },
+    { "province": "Kermanshah", "codes_seen_in_article": [19, 29] },
+    { "province": "Lorestan", "codes_seen_in_article": [31, 41], "examples": ["Borujerd", "Aligudarz", "Dorud", "Kuhdasht", "Rumeshkan", "Delfan", "Azna", "Pol-e Dokhtar", "Selseleh"] },
+    { "province": "North Khorasan", "codes_seen_in_article": [26, 32, 42], "examples": ["Bojnurd", "Raz & Jargalan", "Shirvan", "Esfarayen", "Jajarm", "Garmeh", "Maneh & Samalqan", "Faruj"] },
+    { "province": "South Khorasan", "codes_seen_in_article": [32, 42, 52], "examples": ["Birjand", "Boshruyeh", "Darmian", "Ferdows", "Khusf", "Nehbandan", "Sarayan", "Sarbisheh", "Qaenat", "Zirkuh"] },
+    { "province": "Bushehr", "codes_seen_in_article": [48, 58] },
+    { "province": "Golestan", "codes_seen_in_article": [59, 69] },
+    { "province": "Kohgiluyeh and Boyer-Ahmad", "codes_seen_in_article": [49] },
+    { "province": "Kurdistan", "codes_seen_in_article": [51, 61] },
+    { "province": "Gilan", "codes_seen_in_article": [46, 56, 76], "examples": ["Bandar-e Anzali", "Lahijan", "Astara", "Talesh", "Rudsar", "Rubdar", "Sowme'eh Sara", "Fuman", "Langrud", "Rezvanshahr", "Amlash", "Masal", "Shaft"] },
+    { "province": "Markazi", "codes_seen_in_article": [47, 57] },
+    { "province": "Chaharmahal and Bakhtiari", "codes_seen_in_article": [71, 81], "examples": ["Shahrekord", "Ben", "Kiar", "Saman", "Borujen", "Ardal", "Farsan", "Lordegan", "Khanmirza", "Kuhrang"] },
+    { "province": "Mazandaran", "codes_seen_in_article": [62, 72, 82, 92], "examples": ["Sari", "Miandorud", "Amol", "Babol", "Tonekabon", "Abbasabad", "Ramsar", "Nowshahr", "Nur", "Behshahr", "Galugah", "Qaem Shahr", "Simorgh", "Chalus", "Kelardasht", "Babolsar", "Fereydunkenar"] },
+    { "province": "Fars", "codes_seen_in_article": [63, 73, 83, 93], "examples": ["Shiraz", "Kavar", "Kharameh", "Sarvestan", "Zarqan", "Larestan", "Evaz", "Gerash", "Khonj", "Marvdasht", "Pasargad", "Kazerun", "Kuh-Chenar", "Firuzabad", "Fasa", "Mamasani", "Rostam", "Zarrin Dasht", "Qir va Karzin", "Mohr", "Darab", "Farashband", "Jahrom", "Khafr"] },
+    { "province": "Yazd", "codes_seen_in_article": [54, 64], "examples": ["Yazd", "Ardakan", "Taft", "Meybod", "Bafq", "Behabad", "Mehriz", "Abarkuh", "Tabas", "Khatam", "Marvast", "Ashkezar"] },
+    { "province": "Kerman", "codes_seen_in_article": [45, 65, 75], "examples": ["Rafsanjan", "Anar", "Bam", "Fahraj", "Narmashir", "Rigan", "Sirjan", "Jiroft", "Zarand", "Kuhbanan", "Kahnuj", "Faryab", "Qaleh Ganj", "Rudbar-e Jonub"] },
+    { "province": "Sistan and Baluchestan", "codes_seen_in_article": [85, 95], "examples": ["Zahedan", "Mirjaveh", "Zabol", "Hamun", "Hirmand", "Nimruz", "Zehak", "Iranshahr", "Bampur", "Dalgan", "Saravan", "Golshan", "Mehrestan", "Sib and Suran"] },
+    { "province": "Semnan", "codes_seen_in_article": [86, 96], "examples": ["Semnan", "Sorkheh", "Damghan", "Shahrud", "Meyami", "Garmsar", "Aradan", "Mehdishahr"] },
+    { "province": "Zanjan", "codes_seen_in_article": [87, 97], "examples": ["Zanjan", "Abhar", "Soltaniyeh", "Khodabandeh", "Khorramdarreh", "Ijrud", "Tarom", "Mahneshan"] },
+    { "province": "Qazvin", "codes_seen_in_article": [79, 89], "examples": ["Qazvin", "Takestan", "Buin Zahra", "Avaj", "Abyek"] },
+    { "province": "Hormozgan", "codes_seen_in_article": [84, 94], "examples": ["Bandar Abbas", "Khamir", "Minab", "Sirik", "Bandar Lengeh", "Parsian", "Rudan", "Abumusa", "Jask", "Bashagard", "Bastak", "Hajjiabad", "Qeshm"] },
+    { "province": "Ardabil", "codes_seen_in_article": [91], "examples": ["Ardabil", "Sareyn", "Parsabad", "Aslan Duz", "Khalkhal", "Germi", "Ungut", "Meshgin Shahr", "Bileh Savar", "Nir", "Kowsar", "Namin"] },
+    { "province": "Ilam", "codes_seen_in_article": [98], "examples": ["Ilam", "Chavar", "Mehran", "Malekshahi", "Darreh Shahr", "Badreh", "Dehloran", "Chardavol", "Holeylan", "Sirvan", "Eyvan", "Abdanan"] }
+  ],
+  "motorcycles": {
+    "format": "XXX - #####",
+    "notes": [
+      "XXX is a three-digit provincial code.",
+      "##### is a five-digit number.",
+      "Neither the three-digit code nor the five-digit registration number can take zero.",
+      "After provincial code 499, the next code is 511."
+    ],
+    "allocated_codes": [
+      { "codes": [111, 143], "province": "City of Tehran", "number_of_allocated_codes": 30 },
+      { "codes": [319, 324], "province": "Tehran / Alborz", "number_of_allocated_codes": 5 },
+      { "codes": [371, 377], "province": "West Azerbaijan", "number_of_allocated_codes": 7 },
+      { "codes": [391, 398], "province": "East Azerbaijan", "number_of_allocated_codes": 8 },
+      { "codes": [442, 443], "province": "Ardabil", "number_of_allocated_codes": 2 },
+      { "codes": [461, 462], "province": "Kurdistan", "number_of_allocated_codes": 2 },
+      { "codes": [479, 482], "province": "Zanjan", "number_of_allocated_codes": 3 },
+      { "codes": [498, 511], "province": "Hamedan", "number_of_allocated_codes": 3 },
+      { "codes": [514, 517], "province": "Kermanshah", "number_of_allocated_codes": 4 },
+      { "codes": [523, 525], "province": "Qazvin", "number_of_allocated_codes": 3 },
+      { "codes": [531, 537], "province": "Markazi", "number_of_allocated_codes": 7 },
+      { "codes": [538, 543], "province": "Lorestan", "number_of_allocated_codes": 5 },
+      { "codes": [547, 547], "province": "Ilam", "number_of_allocated_codes": 1 },
+      { "codes": [555, 555], "province": "Chaharmahal and Bakhtiari", "number_of_allocated_codes": 1 },
+      { "codes": [563, 569], "province": "Khuzestan", "number_of_allocated_codes": 8 },
+      { "codes": [571, 571], "province": "Kohgiluyeh and Boyer-Ahmad", "number_of_allocated_codes": 1 },
+      { "codes": [578, 583], "province": "Gilan", "number_of_allocated_codes": 5 },
+      { "codes": [586, 589], "province": "Mazandaran", "number_of_allocated_codes": 4 },
+      { "codes": [596, 597], "province": "Golestan", "number_of_allocated_codes": 2 },
+      { "codes": [611, 615], "province": "Qom", "number_of_allocated_codes": 5 },
+      { "codes": [618, 635], "province": "Isfahan", "number_of_allocated_codes": 16 },
+      { "codes": [637, 643], "province": "Yazd", "number_of_allocated_codes": 6 },
+      { "codes": [687, 698], "province": "Fars", "number_of_allocated_codes": 11 },
+      { "codes": [751, 754], "province": "Semnan", "number_of_allocated_codes": 4 },
+      { "codes": [761, 778], "province": "Razavi Khorasan", "number_of_allocated_codes": 18 },
+      { "codes": [785, 786], "province": "North Khorasan", "number_of_allocated_codes": 2 },
+      { "codes": [791, 792], "province": "South Khorasan", "number_of_allocated_codes": 2 },
+      { "codes": [812, 817], "province": "Kerman", "number_of_allocated_codes": 6 },
+      { "codes": [819, 823], "province": "Sistan and Baluchestan", "number_of_allocated_codes": 3 },
+      { "codes": [827, 831], "province": "Bushehr", "number_of_allocated_codes": 4 },
+      { "codes": [835, 839], "province": "Hormozgan", "number_of_allocated_codes": 5 },
+      { "codes": [851, 851], "province": "Khuzestan", "number_of_allocated_codes": 1 }
+    ]
+  },
+  "free_trade_zones": {
+    "plate_format": {
+      "colors": { "background": "black on white", "text": "black" },
+      "number_style": "five-digit number written once in Persian digits on top and in Western Arabic digits on bottom",
+      "left_side": [
+        "Iranian flag",
+        "logo of the respective free trade zone",
+        "zone name in English below the logo"
+      ],
+      "size": "American standard"
+    },
+    "zones": [
+      { "name": "Anzali", "reference_note": "Bandar-e Anzali" },
+      { "name": "Aras", "reference_note": "Aras Free Zone" },
+      { "name": "Arvand", "reference_note": "Arvand Free Zone" },
+      { "name": "Kish", "reference_note": "Kish Island" },
+      { "name": "Maku", "reference_note": "Maku, Iran" },
+      { "name": "Chabahar", "reference_note": "Chabahar" },
+      { "name": "Qeshm", "reference_note": "Qeshm Island" }
+    ]
+  },
+  "article_scope_note": "The Wikipedia page also contains county-by-county allocation tables under each provincial code; this JSON keeps those allocations summarized so the structure stays readable."
+}

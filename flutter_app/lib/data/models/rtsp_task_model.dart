@@ -1,3 +1,6 @@
+import 'enhanced_rtsp_history_entry.dart';
+
+/// Legacy plate history entry (kept for backward compatibility with older API responses).
 class PlateHistoryEntry {
   final String dtrbText;
   final String yoloText;
@@ -28,7 +31,7 @@ class PlateHistoryEntry {
 
 class RtspTaskStatus {
   final String status;
-  final List<PlateHistoryEntry> history;
+  final List<EnhancedRtspHistoryEntry> history;
   final List<String> liveDetections;
   final String? annotated; // base64 data URL or null
 
@@ -42,7 +45,8 @@ class RtspTaskStatus {
   factory RtspTaskStatus.fromJson(Map<String, dynamic> json) => RtspTaskStatus(
         status: json['status'] as String? ?? 'unknown',
         history: (json['history'] as List? ?? [])
-            .map((e) => PlateHistoryEntry.fromJson(e as Map<String, dynamic>))
+            .map((e) => EnhancedRtspHistoryEntry.fromJson(
+                e as Map<String, dynamic>))
             .toList(),
         liveDetections:
             List<String>.from(json['live_detections'] as List? ?? []),

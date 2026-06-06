@@ -5,3 +5,22 @@ db/license_plate_recognition.sqbpro
 plate_detector.pt
 __pycache__/
 *.pyc
+
+# Output videos and processed files (heavy - use GitHub Releases)
+io/output/
+
+# Flutter build artifacts
+flutter_app/build/
+flutter_app/.dart_tool/
+
+# Database files
+database/*.db
+
+# Hypothesis test cache
+.hypothesis/
+
+# Frontend build
+frontend/node_modules/
+
+# Log files
+log_demo_result.txt

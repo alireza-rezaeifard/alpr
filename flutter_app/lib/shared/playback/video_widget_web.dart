@@ -1,7 +1,6 @@
 // lib/shared/playback/video_widget_web.dart
 // Web implementation: HTML5 <video> element via dart:ui_web.
 
-import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui_web' as ui_web;
 import 'dart:js_interop';
@@ -26,12 +25,21 @@ Widget buildVideoWidget(PlaybackController controller) {
     );
   }
 
-  return _WebVideoPlayer(key: ValueKey(bytes.hashCode), bytes: bytes);
+  return _WebVideoPlayer(
+    key: ValueKey(bytes.hashCode),
+    bytes: bytes,
+    controller: controller,
+  );
 }
 
 class _WebVideoPlayer extends StatefulWidget {
   final Uint8List bytes;
-  const _WebVideoPlayer({super.key, required this.bytes});
+  final PlaybackController controller;
+  const _WebVideoPlayer({
+    super.key,
+    required this.bytes,
+    required this.controller,
+  });
 
   @override
   State<_WebVideoPlayer> createState() => _WebVideoPlayerState();
@@ -39,6 +47,7 @@ class _WebVideoPlayer extends StatefulWidget {
 
 class _WebVideoPlayerState extends State<_WebVideoPlayer> {
   late final String _viewType;
+  web.HTMLVideoElement? _video;
 
   @override
   void initState() {
@@ -57,17 +66,28 @@ class _WebVideoPlayerState extends State<_WebVideoPlayer> {
     ui_web.platformViewRegistry.registerViewFactory(
       _viewType,
       (int viewId, {Object? params}) {
-        final video = web.document.createElement('video') as web.HTMLVideoElement;
+        final video =
+            web.document.createElement('video') as web.HTMLVideoElement;
         video.src = blobUrl;
         video.autoplay = true;
         video.controls = true;
-        video.loop = true;
+        video.loop = false; // Play once — do not loop.
         video.muted = true; // Autoplay requires muted in most browsers
         video.style.width = '100%';
         video.style.height = '100%';
         video.style.objectFit = 'contain';
         video.style.backgroundColor = '#000';
         video.playbackRate = 1.0;
+        _video = video;
+        // Expose live playback position to the controller so the Flutter
+        // overlay can sync detection boxes to the current frame.
+        widget.controller.bindTimeGetters(
+          () => _video?.currentTime.toDouble() ?? 0.0,
+          () {
+            final d = _video?.duration.toDouble() ?? 0.0;
+            return (d.isNaN || d.isInfinite) ? 0.0 : d;
+          },
+        );
         return video;
       },
     );
