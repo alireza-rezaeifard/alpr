@@ -1,4 +1,6 @@
 import os, sys, io, uuid, base64, json, threading
+import asyncio
+from datetime import datetime
 from pathlib import Path
 import cv2
 import numpy as np
@@ -6,6 +8,8 @@ from fastapi import FastAPI, Query, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
+from contextlib import asynccontextmanager
+
 from db import *
 from schemas import (
     CameraCreate, CameraUpdate, CameraView, StartResult, StopResult,
@@ -14,11 +18,13 @@ from schemas import (
 from camera_manager import CameraManager
 from plate_metadata import derive_metadata
 
-app = FastAPI(title="Persian License Plate API", version="1.0.0")
+# Import all routers
+from routers import auth, users, licenses, cameras, scanner, watchlists, alerts, reports, export, audit, retention
 
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
-
-init_db()
+# Import bootstrap and pruning functions
+from routers.auth import bootstrap_default_admin
+from routers.cameras import restore_cameras, set_camera_manager
+from retention.service import prune_detections
 
 # ── Detection model loading (lazy) ──
 _detector = None
@@ -68,14 +74,98 @@ _tasks_lock = threading.Lock()
 # ── Camera Manager (process-wide singleton) ──
 _camera_manager = CameraManager(ensure_models_fn=_ensure_models, tasks_registry=_tasks, tasks_lock=_tasks_lock)
 
-from contextlib import asynccontextmanager
+# ── Retention pruning background task ──
+_pruning_task = None
+_pruning_interval = 24 * 60 * 60  # 24 hours in seconds
+
+
+async def _retention_pruning_loop():
+    """Background task that prunes old detections every 24 hours."""
+    while True:
+        try:
+            await asyncio.sleep(_pruning_interval)
+            now = datetime.now()
+            deleted = prune_detections(now)
+            if deleted > 0:
+                print(f"Retention pruning: deleted {deleted} old detection(s)")
+        except Exception as e:
+            print(f"Error in retention pruning task: {e}")
+
 
 @asynccontextmanager
-async def _lifespan(app):
-    _camera_manager.restore_on_startup()
+async def lifespan(app: FastAPI):
+    """Application lifespan: startup and shutdown logic.
+    
+    On startup (Requirement 1.9, 4.6, 16.2):
+    - Initialize database tables
+    - Bootstrap default admin account if no users exist
+    - Inject camera manager into cameras router
+    - Restore persisted cameras to their last known status
+    - Schedule retention pruning background task
+    
+    On shutdown:
+    - Cancel the pruning task
+    """
+    global _pruning_task
+    
+    # Startup
+    print("Starting ANPR backend...")
+    
+    # 1. Initialize database
+    init_db()
+    
+    # 2. Bootstrap default admin (Requirement 1.9)
+    bootstrap_default_admin()
+    
+    # 3. Inject camera manager into cameras router
+    set_camera_manager(_camera_manager)
+    
+    # 4. Restore cameras (Requirement 4.6)
+    restore_cameras(_camera_manager)
+    
+    # 5. Schedule retention pruning background task (Requirement 16.2)
+    _pruning_task = asyncio.create_task(_retention_pruning_loop())
+    
+    print("ANPR backend started successfully")
+    
     yield
+    
+    # Shutdown
+    print("Shutting down ANPR backend...")
+    if _pruning_task:
+        _pruning_task.cancel()
+        try:
+            await _pruning_task
+        except asyncio.CancelledError:
+            pass
+    print("ANPR backend shutdown complete")
 
-app.router.lifespan_context = _lifespan
+
+app = FastAPI(
+    title="Persian License Plate API",
+    version="1.0.0",
+    lifespan=lifespan,
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Include all routers
+app.include_router(auth.router)
+app.include_router(users.router)
+app.include_router(licenses.router)
+app.include_router(cameras.router)
+app.include_router(scanner.router)
+app.include_router(watchlists.router)
+app.include_router(alerts.router)
+app.include_router(reports.router)
+app.include_router(export.router)
+app.include_router(audit.router)
+app.include_router(retention.router)
 
 
 OUTPUT_DIR = "io/output"

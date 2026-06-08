@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import '../models/detection_model.dart';
 import '../models/video_task_model.dart';
 import '../models/rtsp_task_model.dart';
 import '../../core/api_client.dart';

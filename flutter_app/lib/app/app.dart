@@ -1,8 +1,9 @@
 // lib/app/app.dart
-// MaterialApp.router entry point.
-// Requirements: 1.1, 1.2, 1.6
+// FluentApp.router entry point with Persian RTL support and Fluent design.
+// Requirements: 17.1, 17.2, 17.3
 
-import 'package:flutter/material.dart';
+import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'router.dart';
 import 'theme.dart';
@@ -12,13 +13,24 @@ class PlprApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return MaterialApp.router(
-      title: 'Persian License Plate Recognition',
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
-      themeMode: ThemeMode.system,
-      routerConfig: appRouter,
-      debugShowCheckedModeBanner: false,
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: FluentApp.router(
+        title: 'سامانه تشخیص پلاک خودرو',
+        theme: AppTheme.fluentDark,
+        locale: const Locale('fa', 'IR'),
+        supportedLocales: const [
+          Locale('fa', 'IR'),
+          Locale('en', 'US'),
+        ],
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        routerConfig: appRouter,
+        debugShowCheckedModeBanner: false,
+      ),
     );
   }
 }

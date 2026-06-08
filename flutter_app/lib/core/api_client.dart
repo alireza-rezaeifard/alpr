@@ -1,9 +1,10 @@
 // lib/core/api_client.dart
 // Dio instance with base URL, per-request timeouts, and central error-mapping interceptor.
-// Requirements: 1.5, 1.8, 2.1
+// Requirements: 1.5, 1.8, 2.1, 18.2, 18.3
 
 import 'package:dio/dio.dart';
 import '../app/config.dart';
+import 'auth_interceptor.dart';
 
 /// Typed failure returned by the error-mapping interceptor.
 class ApiFailure {
@@ -41,6 +42,9 @@ class ApiClient {
         contentType: 'application/json',
       ),
     );
+    // Add auth interceptor first (attaches token, handles 401)
+    dio.interceptors.add(AuthInterceptor());
+    // Then add error mapping interceptor
     dio.interceptors.add(_ErrorMappingInterceptor());
     return dio;
   }

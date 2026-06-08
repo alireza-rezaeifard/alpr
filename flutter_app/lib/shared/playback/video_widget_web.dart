@@ -55,11 +55,12 @@ class _WebVideoPlayerState extends State<_WebVideoPlayer> {
     _viewIdCounter++;
     _viewType = 'plpr-video-player-$_viewIdCounter';
 
-    // Create a Blob URL from the video bytes
-    final blob = web.Blob(
-      [widget.bytes.toJS].toJS,
-      web.BlobPropertyBag(type: 'video/mp4'),
-    );
+    // Create a Blob URL from the video bytes.
+    // Use JSUint8Array directly to avoid Dart list-to-JS-array conversion
+    // which fails with "Invalid array length" for large files.
+    final jsBytes = widget.bytes.toJS;
+    final parts = <JSAny>[jsBytes].toJS;
+    final blob = web.Blob(parts, web.BlobPropertyBag(type: 'video/mp4'));
     final blobUrl = web.URL.createObjectURL(blob);
 
     // Register the HTML element factory

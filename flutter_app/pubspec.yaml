@@ -2,13 +2,15 @@ name: flutter_app
 description: "Persian License Plate Recognition - Flutter client for Windows and Web."
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 2.0.0+1
 
 environment:
   sdk: '>=3.3.0 <4.0.0'
 
 dependencies:
   flutter:
+    sdk: flutter
+  flutter_localizations:
     sdk: flutter
 
   # State management
@@ -21,8 +23,15 @@ dependencies:
   # HTTP
   dio: ^5.4.3
 
-  # Charts
-  fl_chart: ^0.68.0
+  # UI Framework - Fluent Design
+  fluent_ui: ^4.9.1
+
+  # Data Grid
+  pluto_grid: ^8.1.0
+
+  # Charts and Gauges - Syncfusion
+  syncfusion_flutter_charts: ^28.1.38
+  syncfusion_flutter_gauges: ^28.1.38
 
   # Video playback (Windows + Web)
   media_kit: ^1.1.10
@@ -34,6 +43,12 @@ dependencies:
 
   # File picking
   file_picker: ^8.0.7
+
+  # Animations
+  flutter_animate: ^4.5.0
+
+  # Persian/Farsi locale support
+  shamsi_date: ^1.0.1
 
 dev_dependencies:
   flutter_test:

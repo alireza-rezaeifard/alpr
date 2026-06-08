@@ -1,18 +1,16 @@
 // lib/features/detection/video_sub_view.dart
-// Video detection: smooth local HTML5 playback + detection results overlay.
-// The video plays natively at full speed. Detection results (plate log) update
-// periodically from the backend based on skip_frames setting.
+// Modern video detection sub-view with clean layout.
 
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:file_picker/file_picker.dart';
+import '../../shared/app_icons.dart';
 import '../../shared/playback/playback_controller.dart';
 import '../../shared/widgets/plate_detail_card.dart';
 import '../../data/models/enhanced_plate_log_entry.dart';
 import 'video_task_controller.dart';
 
-// Web-specific video widget
 import '../../shared/playback/video_widget_web.dart'
     if (dart.library.io) '../../shared/playback/video_widget_stub.dart'
     as platform_video;
@@ -53,23 +51,14 @@ class _VideoSubViewState extends ConsumerState<VideoSubView> {
     if (!_validateSkip()) return;
     final skip = int.parse(_skipFramesCtrl.text.trim());
 
-    setState(() {
-      _pickError = null;
-      _picking = true;
-    });
+    setState(() { _pickError = null; _picking = true; });
 
     try {
       FilePickerResult? result;
       try {
-        result = await FilePicker.platform.pickFiles(
-          type: FileType.video,
-          withData: true,
-        );
+        result = await FilePicker.platform.pickFiles(type: FileType.video, withData: true);
       } catch (_) {
-        result = await FilePicker.platform.pickFiles(
-          type: FileType.any,
-          withData: true,
-        );
+        result = await FilePicker.platform.pickFiles(type: FileType.any, withData: true);
       }
 
       if (result == null || result.files.isEmpty) {
@@ -82,36 +71,21 @@ class _VideoSubViewState extends ConsumerState<VideoSubView> {
       final name = file.name;
 
       if (bytes == null) {
-        setState(() {
-          _picking = false;
-          _pickError = 'Could not read file bytes.';
-        });
+        setState(() { _picking = false; _pickError = 'Could not read file bytes.'; });
         return;
       }
 
-      // Set up local playback controller with the bytes
       final controller = PlaybackController();
       await controller.openBytes(bytes, 'video/mp4');
       controller.play();
 
       _playback?.dispose();
-      setState(() {
-        _pickedFileName = name;
-        _playback = controller;
-        _picking = false;
-      });
+      setState(() { _pickedFileName = name; _playback = controller; _picking = false; });
 
-      // Submit to backend for plate recognition processing
       await ref.read(videoTaskControllerProvider.notifier).submit(
-            bytes,
-            name,
-            skipFrames: skip,
-          );
+            bytes, name, skipFrames: skip);
     } catch (e) {
-      setState(() {
-        _picking = false;
-        _pickError = 'Failed to load video: $e';
-      });
+      setState(() { _picking = false; _pickError = 'Failed to load video: $e'; });
     }
   }
 
@@ -122,121 +96,105 @@ class _VideoSubViewState extends ConsumerState<VideoSubView> {
     final isActive = taskState.phase == VideoTaskPhase.uploading ||
         taskState.phase == VideoTaskPhase.polling;
 
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ── Controls ─────────────────────────────────────────────────
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Controls
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: const Color(0xFF111113),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.white.withOpacity(0.06)),
+          ),
+          child: Row(
             children: [
               SizedBox(
                 width: 100,
                 child: TextField(
                   controller: _skipFramesCtrl,
+                  style: const TextStyle(fontSize: 13, color: Colors.white),
                   decoration: InputDecoration(
                     labelText: 'Skip frames',
+                    labelStyle: TextStyle(fontSize: 11, color: Colors.white.withOpacity(0.4)),
                     errorText: _skipError,
                     isDense: true,
+                    filled: true,
+                    fillColor: Colors.white.withOpacity(0.04),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: Colors.white.withOpacity(0.08))),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: Colors.white.withOpacity(0.08))),
                   ),
                   keyboardType: TextInputType.number,
                   enabled: !isActive,
                 ),
               ),
               const SizedBox(width: 12),
-              ElevatedButton.icon(
-                icon: _picking
-                    ? const SizedBox(
-                        width: 16, height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2))
-                    : const Icon(Icons.upload_file),
-                label: Text(_picking ? 'Loading…' : 'Select Video'),
-                onPressed: (isActive || _picking) ? null : _pickAndSubmit,
+              _ModernButton(
+                icon: _picking ? AppIcons.loader2 : AppIcons.upload,
+                label: _picking ? 'Loading…' : 'Select Video',
+                onTap: (isActive || _picking) ? null : _pickAndSubmit,
               ),
               const SizedBox(width: 8),
               if (isActive)
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.stop),
-                  label: const Text('Stop'),
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                  onPressed: taskCtrl.stop,
-                ),
-              if (taskState.isTerminal) ...[
-                const SizedBox(width: 8),
-                TextButton(onPressed: taskCtrl.reset, child: const Text('Reset')),
+                _ModernButton(icon: AppIcons.square, label: 'Stop', danger: true, onTap: taskCtrl.stop),
+              if (taskState.isTerminal)
+                _ModernButton(icon: AppIcons.refreshCw, label: 'Reset', onTap: taskCtrl.reset),
+              if (_pickedFileName != null) ...[
+                const SizedBox(width: 16),
+                Icon(AppIcons.file, size: 14, color: Colors.white.withOpacity(0.4)),
+                const SizedBox(width: 4),
+                Text(_pickedFileName!, style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.5))),
               ],
             ],
           ),
+        ),
 
-          // ── Errors ───────────────────────────────────────────────────
-          if (_pickError != null) ...[
-            const SizedBox(height: 8),
-            Card(
-              color: Theme.of(context).colorScheme.errorContainer,
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Row(children: [
-                  const Icon(Icons.warning_amber),
-                  const SizedBox(width: 8),
-                  Expanded(child: Text(_pickError!)),
-                ]),
-              ),
-            ),
-          ],
-          if (taskState.phase == VideoTaskPhase.error) ...[
-            const SizedBox(height: 8),
-            Card(
-              color: Theme.of(context).colorScheme.errorContainer,
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Text('Error: ${taskState.errorDetail}',
-                    style: TextStyle(color: Theme.of(context).colorScheme.error)),
-              ),
-            ),
-          ],
-
-          // ── Progress + info ──────────────────────────────────────────
-          if (_pickedFileName != null) ...[
-            const SizedBox(height: 8),
-            Text('File: $_pickedFileName', style: Theme.of(context).textTheme.bodySmall),
-          ],
-          if (taskState.phase != VideoTaskPhase.idle) ...[
-            const SizedBox(height: 8),
-            _StatusBar(taskState: taskState),
-          ],
-
-          const SizedBox(height: 12),
-
-          // ── Video player + plate log side by side ────────────────────
-          Expanded(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Left: live annotated preview (boxes burned in) while
-                // processing; falls back to raw playback otherwise.
-                Expanded(
-                  flex: 2,
-                  child: Card(
-                    clipBehavior: Clip.hardEdge,
-                    color: Colors.black,
-                    child: _VideoPreviewPanel(
-                      taskState: taskState,
-                      playback: _playback,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                // Right: live plate detection results
-                Expanded(
-                  flex: 1,
-                  child: _PlateLogPanel(taskState: taskState),
-                ),
-              ],
-            ),
-          ),
+        // Errors
+        if (_pickError != null) ...[
+          const SizedBox(height: 8),
+          _ErrorBanner(message: _pickError!),
         ],
-      ),
+        if (taskState.phase == VideoTaskPhase.error) ...[
+          const SizedBox(height: 8),
+          _ErrorBanner(message: taskState.errorDetail ?? 'Error occurred'),
+        ],
+
+        // Progress
+        if (taskState.phase != VideoTaskPhase.idle) ...[
+          const SizedBox(height: 12),
+          _StatusBar(taskState: taskState),
+        ],
+
+        const SizedBox(height: 12),
+
+        // Video + plates side by side
+        Expanded(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                flex: 2,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.white.withOpacity(0.06)),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: _VideoPreviewPanel(taskState: taskState, playback: _playback),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                flex: 1,
+                child: _PlateLogPanel(taskState: taskState),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
@@ -252,38 +210,49 @@ class _StatusBar extends StatelessWidget {
     final progress = taskState.progressPercent;
     final label = switch (taskState.phase) {
       VideoTaskPhase.uploading => 'Uploading…',
-      VideoTaskPhase.polling => 'Processing (plates detected every ${taskState.status?.status ?? "N"} frames)…',
+      VideoTaskPhase.polling => 'Processing…',
       VideoTaskPhase.done => '✓ Done — ${taskState.status?.plateLog.length ?? 0} plates found',
       VideoTaskPhase.error => 'Error',
       VideoTaskPhase.cancelled => 'Cancelled',
       _ => '',
     };
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: Theme.of(context).textTheme.bodyMedium),
-        const SizedBox(height: 4),
-        if (progress == null)
-          const LinearProgressIndicator()
-        else
-          LinearProgressIndicator(value: progress / 100),
-        if (progress != null)
-          Text('$progress%', style: Theme.of(context).textTheme.bodySmall),
-      ],
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFF111113),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.white.withOpacity(0.06)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.7))),
+          const SizedBox(height: 6),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: progress == null
+                ? LinearProgressIndicator(minHeight: 3, backgroundColor: Colors.white.withOpacity(0.05),
+                    valueColor: const AlwaysStoppedAnimation(Color(0xFF3B82F6)))
+                : LinearProgressIndicator(value: progress / 100, minHeight: 3,
+                    backgroundColor: Colors.white.withOpacity(0.05),
+                    valueColor: const AlwaysStoppedAnimation(Color(0xFF3B82F6))),
+          ),
+          if (progress != null) ...[
+            const SizedBox(height: 4),
+            Text('$progress%', style: TextStyle(fontSize: 10, color: Colors.white.withOpacity(0.4))),
+          ],
+        ],
+      ),
     );
   }
 }
 
-// ── Video preview panel ──────────────────────────────────────────────────
-// Plays the raw video smoothly (HTML5, native frame rate, single pass) and
-// draws detection boxes as a Flutter overlay synced to playback time, so the
-// overlay is live without making the video choppy.
+// ── Video preview panel ────────────────────────────────────────────────────
 
 class _VideoPreviewPanel extends StatefulWidget {
   final VideoTaskState taskState;
   final PlaybackController? playback;
-
   const _VideoPreviewPanel({required this.taskState, required this.playback});
 
   @override
@@ -292,20 +261,16 @@ class _VideoPreviewPanel extends StatefulWidget {
 
 class _VideoPreviewPanelState extends State<_VideoPreviewPanel> {
   Timer? _ticker;
-  double _t = 0.0; // current playback time (seconds)
+  double _t = 0.0;
 
   @override
   void initState() {
     super.initState();
-    // Refresh the overlay ~30x/sec by reading the video's currentTime.
-    // This does NOT touch the video itself, so playback stays smooth.
     _ticker = Timer.periodic(const Duration(milliseconds: 33), (_) {
       final pb = widget.playback;
       if (pb == null) return;
       final now = pb.currentTime;
-      if ((now - _t).abs() > 0.001 && mounted) {
-        setState(() => _t = now);
-      }
+      if ((now - _t).abs() > 0.001 && mounted) setState(() => _t = now);
     });
   }
 
@@ -315,39 +280,22 @@ class _VideoPreviewPanelState extends State<_VideoPreviewPanel> {
     super.dispose();
   }
 
-  /// Pick detections to overlay on the current playback frame.
-  ///
-  /// The backend processes frames much slower than real-time playback.
-  /// Strategy: show the nearest detection group at or before the current
-  /// playback time. If no detections exist before _t (backend hasn't caught up),
-  /// show the latest available detections so the user always sees boxes once
-  /// processing starts producing results.
   List<EnhancedPlateLogEntry> _activeBoxes() {
     final log = widget.taskState.status?.plateLog ?? const [];
     if (log.isEmpty) return const [];
 
-    // Find the detection group time closest to (but not after) playback time.
     double? bestTime;
     for (final e in log) {
       if (e.timeSec <= _t + 0.1) {
-        if (bestTime == null || e.timeSec > bestTime) {
-          bestTime = e.timeSec;
-        }
+        if (bestTime == null || e.timeSec > bestTime) bestTime = e.timeSec;
       }
     }
-
-    // If playback is ahead of all detections (backend still processing),
-    // fall back to the latest detection group available.
     if (bestTime == null) {
       for (final e in log) {
-        if (bestTime == null || e.timeSec > bestTime) {
-          bestTime = e.timeSec;
-        }
+        if (bestTime == null || e.timeSec > bestTime) bestTime = e.timeSec;
       }
     }
     if (bestTime == null) return const [];
-
-    // Return all entries at that detection time.
     return log.where((e) => (e.timeSec - bestTime!).abs() < 0.5).toList();
   }
 
@@ -356,14 +304,13 @@ class _VideoPreviewPanelState extends State<_VideoPreviewPanel> {
     final playback = widget.playback;
 
     if (playback == null) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.video_library_outlined, size: 64, color: Colors.grey),
-            SizedBox(height: 8),
-            Text('Select a video to start',
-                style: TextStyle(color: Colors.grey)),
+            Icon(AppIcons.video, size: 48, color: Colors.white.withOpacity(0.15)),
+            const SizedBox(height: 12),
+            Text('Select a video to start', style: TextStyle(color: Colors.white.withOpacity(0.3))),
           ],
         ),
       );
@@ -371,31 +318,19 @@ class _VideoPreviewPanelState extends State<_VideoPreviewPanel> {
 
     final boxes = _activeBoxes();
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Stack(
-          fit: StackFit.expand,
-          children: [
-            platform_video.buildVideoWidget(playback),
-            // Synced bounding-box overlay (boxes are normalized 0..1).
-            if (boxes.isNotEmpty)
-              IgnorePointer(
-                child: CustomPaint(
-                  painter: _BoxOverlayPainter(boxes),
-                ),
-              ),
-            if (widget.taskState.phase == VideoTaskPhase.polling)
-              const Positioned(top: 8, left: 8, child: _LiveBadge()),
-          ],
-        );
-      },
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        platform_video.buildVideoWidget(playback),
+        if (boxes.isNotEmpty)
+          IgnorePointer(child: CustomPaint(painter: _BoxOverlayPainter(boxes))),
+        if (widget.taskState.phase == VideoTaskPhase.polling)
+          Positioned(top: 8, left: 8, child: _LiveBadge()),
+      ],
     );
   }
 }
 
-/// Paints normalized detection boxes + plate labels over the video.
-/// Note: assumes the video fills the paint area (objectFit: contain may letter-
-/// box; boxes still track horizontally/vertically within the painted region).
 class _BoxOverlayPainter extends CustomPainter {
   final List<EnhancedPlateLogEntry> boxes;
   _BoxOverlayPainter(this.boxes);
@@ -404,68 +339,49 @@ class _BoxOverlayPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final stroke = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 3
-      ..color = const Color(0xFF32FF64);
+      ..strokeWidth = 2.5
+      ..color = const Color(0xFF10B981);
 
     for (final e in boxes) {
       if (e.bbox.length < 4) continue;
-      final x1 = e.bbox[0] * size.width;
-      final y1 = e.bbox[1] * size.height;
-      final x2 = e.bbox[2] * size.width;
-      final y2 = e.bbox[3] * size.height;
-      final rect = Rect.fromLTRB(x1, y1, x2, y2);
-      canvas.drawRect(rect, stroke);
+      final rect = Rect.fromLTRB(
+        e.bbox[0] * size.width, e.bbox[1] * size.height,
+        e.bbox[2] * size.width, e.bbox[3] * size.height);
+      canvas.drawRRect(RRect.fromRectAndRadius(rect, const Radius.circular(3)), stroke);
 
-      // Label background + text
       final label = e.persianDisplay.isNotEmpty ? e.persianDisplay : e.dtrbText;
       final tp = TextPainter(
-        text: TextSpan(
-          text: label,
-          style: const TextStyle(
-            color: Color(0xFF32FF64),
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        text: TextSpan(text: label, style: const TextStyle(
+          color: Color(0xFF10B981), fontSize: 12, fontWeight: FontWeight.bold)),
         textDirection: TextDirection.rtl,
       )..layout();
-
-      final labelY = (y1 - tp.height - 6).clamp(0.0, size.height);
-      final bg = Paint()..color = const Color(0xCC000000);
-      canvas.drawRect(
-        Rect.fromLTWH(x1, labelY, tp.width + 10, tp.height + 4),
-        bg,
-      );
-      tp.paint(canvas, Offset(x1 + 5, labelY + 2));
+      final labelY = (rect.top - tp.height - 4).clamp(0.0, size.height);
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(Rect.fromLTWH(rect.left, labelY, tp.width + 8, tp.height + 4), const Radius.circular(3)),
+        Paint()..color = const Color(0xDD000000));
+      tp.paint(canvas, Offset(rect.left + 4, labelY + 2));
     }
   }
 
   @override
-  bool shouldRepaint(covariant _BoxOverlayPainter old) =>
-      old.boxes != boxes;
+  bool shouldRepaint(covariant _BoxOverlayPainter old) => old.boxes != boxes;
 }
 
 class _LiveBadge extends StatelessWidget {
-  const _LiveBadge();
-
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.red.withValues(alpha: 0.85),
+        color: const Color(0xFFEF4444).withOpacity(0.9),
         borderRadius: BorderRadius.circular(4),
       ),
       child: const Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.fiber_manual_record, size: 10, color: Colors.white),
+          Icon(AppIcons.radio, size: 10, color: Colors.white),
           SizedBox(width: 4),
-          Text('LIVE',
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold)),
+          Text('LIVE', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
         ],
       ),
     );
@@ -473,7 +389,6 @@ class _LiveBadge extends StatelessWidget {
 }
 
 // ── Plate log panel ────────────────────────────────────────────────────────
-// Requirements: 2.2, 2.3, 2.4
 
 class _PlateLogPanel extends StatefulWidget {
   final VideoTaskState taskState;
@@ -503,10 +418,7 @@ class _PlateLogPanelState extends State<_PlateLogPanel> {
 
   void _onScroll() {
     if (!_scrollCtrl.hasClients) return;
-    final maxScroll = _scrollCtrl.position.maxScrollExtent;
-    final currentScroll = _scrollCtrl.offset;
-    // User is "at bottom" if within 50 pixels of the end
-    _userScrolledAway = (maxScroll - currentScroll) > 50;
+    _userScrolledAway = (_scrollCtrl.position.maxScrollExtent - _scrollCtrl.offset) > 50;
   }
 
   @override
@@ -515,22 +427,15 @@ class _PlateLogPanelState extends State<_PlateLogPanel> {
     final log = widget.taskState.status?.plateLog ?? [];
     if (log.length > _lastLogLength) {
       _lastLogLength = log.length;
-      // Auto-scroll to bottom when new plates arrive (Req 2.3)
-      // Only if user hasn't scrolled away
-      if (!_userScrolledAway) {
-        _scrollToBottom();
-      }
+      if (!_userScrolledAway) _scrollToBottom();
     }
   }
 
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollCtrl.hasClients) {
-        _scrollCtrl.animateTo(
-          _scrollCtrl.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
+        _scrollCtrl.animateTo(_scrollCtrl.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
       }
     });
   }
@@ -539,79 +444,105 @@ class _PlateLogPanelState extends State<_PlateLogPanel> {
   Widget build(BuildContext context) {
     final log = widget.taskState.status?.plateLog ?? [];
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF111113),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white.withOpacity(0.06)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
               children: [
-                const Icon(Icons.credit_card, size: 18),
+                Icon(AppIcons.creditCard, size: 14, color: Colors.white.withOpacity(0.4)),
                 const SizedBox(width: 6),
-                Text('Plates Detected (${log.length})',
-                    style: Theme.of(context).textTheme.labelLarge),
+                Text('Plates (${log.length})', style: TextStyle(
+                  fontSize: 13, fontWeight: FontWeight.w500, color: Colors.white.withOpacity(0.7))),
               ],
             ),
-            const Divider(),
-            Expanded(
-              child: log.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.hourglass_empty,
-                              size: 32, color: Colors.grey.shade400),
-                          const SizedBox(height: 8),
-                          const Text('Waiting for detections…',
-                              style: TextStyle(color: Colors.grey)),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Plates will appear here as they are recognized',
-                            style: TextStyle(
-                                color: Colors.grey.shade500, fontSize: 11),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    )
-                  : Stack(
-                      children: [
-                        ListView.builder(
-                          controller: _scrollCtrl,
-                          itemCount: log.length,
-                          itemBuilder: (_, i) {
-                            final entry = log[i];
-                            return PlateDetailCard(entry: entry);
-                          },
-                        ),
-                        // "Scroll to bottom" button when user has scrolled away
-                        if (_userScrolledAway && log.isNotEmpty)
-                          Positioned(
-                            bottom: 8,
-                            right: 8,
-                            child: FloatingActionButton.small(
-                              onPressed: () {
-                                _userScrolledAway = false;
-                                _scrollToBottom();
-                              },
-                              child: const Icon(Icons.arrow_downward, size: 18),
-                            ),
-                          ),
-                      ],
-                    ),
-            ),
-            if (widget.taskState.phase == VideoTaskPhase.done &&
-                widget.taskState.outputMediaPath != null) ...[
-              const Divider(),
-              TextButton.icon(
-                icon: const Icon(Icons.download),
-                label: const Text('Download Processed Video'),
-                onPressed: () {/* TODO: open /media/outputPath */},
-              ),
-            ],
+          ),
+          Divider(height: 1, color: Colors.white.withOpacity(0.04)),
+          Expanded(
+            child: log.isEmpty
+                ? Center(child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(AppIcons.clock, size: 24, color: Colors.white.withOpacity(0.15)),
+                      const SizedBox(height: 8),
+                      Text('Waiting for detections…',
+                          style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.3))),
+                    ],
+                  ))
+                : ListView.builder(
+                    controller: _scrollCtrl,
+                    padding: const EdgeInsets.all(8),
+                    itemCount: log.length,
+                    itemBuilder: (_, i) => PlateDetailCard(entry: log[i]),
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── Shared widgets ─────────────────────────────────────────────────────────
+
+class _ModernButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback? onTap;
+  final bool danger;
+  const _ModernButton({required this.icon, required this.label, this.onTap, this.danger = false});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = danger ? const Color(0xFFEF4444) : const Color(0xFF3B82F6);
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: onTap != null ? color.withOpacity(0.1) : Colors.white.withOpacity(0.02),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: onTap != null ? color.withOpacity(0.2) : Colors.white.withOpacity(0.04)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 14, color: onTap != null ? color : Colors.white.withOpacity(0.3)),
+            const SizedBox(width: 6),
+            Text(label, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500,
+                color: onTap != null ? color : Colors.white.withOpacity(0.3))),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _ErrorBanner extends StatelessWidget {
+  final String message;
+  const _ErrorBanner({required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: const Color(0xFFEF4444).withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: const Color(0xFFEF4444).withOpacity(0.2)),
+      ),
+      child: Row(
+        children: [
+          const Icon(AppIcons.alertCircle, size: 14, color: Color(0xFFEF4444)),
+          const SizedBox(width: 8),
+          Expanded(child: Text(message, style: const TextStyle(fontSize: 12, color: Color(0xFFEF4444)))),
+        ],
       ),
     );
   }
