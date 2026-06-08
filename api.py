@@ -19,7 +19,7 @@ from camera_manager import CameraManager
 from plate_metadata import derive_metadata
 
 # Import all routers
-from routers import auth, users, licenses, cameras, scanner, watchlists, alerts, reports, export, audit, retention
+from routers import auth, users, licenses, cameras, detection, scanner, watchlists, alerts, reports, export, audit, retention
 
 # Import bootstrap and pruning functions
 from routers.auth import bootstrap_default_admin
@@ -159,6 +159,7 @@ app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(licenses.router)
 app.include_router(cameras.router)
+app.include_router(detection.router)
 app.include_router(scanner.router)
 app.include_router(watchlists.router)
 app.include_router(alerts.router)
@@ -225,295 +226,24 @@ def health():
     return {"status": "ok"}
 
 
-# ── Image detection ──
-
-@app.post("/api/detect/image")
-async def detect_image(file: UploadFile = File(...)):
-    detector, recognizer, opt = _ensure_models()
-    from video_processor import process_frame, format_plate_persian
-
-    contents = await file.read()
-    nparr = np.frombuffer(contents, np.uint8)
-    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-    if img is None:
-        return JSONResponse({"error": "Invalid image"}, status_code=400)
-
-    annotated, plates, dtrb_results = process_frame(img, detector, recognizer, opt)
-
-    # Save to session
-    sid = start_session("image", file.filename or "upload")
-    plates_out = []
-    for idx, plate in enumerate(plates):
-        dtrb_entry = dtrb_results[idx] if idx < len(dtrb_results) else ("-", 0.0)
-        if isinstance(dtrb_entry, tuple):
-            dtrb_text, dtrb_conf = dtrb_entry
-        else:
-            dtrb_text, dtrb_conf = dtrb_entry, plate["confidence"]
-        best_conf = max(float(plate["confidence"]), dtrb_conf)
-        persian = format_plate_persian(dtrb_text)
-        # Convert numpy types to native Python for JSON serialization
-        bbox = tuple(int(x) for x in plate["bbox"])
-        plates_out.append({
-            "plate_dtrb": dtrb_text,
-            "plate_persian": persian,
-            "confidence": best_conf,
-            "bbox": bbox,
-        })
-        save_detection(sid, "image", dtrb_text, persian, best_conf, file.filename)
-    end_session(sid, 0, len(plates), len(set(p["plate_dtrb"] for p in plates_out)))
-
-    # Encode annotated image to base64
-    _, buf = cv2.imencode(".jpg", annotated, [cv2.IMWRITE_JPEG_QUALITY, 85])
-    b64 = base64.b64encode(buf).decode("utf-8")
-
-    return {
-        "session_id": sid,
-        "annotated": f"data:image/jpeg;base64,{b64}",
-        "plates": plates_out,
-    }
-
-
-# ── Video detection ──
-
-@app.post("/api/detect/video")
-async def detect_video(
-    file: UploadFile = File(...),
-    skip_frames: int = Form(30, ge=1, le=1000),
-    fast_mode: bool = Form(False),
-):
-    detector, recognizer, opt = _ensure_models()
-    from video_processor import VideoProcessor, format_plate_persian
-
-    # Save uploaded file
-    ext = Path(file.filename or "video.mp4").suffix or ".mp4"
-    input_path = os.path.join(OUTPUT_DIR, f"input_{uuid.uuid4().hex}{ext}")
-    contents = await file.read()
-    with open(input_path, "wb") as f:
-        f.write(contents)
-
-    task_id = uuid.uuid4().hex
-    session_id = start_session("video", file.filename)
-
-    def run_video(task_id, sid, inp, skip, fast):
-        def on_det(src, text, conf, sf, frame, ftime):
-            save_detection(sid, src, text, format_plate_persian(text), conf, sf, frame, ftime)
-        vp = VideoProcessor(detector, recognizer, opt, on_detection=on_det)
-        with _tasks_lock:
-            _tasks[task_id]["processor"] = vp
-        vp.process_video(inp, skip_frames=skip, fast_mode=fast)
-        # Wait for completion
-        while True:
-            # Check if cancelled externally
-            with _tasks_lock:
-                if _tasks.get(task_id, {}).get("status") == "cancelled":
-                    vp.stop()
-                    break
-            state = vp.get_state()
-            with _tasks_lock:
-                _tasks[task_id].update(state)
-            if state["status"] in ("done", "error"):
-                break
-            threading.Event().wait(0.5)
-        if state["status"] == "done":
-            unique = len(set(e["dtrb_text"] for e in state["plate_log"]))
-            end_session(sid, state["total_frames"], len(state["plate_log"]), unique)
-
-    with _tasks_lock:
-        _tasks[task_id] = {"status": "queued", "session_id": session_id}
-
-    threading.Thread(target=run_video, args=(task_id, session_id, input_path, skip_frames, fast_mode), daemon=True).start()
-
-    return JSONResponse({"task_id": task_id, "session_id": session_id})
-
-
-@app.get("/api/detect/video/{task_id}")
-def video_status(task_id: str):
-    with _tasks_lock:
-        state = _tasks.get(task_id)
-    if state is None:
-        return JSONResponse({"error": "Task not found"}, status_code=404)
-
-    # Encode the latest annotated frame for live preview
-    annotated_b64 = None
-    current_frame = state.get("current_frame")
-    if current_frame is not None:
-        try:
-            _, buf = cv2.imencode(".jpg", current_frame, [cv2.IMWRITE_JPEG_QUALITY, 70])
-            annotated_b64 = f"data:image/jpeg;base64,{base64.b64encode(buf).decode('utf-8')}"
-        except Exception:
-            pass
-
-    return {
-        "status": state.get("status", "unknown"),
-        "frame_idx": state.get("frame_idx", 0),
-        "total_frames": state.get("total_frames", 0),
-        "plate_log": state.get("plate_log", []),
-        "live_detections": state.get("live_detections", []),
-        "error": state.get("error"),
-        "output_path": state.get("output_path"),
-        "annotated": annotated_b64,
-    }
-
-
-@app.post("/api/detect/video/{task_id}/stop")
-def stop_video_task(task_id: str):
-    with _tasks_lock:
-        state = _tasks.get(task_id)
-    if state is None:
-        return JSONResponse({"error": "Task not found"}, status_code=404)
-    processor = state.get("processor")
-    if processor:
-        processor.stop()
-    with _tasks_lock:
-        _tasks[task_id]["status"] = "cancelled"
-    return {"status": "stopped"}
-
-
-# ── RTSP detection ──
-
-@app.post("/api/detect/rtsp")
-def detect_rtsp(
-    url: str = Form(...),
-    fast_mode: bool = Form(False),
-    skip_frames: int = Form(15, ge=1, le=1000),
-):
-    detector, recognizer, opt = _ensure_models()
-    from video_processor import RTSPStreamProcessor, format_plate_persian
-
-    task_id = uuid.uuid4().hex
-    session_id = start_session("rtsp", url)
-
-    def on_det(src, text, conf, sf, frame, ftime):
-        save_detection(session_id, src, text, format_plate_persian(text), conf, sf, frame, ftime)
-
-    processor = RTSPStreamProcessor(detector, recognizer, opt, url,
-                                     fast_mode=fast_mode, skip_frames=skip_frames,
-                                     on_detection=on_det)
-    processor.start()
-
-    with _tasks_lock:
-        _tasks[task_id] = {"processor": processor, "session_id": session_id, "status": "running", "url": url}
-
-    return JSONResponse({"task_id": task_id, "session_id": session_id})
-
-
-@app.get("/api/detect/rtsp/{task_id}")
-def rtsp_status(task_id: str):
-    with _tasks_lock:
-        entry = _tasks.get(task_id)
-    if entry is None:
-        return JSONResponse({"error": "Task not found"}, status_code=404)
-    processor: RTSPStreamProcessor = entry.get("processor")
-    if processor is None:
-        return {"status": "error", "error": "Processor not found"}
-    state = processor.get_state()
-
-    # Encode latest annotated frame
-    annotated_b64 = None
-    if state.get("annotated") is not None:
-        _, buf = cv2.imencode(".jpg", state["annotated"], [cv2.IMWRITE_JPEG_QUALITY, 80])
-        annotated_b64 = f"data:image/jpeg;base64,{base64.b64encode(buf).decode('utf-8')}"
-
-    return {
-        "status": state.get("status", "unknown"),
-        "history": state.get("history", []),
-        "live_detections": state.get("live_detections", []),
-        "annotated": annotated_b64,
-    }
-
-
-@app.get("/api/detect/rtsp/{task_id}/frame")
-def rtsp_frame_only(task_id: str):
-    """Lightweight endpoint: returns only the latest pre-encoded frame + status.
-    
-    Optimized for fast polling (~300ms). Frame is pre-encoded by the processor thread.
-    """
-    with _tasks_lock:
-        entry = _tasks.get(task_id)
-    if entry is None:
-        return JSONResponse({"error": "Task not found"}, status_code=404)
-    processor = entry.get("processor")
-    if processor is None:
-        return {"status": "error"}
-
-    # Get pre-encoded JPEG and recent data directly
-    with processor.lock:
-        status = processor.status
-        jpeg_bytes = processor.latest_jpeg
-        recent_live = processor.live_detections[-3:] if processor.live_detections else []
-        recent_history = processor.plate_history[-5:] if processor.plate_history else []
-
-    # Use pre-encoded JPEG — no encoding needed here
-    annotated_b64 = None
-    if jpeg_bytes is not None:
-        annotated_b64 = f"data:image/jpeg;base64,{base64.b64encode(jpeg_bytes).decode('utf-8')}"
-
-    return {
-        "status": status,
-        "annotated": annotated_b64,
-        "live_detections": list(recent_live),
-        "history": list(recent_history),
-    }
-
-
-@app.get("/api/detect/rtsp/{task_id}/mjpeg")
-async def rtsp_mjpeg_stream(task_id: str):
-    """MJPEG stream endpoint for smooth real-time video in the browser/app.
-    
-    Streams annotated frames as multipart JPEG at ~10 FPS.
-    """
-    from starlette.responses import StreamingResponse
-    import time as _time
-
-    with _tasks_lock:
-        entry = _tasks.get(task_id)
-    if entry is None:
-        return JSONResponse({"error": "Task not found"}, status_code=404)
-    processor = entry.get("processor")
-    if processor is None:
-        return JSONResponse({"error": "Processor not found"}, status_code=404)
-
-    def generate_frames():
-        while True:
-            try:
-                with processor.lock:
-                    status = processor.status
-                    jpeg_bytes = processor.latest_jpeg
-                if status.startswith("error") or status in ("done", "stopped"):
-                    break
-                if jpeg_bytes is not None:
-                    yield (
-                        b"--frame\r\n"
-                        b"Content-Type: image/jpeg\r\n"
-                        b"Content-Length: " + str(len(jpeg_bytes)).encode() + b"\r\n\r\n"
-                        + jpeg_bytes + b"\r\n"
-                    )
-                _time.sleep(0.1)  # ~10 FPS
-            except Exception:
-                break
-
-    return StreamingResponse(
-        generate_frames(),
-        media_type="multipart/x-mixed-replace; boundary=frame",
-    )
-
-
-@app.post("/api/detect/rtsp/{task_id}/stop")
-def stop_rtsp_task(task_id: str):
-    with _tasks_lock:
-        entry = _tasks.get(task_id)
-    if entry is None:
-        return JSONResponse({"error": "Task not found"}, status_code=404)
-    processor = entry.get("processor")
-    if processor:
-        state = processor.get_state()
-        if entry.get("session_id"):
-            end_session(entry["session_id"], 0, len(state.get("history", [])),
-                        len(set(p["dtrb_text"] for p in state.get("history", []))))
-        processor.stop()
-    with _tasks_lock:
-        _tasks[task_id]["status"] = "stopped"
-    return {"status": "stopped"}
+# ── Detection endpoints ──
+# Image (Req 8), video (Req 9), and RTSP (Req 10) detection now live in
+# ``routers/detection.py`` behind ``current_user()`` + ``run_detection`` (and
+# ``require_license()`` for the run/start paths). The handler functions are
+# re-exported here so they remain importable as ``api.detect_image`` etc. for
+# direct-call integration tests; they operate on this module's shared
+# ``_ensure_models`` / ``_tasks`` / ``_tasks_lock`` / ``OUTPUT_DIR`` state.
+from routers.detection import (  # noqa: E402
+    detect_image,
+    detect_rtsp,
+    detect_video,
+    rtsp_frame_only,
+    rtsp_mjpeg_stream,
+    rtsp_status,
+    stop_rtsp_task,
+    stop_video_task,
+    video_status,
+)
 
 
 # ── Camera CRUD endpoints ──

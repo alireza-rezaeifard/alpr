@@ -136,7 +136,7 @@ Property tests are placed next to the logic they validate so correctness is caug
     - Status fields and no-license reachability of auth/activate/status
     - _Requirements: 3.5, 3.7_
 
-- [~] 8. Checkpoint - Ensure all tests pass
+- [ ] 8. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 - [x] 9. Protect and extend camera management and streaming
@@ -209,7 +209,7 @@ Property tests are placed next to the logic they validate so correctness is caug
     - **Property 18: Free-zone plates carry the free-zone note**
     - **Validates: Requirements 11.6**
 
-- [ ] 13. Hook detection persistence into watchlist matching and Persian formatting
+- [x] 13. Hook detection persistence into watchlist matching and Persian formatting
   - [x] 13.1 Implement watchlist matching logic in `watchlist/matching.py`
     - Implement `normalize_for_match(value)` (digit normalization + separator stripping),
       `find_matches(plate_value, active_entries)` (only non-deleted entries), and
@@ -228,24 +228,24 @@ Property tests are placed next to the logic they validate so correctness is caug
     - Ensure detections are stored under their originating session and appear in live recent-history
     - _Requirements: 8.3, 8.5, 10.4, 6.4, 12.4_
 
-  - [-] 13.4 Write property test for watchlist entry persistence round-trip
+  - [x] 13.4 Write property test for watchlist entry persistence round-trip
     - **Property 19: Watchlist entry create/remove is a persistence round-trip**
     - **Validates: Requirements 12.1, 12.2, 12.3**
 
-  - [-] 13.5 Write property test for match-on-detection alert creation
+  - [x] 13.5 Write property test for match-on-detection alert creation
     - **Property 20: Detections matching an active watchlist entry raise exactly one referencing alert**
     - **Validates: Requirements 12.4, 12.5, 12.7**
 
-  - [-] 13.6 Write property test for alert ordering
+  - [x] 13.6 Write property test for alert ordering
     - **Property 21: Alerts are returned most-recent-first**
     - **Validates: Requirements 12.6**
 
-  - [-] 13.7 Write property test for detection-session persistence
+  - [x] 13.7 Write property test for detection-session persistence
     - **Property 22: Detections are persisted under their originating session**
     - **Validates: Requirements 8.3, 10.4, 6.4**
 
-- [ ] 14. Protect and verify detection endpoints (image/video/RTSP)
-  - [-] 14.1 Add auth/permission/license guards to detection routers in `routers/detection.py`
+- [x] 14. Protect and verify detection endpoints (image/video/RTSP)
+  - [x] 14.1 Add auth/permission/license guards to detection routers in `routers/detection.py`
     - Guard image (Req 8), video (Req 9), and RTSP (Req 10) endpoints with `current_user()`,
       `require_permission("run_detection")`, and `require_license()`
     - Enforce video skip-frame 1..1000, undecodable-image validation error, atomic per-image
@@ -258,29 +258,29 @@ Property tests are placed next to the logic they validate so correctness is caug
       not-found, video task status/stop/complete
     - _Requirements: 8.1, 8.2, 8.4, 9.1, 9.2, 9.3, 9.4, 9.5, 10.1, 10.2, 10.3_
 
-- [~] 15. Checkpoint - Ensure all tests pass
+- [ ] 15. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 16. Implement reporting, export, audit, and retention
+- [x] 16. Implement reporting, export, audit, and retention
   - [x] 16.1 Add reporting routers over preserved `db.py` queries in `routers/reports.py`
     - Expose detections list (limit 1..1000, offset, source-type filter, search + total), timeline
       (days 1..90), aggregate stats, source distribution, confidence distribution, and session
       history (most-recent-first), all behind the view permission
     - _Requirements: 13.1, 13.2, 13.3, 13.4, 13.5, 13.6, 13.7_
 
-  - [~] 16.2 Write property test for detection query correctness
+  - [x] 16.2 Write property test for detection query correctness
     - **Property 23: Detection queries return exactly the matching records and total**
     - **Validates: Requirements 13.1**
 
-  - [~] 16.3 Write property test for bounded/complete reporting ranges
+  - [x] 16.3 Write property test for bounded/complete reporting ranges
     - **Property 24: Reporting range parameters are bounded and complete**
     - **Validates: Requirements 13.2, 13.3**
 
-  - [~] 16.4 Write property test for distribution partitioning
+  - [x] 16.4 Write property test for distribution partitioning
     - **Property 25: Distribution groupings partition the detection set**
     - **Validates: Requirements 13.5, 13.6**
 
-  - [~] 16.5 Write property test for session-history ordering
+  - [x] 16.5 Write property test for session-history ordering
     - **Property 26: Session history is returned most-recent-first**
     - **Validates: Requirements 13.7**
 
@@ -290,7 +290,7 @@ Property tests are placed next to the logic they validate so correctness is caug
       header-only output for empty results; expose `GET /api/export/detections`
     - _Requirements: 14.1, 14.2, 14.3, 14.4_
 
-  - [~] 16.7 Write property test for export content and camera-name rule
+  - [x] 16.7 Write property test for export content and camera-name rule
     - **Property 27: Export reflects matches, required fields, and the camera-name rule**
     - **Validates: Requirements 14.1, 14.2, 14.3, 14.4**
 
@@ -301,15 +301,15 @@ Property tests are placed next to the logic they validate so correctness is caug
     - Guard the audit-read endpoint with `require_permission("view_audit")`
     - _Requirements: 15.1, 15.2, 15.3, 15.4, 15.5_
 
-  - [~] 16.9 Write property test for audit append completeness
+  - [x] 16.9 Write property test for audit append completeness
     - **Property 28: Auditable actions always append a complete audit entry**
     - **Validates: Requirements 15.1, 15.2**
 
-  - [~] 16.10 Write property test for audit retrieval limit/ordering
+  - [x] 16.10 Write property test for audit retrieval limit/ordering
     - **Property 29: Audit retrieval honors limit and most-recent-first ordering**
     - **Validates: Requirements 15.3, 15.4**
 
-  - [~] 16.11 Write unit test for audit immutability
+  - [x] 16.11 Write unit test for audit immutability
     - Reject any modify/delete of existing audit rows
     - _Requirements: 15.5_
 
@@ -319,7 +319,7 @@ Property tests are placed next to the logic they validate so correctness is caug
       none); expose `GET/PUT /api/config/retention` behind `require_permission("manage_config")`
     - _Requirements: 16.1, 16.2, 16.3, 16.4_
 
-  - [~] 16.13 Write property test for retention pruning
+  - [x] 16.13 Write property test for retention pruning
     - **Property 30: Retention pruning removes exactly the records older than the cutoff**
     - **Validates: Requirements 16.1, 16.2, 16.3, 16.4**
 
@@ -330,7 +330,7 @@ Property tests are placed next to the logic they validate so correctness is caug
       restore on startup, and schedule the retention pruning background task
     - _Requirements: 1.9, 4.6, 16.2_
 
-- [~] 18. Checkpoint - Ensure all backend tests pass
+- [ ] 18. Checkpoint - Ensure all backend tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 19. Build the Persian RTL Flutter client foundation
@@ -346,7 +346,7 @@ Property tests are placed next to the logic they validate so correctness is caug
       number/date/time formatting
     - _Requirements: 17.4_
 
-  - [~] 19.3 Write Dart property test for Persian-locale formatting round-trip
+  - [x] 19.3 Write Dart property test for Persian-locale formatting round-trip
     - **Property 31: Persian-locale formatting round-trips numbers and dates**
     - **Validates: Requirements 17.4**
 
@@ -355,13 +355,13 @@ Property tests are placed next to the logic they validate so correctness is caug
       on `401`, clears it and triggers a redirect to login; implement `authProvider`/`sessionProvider`
     - _Requirements: 18.2, 18.3_
 
-  - [~] 19.5 Implement go_router redirect guard and login flow
+  - [x] 19.5 Implement go_router redirect guard and login flow
     - Configure `go_router` `redirect` consulting `authProvider` to force unauthenticated users to
       `/login`; on successful auth store the token and navigate to the dashboard; route navigation
       preserves the authenticated session
     - _Requirements: 18.1, 18.2, 18.5_
 
-  - [~] 19.6 Write widget tests for routing, RTL, and the 401 interceptor
+  - [-] 19.6 Write widget tests for routing, RTL, and the 401 interceptor
     - RTL root layout, redirect/login flow, and 401-clears-token-and-redirects behavior
     - _Requirements: 17.2, 18.1, 18.2, 18.3, 18.5_
 
@@ -371,24 +371,24 @@ Property tests are placed next to the logic they validate so correctness is caug
       detection, reports, watchlists/alerts, users, licenses, audit, and settings
     - _Requirements: 18.4, 18.5_
 
-  - [~] 20.2 Implement tabular and analytics screens
+  - [-] 20.2 Implement tabular and analytics screens
     - Build Cameras, Detections/History, Sessions, Watchlists & Alerts, Users, and Audit screens
       using PlutoGrid (sorting/column controls); build Dashboard and Analytics with Syncfusion
       charts/gauges; add the export button on the history screen
     - _Requirements: 17.5, 17.6_
 
-  - [~] 20.3 Implement detection, live monitoring, license, and settings screens with permission gating
+  - [-] 20.3 Implement detection, live monitoring, license, and settings screens with permission gating
     - Build Detection (image/video/RTSP), Live Monitoring (MJPEG), License (activate/status), and
       Settings (concurrency/retention) screens; hide or disable controls whose action the current
       role lacks based on the permission set returned at login
     - _Requirements: 6.1, 6.2, 18.4_
 
-  - [~] 20.4 Write widget tests for grids, charts, and permission gating
+  - [ ] 20.4 Write widget tests for grids, charts, and permission gating
     - PlutoGrid presence on tabular screens, Syncfusion chart/gauge presence on analytics, and
       permission-gated control visibility per role
     - _Requirements: 17.5, 17.6, 18.4_
 
-- [~] 21. Final checkpoint - Ensure all tests pass
+- [ ] 21. Final checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes

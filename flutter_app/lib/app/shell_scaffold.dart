@@ -37,22 +37,6 @@ class ShellScaffold extends ConsumerWidget {
     final selectedIndex = _selectedIndex(context);
 
     return NavigationView(
-      appBar: const NavigationAppBar(
-        title: Padding(
-          padding: EdgeInsets.only(right: 12.0),
-          child: Text(
-            'سامانه تشخیص پلاک خودرو',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-        actions: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 12.0),
-          child: ConnectivityBadge(),
-        ),
-      ),
       pane: NavigationPane(
         selected: selectedIndex,
         onChanged: (index) {
@@ -83,6 +67,17 @@ class ShellScaffold extends ConsumerWidget {
                   size: 20,
                 ),
               ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  'سامانه تشخیص پلاک خودرو',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              const ConnectivityBadge(),
             ],
           ),
         ),
@@ -90,7 +85,9 @@ class ShellScaffold extends ConsumerWidget {
           return PaneItem(
             icon: Icon(dest.icon),
             title: Text(dest.label),
-            body: const SizedBox.shrink(),
+            body: ScaffoldPage.withPadding(
+              content: child,
+            ),
           );
         }).toList(),
         footerItems: [
@@ -98,12 +95,11 @@ class ShellScaffold extends ConsumerWidget {
           PaneItem(
             icon: const Icon(FluentIcons.settings),
             title: const Text('تنظیمات'),
-            body: const SizedBox.shrink(),
+            body: ScaffoldPage.withPadding(
+              content: child,
+            ),
           ),
         ],
-      ),
-      content: ScaffoldPage.withPadding(
-        content: child,
       ),
     );
   }

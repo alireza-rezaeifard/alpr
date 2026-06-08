@@ -29,6 +29,9 @@ dependencies:
   # Data Grid
   pluto_grid: ^8.1.0
 
+  # Charts - fl_chart for legacy screens
+  fl_chart: ^0.69.0
+
   # Charts and Gauges - Syncfusion
   syncfusion_flutter_charts: ^28.1.38
   syncfusion_flutter_gauges: ^28.1.38

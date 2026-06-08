@@ -2,6 +2,7 @@
 // Dio interceptor that attaches Bearer token and handles 401 by clearing token.
 // Requirements: 18.2, 18.3
 
+import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'secure_storage.dart';
 
@@ -12,11 +13,20 @@ import 'secure_storage.dart';
 ///
 /// On 401 response:
 /// - Clears the stored token
-/// - Sets a flag that triggers redirect to login (checked by router)
+/// - Flips [reauthNotifier], which the router's `refreshListenable` observes so
+///   the redirect guard re-evaluates and sends the user back to `/login`.
 class AuthInterceptor extends Interceptor {
-  /// Flag indicating that a 401 was received and auth state should be cleared.
-  /// The router redirect guard will check this flag.
-  static bool needsReauthentication = false;
+  /// Reactive signal that a 401 was received and re-authentication is required.
+  ///
+  /// The go_router configuration merges this into its `refreshListenable` so a
+  /// 401 during any request (e.g. loading cameras) immediately triggers a
+  /// redirect to the login screen.
+  static final ValueNotifier<bool> reauthNotifier = ValueNotifier<bool>(false);
+
+  /// Whether the most recent activity requires re-authentication.
+  /// Backed by [reauthNotifier] so reads/writes stay reactive for the router.
+  static bool get needsReauthentication => reauthNotifier.value;
+  static set needsReauthentication(bool value) => reauthNotifier.value = value;
 
   @override
   Future<void> onRequest(
@@ -33,7 +43,7 @@ class AuthInterceptor extends Interceptor {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
-    // On 401, clear token and set reauthentication flag
+    // On 401, clear token and raise the reauthentication signal
     if (err.response?.statusCode == 401) {
       await _handle401();
     }
@@ -43,12 +53,12 @@ class AuthInterceptor extends Interceptor {
   Future<void> _handle401() async {
     // Clear the stored token
     await SecureStorage.deleteToken();
-    // Set flag for router to redirect to login
-    needsReauthentication = true;
+    // Raise the signal for the router to redirect to login
+    reauthNotifier.value = true;
   }
 
   /// Reset the reauthentication flag (called after successful login)
   static void clearReauthFlag() {
-    needsReauthentication = false;
+    reauthNotifier.value = false;
   }
 }

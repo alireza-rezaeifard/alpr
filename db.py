@@ -1,6 +1,6 @@
 import sqlite3
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "database", "plpr.db")
 
@@ -261,12 +261,32 @@ def get_all_detections(limit=500, offset=0, source_type=None, search=None):
 
 
 def get_detections_timeline(days=7):
+    """Per-day detection counts over the last *days* days.
+
+    Returns a list of ``{"dt": "YYYY-MM-DD", "cnt": int}`` entries ordered
+    oldest-to-newest. The series is COMPLETE across the requested range: every
+    day in the requested window (today and the preceding ``days - 1`` days)
+    appears as a bucket, with a count of 0 for days that have no detections.
+    """
     conn = get_conn()
     rows = conn.execute(
-        f"SELECT DATE(timestamp) as dt, COUNT(*) as cnt FROM detections WHERE datetime(timestamp) >= datetime('now', '-{days} days') GROUP BY DATE(timestamp) ORDER BY dt",
+        "SELECT DATE(timestamp) as dt, COUNT(*) as cnt FROM detections "
+        "WHERE datetime(timestamp) >= datetime('now', ? ) "
+        "GROUP BY DATE(timestamp)",
+        (f"-{int(days)} days",),
     ).fetchall()
     conn.close()
-    return [dict(r) for r in rows]
+
+    # Grouped counts keyed by ISO date for days that actually have detections.
+    counts = {r["dt"]: r["cnt"] for r in rows}
+
+    # Build the full date series so days with zero detections still appear.
+    today = datetime.now().date()
+    series = []
+    for offset in range(int(days) - 1, -1, -1):  # oldest-to-newest
+        day = (today - timedelta(days=offset)).isoformat()
+        series.append({"dt": day, "cnt": counts.get(day, 0)})
+    return series
 
 
 def get_letter_frequency():

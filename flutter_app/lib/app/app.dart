@@ -13,6 +13,7 @@ class PlprApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(routerProvider);
     return Directionality(
       textDirection: TextDirection.rtl,
       child: FluentApp.router(
@@ -28,7 +29,7 @@ class PlprApp extends ConsumerWidget {
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        routerConfig: appRouter,
+        routerConfig: router,
         debugShowCheckedModeBanner: false,
       ),
     );
