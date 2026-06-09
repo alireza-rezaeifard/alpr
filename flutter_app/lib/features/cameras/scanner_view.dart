@@ -79,11 +79,11 @@ class _ScannerViewState extends ConsumerState<ScannerView> {
     });
     try {
       await _dio.post('/scanner/scan',
-          data: FormData.fromMap({
+          data: {
             'start_ip': _startIpCtrl.text.trim(),
             'end_ip': _endIpCtrl.text.trim(),
-            'timeout': '0.8',
-          }));
+            'timeout': 0.8,
+          });
       _pollTimer = Timer.periodic(
           const Duration(milliseconds: 500), (_) => _pollScan());
     } catch (e) {
@@ -95,11 +95,13 @@ class _ScannerViewState extends ConsumerState<ScannerView> {
     try {
       final res = await _dio.get('/scanner/status');
       final data = res.data as Map<String, dynamic>;
+      // New scanner router returns {running, hosts, completed, total}.
+      final hosts = (data['hosts'] ?? data['results']) as List? ?? const [];
       setState(() {
-        _results = List<Map<String, dynamic>>.from(data['results'] as List);
-        _progress = data['progress'] as int;
-        _total = data['total'] as int;
-        _scanning = data['running'] as bool;
+        _results = List<Map<String, dynamic>>.from(hosts);
+        _progress = (data['completed'] ?? data['progress'] ?? 0) as int;
+        _total = (data['total'] ?? 0) as int;
+        _scanning = (data['running'] ?? false) as bool;
       });
       if (!_scanning) _pollTimer?.cancel();
     } catch (_) {}
@@ -169,7 +171,7 @@ class _ScannerViewState extends ConsumerState<ScannerView> {
     try {
       final url = _buildRtspUrl();
       final res = await _dio.post('/scanner/test',
-          data: FormData.fromMap({'url': url}),
+          data: {'url': url},
           options: Options(receiveTimeout: const Duration(seconds: 15)));
       final data = res.data as Map<String, dynamic>;
       setState(() {

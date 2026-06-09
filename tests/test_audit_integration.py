@@ -22,10 +22,32 @@ import pytest
 
 @pytest.fixture
 def mock_audit(monkeypatch):
-    """Mock write_audit to verify it's called with correct arguments."""
+    """Mock write_audit to verify it's called with correct arguments.
+
+    Each router binds ``from audit.service import write_audit`` at import time,
+    so the name lives in the *router* module's namespace. Patching
+    ``audit.service.write_audit`` would not affect those already-bound names, so
+    we patch the name where it is actually looked up — in every router module
+    that records audit entries. They all share the same MagicMock so a test can
+    assert on the single call regardless of which router it exercised.
+    """
     import audit.service
+    import routers.auth
+    import routers.cameras
+    import routers.users
+    import routers.watchlists
+    import routers.licenses
+
     mock = MagicMock()
     monkeypatch.setattr(audit.service, "write_audit", mock)
+    for module in (
+        routers.auth,
+        routers.cameras,
+        routers.users,
+        routers.watchlists,
+        routers.licenses,
+    ):
+        monkeypatch.setattr(module, "write_audit", mock)
     return mock
 
 

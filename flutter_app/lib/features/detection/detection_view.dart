@@ -2,20 +2,22 @@
 // Modern detection view with sleek tab selector.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../shared/app_icons.dart';
+import '../../shared/widgets/permission_gate.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'image_sub_view.dart';
 import 'video_sub_view.dart';
 import 'rtsp_sub_view.dart';
 
-class DetectionView extends StatefulWidget {
+class DetectionView extends ConsumerStatefulWidget {
   const DetectionView({super.key});
 
   @override
-  State<DetectionView> createState() => _DetectionViewState();
+  ConsumerState<DetectionView> createState() => _DetectionViewState();
 }
 
-class _DetectionViewState extends State<DetectionView>
+class _DetectionViewState extends ConsumerState<DetectionView>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
 
@@ -34,6 +36,16 @@ class _DetectionViewState extends State<DetectionView>
 
   @override
   Widget build(BuildContext context) {
+    // Detection actions require the `run_detection` permission. Roles without
+    // it (e.g. Viewer) see a denied view instead of the detection controls.
+    if (!currentUserHasPermission(ref, Permissions.runDetection)) {
+      return const Scaffold(
+        backgroundColor: Colors.transparent,
+        body: PermissionDeniedView(
+          message: 'شما اجازه اجرای تشخیص را ندارید.',
+        ),
+      );
+    }
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Padding(

@@ -1,27 +1,28 @@
 // lib/features/cameras/cameras_view.dart
-// Modern multi-camera management view.
+// Camera management view. The camera list is a PlutoGrid data grid (sorting +
+// column controls, Requirement 17.5); management controls are gated by the
+// manage_cameras permission (Requirement 18.4). Live monitor and scanner are
+// kept as additional tabs.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../shared/app_icons.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'package:pluto_grid/pluto_grid.dart';
+
+import '../../core/api_client.dart';
+import '../../core/persian_format.dart';
 import '../../data/models/camera_model.dart';
 import '../../data/repositories/camera_repo.dart';
-import '../../core/api_client.dart';
-import 'camera_panel.dart';
+import '../../shared/app_icons.dart';
+import '../../shared/widgets/app_data_grid.dart';
+import '../../shared/widgets/permission_gate.dart' show Permissions;
+import '../../shared/widgets/screen_shell.dart';
 import 'camera_live_monitor.dart' show CameraLiveMonitor, SingleCameraMonitor;
 import 'scanner_view.dart';
-
-// ── Providers ──────────────────────────────────────────────────────────────
 
 final _cameraRepoProvider = Provider((_) => CameraRepo());
 
 final cameraListProvider = FutureProvider<List<CameraModel>>((ref) =>
     ref.read(_cameraRepoProvider).listCameras());
-
-final concurrencyLimitProvider = StateProvider<int>((_) => 4);
-
-// ── Main view ──────────────────────────────────────────────────────────────
 
 class CamerasView extends ConsumerStatefulWidget {
   const CamerasView({super.key});
@@ -30,214 +31,501 @@ class CamerasView extends ConsumerStatefulWidget {
   ConsumerState<CamerasView> createState() => _CamerasViewState();
 }
 
-class _CamerasViewState extends ConsumerState<CamerasView>
-    with SingleTickerProviderStateMixin {
-  late final TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 3, vsync: this);
-    _tabController.addListener(() => setState(() {}));
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
+class _CamerasViewState extends ConsumerState<CamerasView> {
+  int _tab = 0; // 0 = list, 1 = monitor, 2 = scanner
 
   @override
   Widget build(BuildContext context) {
-    final camerasAsync = ref.watch(cameraListProvider);
+    final canManage = sessionHasPermission(ref, Permissions.manageCameras);
 
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            _buildHeader(context),
-            const SizedBox(height: 20),
-            // Tabs
-            _buildTabs(),
-            const SizedBox(height: 20),
-            // Content
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                physics: const NeverScrollableScrollPhysics(),
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ScreenHeader(
+            title: 'دوربین‌ها',
+            subtitle: 'مدیریت و پایش دوربین‌های شبکه (RTSP)',
+            actions: [
+              ToolbarButton(
+                icon: AppIcons.refreshCw,
+                label: 'بازخوانی',
+                onTap: () => ref.invalidate(cameraListProvider),
+              ),
+              if (canManage && _tab == 0) ...[
+                const SizedBox(width: 8),
+                ToolbarButton(
+                  icon: AppIcons.plus,
+                  label: 'افزودن دوربین',
+                  primary: true,
+                  onTap: _showAddCameraDialog,
+                ),
+              ],
+            ],
+          ),
+          const SizedBox(height: 16),
+          _Tabs(index: _tab, onChanged: (i) => setState(() => _tab = i)),
+          const SizedBox(height: 16),
+          Expanded(child: _buildTab(canManage)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTab(bool canManage) {
+    switch (_tab) {
+      case 1:
+        return const CameraLiveMonitor();
+      case 2:
+        return const ScannerView();
+      default:
+        return _buildList(canManage);
+    }
+  }
+
+  Widget _buildList(bool canManage) {
+    final camerasAsync = ref.watch(cameraListProvider);
+    return Column(
+      children: [
+        if (canManage) ...[
+          _Toolbar(repo: ref.read(_cameraRepoProvider), onChanged: () => ref.invalidate(cameraListProvider)),
+          const SizedBox(height: 12),
+        ],
+        Expanded(
+          child: camerasAsync.when(
+            loading: () => const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+            error: (e, _) => GridStatePlaceholder(
+              icon: AppIcons.alertCircle,
+              message: 'بارگیری دوربین‌ها ممکن نشد\n${_errMsg(e)}',
+              onRetry: () => ref.invalidate(cameraListProvider),
+            ),
+            data: (cameras) {
+              if (cameras.isEmpty) {
+                return const GridStatePlaceholder(
+                  icon: AppIcons.camera,
+                  message: 'هنوز دوربینی اضافه نشده است.',
+                );
+              }
+              return AppDataGrid(
+                key: ValueKey('cameras_${cameras.length}_$canManage'),
+                columns: _columns(canManage),
+                rows: cameras.map(_rowFor).toList(),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  List<PlutoColumn> _columns(bool canManage) => [
+        PlutoColumn(
+          title: 'وضعیت',
+          field: 'status',
+          type: PlutoColumnType.text(),
+          width: 130,
+          renderer: (ctx) => _StatusBadge(status: ctx.cell.value as String),
+        ),
+        PlutoColumn(title: 'نام', field: 'name', type: PlutoColumnType.text(), minWidth: 150),
+        PlutoColumn(title: 'آدرس', field: 'url', type: PlutoColumnType.text(), minWidth: 220),
+        PlutoColumn(
+          title: 'پرش فریم',
+          field: 'skip',
+          type: PlutoColumnType.number(),
+          width: 110,
+          renderer: (ctx) => Text(
+            PersianFormat.number(ctx.cell.value as num),
+            style: const TextStyle(color: Color(0xFFFAFAFA), fontSize: 13),
+          ),
+        ),
+        PlutoColumn(
+          title: 'عملیات',
+          field: 'actions',
+          type: PlutoColumnType.text(),
+          width: 210,
+          enableSorting: false,
+          enableContextMenu: false,
+          renderer: (ctx) {
+            final cells = ctx.row.cells;
+            final cam = CameraModel(
+              id: cells['id']!.value as int,
+              name: cells['name']!.value as String,
+              url: cells['url']!.value as String,
+              skipFrames: cells['skip']!.value as int,
+              status: cells['status']!.value as String,
+              taskId: cells['task']!.value as String?,
+            );
+            final running = cam.status != 'stopped' && cam.status != 'error';
+            return Align(
+              alignment: Alignment.centerRight,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  _CamerasTab(camerasAsync: camerasAsync, ref: ref),
-                  const CameraLiveMonitor(),
-                  const ScannerView(),
+                  if (canManage) ...[
+                    if (running)
+                      _IconBtn(icon: AppIcons.square, color: const Color(0xFFEF4444), tooltip: 'توقف', onTap: () => _stop(cam.id))
+                    else
+                      _IconBtn(
+                        icon: AppIcons.play,
+                        color: const Color(0xFF10B981),
+                        tooltip: 'شروع',
+                        onTap: cam.name.trim().isEmpty ? null : () => _start(cam.id),
+                      ),
+                    const SizedBox(width: 6),
+                    _IconBtn(icon: AppIcons.edit2, color: const Color(0xFF3B82F6), tooltip: 'ویرایش', onTap: () => _showEditDialog(cam)),
+                    const SizedBox(width: 6),
+                    _IconBtn(icon: AppIcons.trash2, color: const Color(0xFFEF4444), tooltip: 'حذف', onTap: () => _confirmDelete(cam)),
+                    const SizedBox(width: 6),
+                  ],
+                  if (cam.taskId != null && cam.taskId!.isNotEmpty)
+                    _IconBtn(
+                      icon: AppIcons.monitor,
+                      color: const Color(0xFF8B5CF6),
+                      tooltip: 'پایش',
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => SingleCameraMonitor(camera: cam)),
+                      ),
+                    ),
                 ],
               ),
-            ),
+            );
+          },
+        ),
+      ];
+
+  PlutoRow _rowFor(CameraModel c) => PlutoRow(cells: {
+        'status': PlutoCell(value: c.status),
+        'name': PlutoCell(value: c.name.isNotEmpty ? c.name : '(بدون نام)'),
+        'url': PlutoCell(value: c.url),
+        'skip': PlutoCell(value: c.skipFrames),
+        'id': PlutoCell(value: c.id),
+        'task': PlutoCell(value: c.taskId),
+        'actions': PlutoCell(value: c.id),
+      });
+
+  // ── Actions ───────────────────────────────────────────────────────────────
+
+  Future<void> _start(int id) async {
+    try {
+      await ref.read(_cameraRepoProvider).startCamera(id);
+    } catch (e) {
+      _toast('شروع ناموفق بود: ${_errMsg(e)}');
+    }
+    ref.invalidate(cameraListProvider);
+  }
+
+  Future<void> _stop(int id) async {
+    try {
+      await ref.read(_cameraRepoProvider).stopCamera(id);
+    } catch (e) {
+      _toast('توقف ناموفق بود: ${_errMsg(e)}');
+    }
+    ref.invalidate(cameraListProvider);
+  }
+
+  void _toast(String msg) {
+    if (!mounted) return;
+    ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+      SnackBar(content: Text(msg), backgroundColor: const Color(0xFF7F1D1D)),
+    );
+  }
+
+  Future<void> _showAddCameraDialog() async {
+    final nameCtrl = TextEditingController();
+    final urlCtrl = TextEditingController();
+    final skipCtrl = TextEditingController(text: '15');
+    String? error;
+    await showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setLocal) => _CameraDialog(
+          title: 'افزودن دوربین',
+          children: [
+            _LabeledField(label: 'نام دوربین', controller: nameCtrl, hint: 'مثلاً درب ورودی'),
+            const SizedBox(height: 12),
+            _LabeledField(label: 'آدرس RTSP', controller: urlCtrl, hint: 'rtsp://...'),
+            const SizedBox(height: 12),
+            _LabeledField(label: 'پرش فریم (۱ تا ۱۰۰۰)', controller: skipCtrl, hint: '15'),
+            if (error != null) ...[
+              const SizedBox(height: 10),
+              Text(error!, style: const TextStyle(color: Color(0xFFEF4444), fontSize: 12)),
+            ],
           ],
+          onConfirm: () async {
+            final url = urlCtrl.text.trim();
+            if (url.isEmpty) {
+              setLocal(() => error = 'آدرس الزامی است');
+              return;
+            }
+            final skip = int.tryParse(skipCtrl.text.trim());
+            if (skip == null || skip < 1 || skip > 1000) {
+              setLocal(() => error = 'پرش فریم باید بین ۱ تا ۱۰۰۰ باشد');
+              return;
+            }
+            try {
+              await ref.read(_cameraRepoProvider).createCamera(nameCtrl.text.trim(), url, skip);
+              ref.invalidate(cameraListProvider);
+              if (ctx.mounted) Navigator.pop(ctx);
+            } catch (e) {
+              setLocal(() => error = _errMsg(e));
+            }
+          },
         ),
       ),
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
-    return Row(
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Cameras',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-                letterSpacing: -0.5,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Manage and monitor RTSP cameras',
-              style: TextStyle(fontSize: 14, color: Colors.white.withOpacity(0.5)),
-            ),
-          ],
-        ),
-        const Spacer(),
-        _ActionButton(
-          icon: AppIcons.refreshCw,
-          label: 'Refresh',
-          onTap: () => ref.invalidate(cameraListProvider),
-        ),
-        const SizedBox(width: 8),
-        _ActionButton(
-          icon: AppIcons.plus,
-          label: 'Add Camera',
-          primary: true,
-          onTap: () => _showAddCameraDialog(context, ref),
-        ),
-      ],
-    ).animate().fadeIn(duration: 400.ms);
-  }
-
-  Widget _buildTabs() {
-    final tabs = [
-      (AppIcons.camera, 'My Cameras'),
-      (AppIcons.monitor, 'Monitor'),
-      (AppIcons.radar, 'Scanner'),
-    ];
-
-    return Container(
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.04),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.white.withOpacity(0.06)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: tabs.asMap().entries.map((e) {
-          final isSelected = _tabController.index == e.key;
-          return GestureDetector(
-            onTap: () => _tabController.animateTo(e.key),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: isSelected ? const Color(0xFF3B82F6).withOpacity(0.15) : Colors.transparent,
-                borderRadius: BorderRadius.circular(7),
-                border: isSelected
-                    ? Border.all(color: const Color(0xFF3B82F6).withOpacity(0.3))
-                    : null,
-              ),
-              child: Row(
-                children: [
-                  Icon(e.value.$1, size: 16,
-                    color: isSelected ? const Color(0xFF3B82F6) : Colors.white.withOpacity(0.4)),
-                  const SizedBox(width: 8),
-                  Text(e.value.$2, style: TextStyle(
-                    fontSize: 13, fontWeight: FontWeight.w500,
-                    color: isSelected ? const Color(0xFF3B82F6) : Colors.white.withOpacity(0.5),
-                  )),
-                ],
-              ),
-            ),
-          );
-        }).toList(),
-      ),
-    ).animate().fadeIn(duration: 400.ms, delay: 100.ms);
-  }
-
-  static Future<void> _showAddCameraDialog(BuildContext context, WidgetRef ref) async {
-    final nameCtrl = TextEditingController();
-    final urlCtrl = TextEditingController();
-    final skipCtrl = TextEditingController(text: '15');
+  Future<void> _showEditDialog(CameraModel cam) async {
+    final nameCtrl = TextEditingController(text: cam.name);
+    final urlCtrl = TextEditingController(text: cam.url);
+    final skipCtrl = TextEditingController(text: cam.skipFrames.toString());
     String? error;
-
     await showDialog(
       context: context,
       builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setState) => Dialog(
-          backgroundColor: const Color(0xFF18181B),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            width: 400,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Add Camera', style: TextStyle(
-                  fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white)),
-                const SizedBox(height: 4),
-                Text('Configure a new RTSP camera',
-                    style: TextStyle(fontSize: 13, color: Colors.white.withOpacity(0.5))),
-                const SizedBox(height: 20),
-                _DialogInput(controller: nameCtrl, label: 'Camera Name', hint: 'e.g. Front Gate'),
-                const SizedBox(height: 12),
-                _DialogInput(controller: urlCtrl, label: 'RTSP URL', hint: 'rtsp://...'),
-                const SizedBox(height: 12),
-                _DialogInput(controller: skipCtrl, label: 'Skip Frames', hint: '15'),
-                if (error != null) ...[
-                  const SizedBox(height: 12),
-                  Text(error!, style: const TextStyle(color: Color(0xFFEF4444), fontSize: 12)),
-                ],
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(ctx),
-                      child: Text('Cancel', style: TextStyle(color: Colors.white.withOpacity(0.5))),
-                    ),
-                    const SizedBox(width: 8),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF3B82F6),
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      ),
-                      onPressed: () async {
-                        final url = urlCtrl.text.trim();
-                        if (url.isEmpty) { setState(() => error = 'URL is required'); return; }
-                        final skipRaw = int.tryParse(skipCtrl.text.trim());
-                        if (skipRaw == null || skipRaw < 1 || skipRaw > 1000) {
-                          setState(() => error = 'Skip frames must be 1–1000'); return;
-                        }
-                        try {
-                          final repo = ref.read(_cameraRepoProvider);
-                          await repo.createCamera(nameCtrl.text, url, skipRaw);
-                          ref.invalidate(cameraListProvider);
-                          if (ctx.mounted) Navigator.pop(ctx);
-                        } catch (e) { setState(() => error = _errMsg(e)); }
-                      },
-                      child: const Text('Add Camera'),
-                    ),
-                  ],
+        builder: (ctx, setLocal) => _CameraDialog(
+          title: 'ویرایش دوربین',
+          children: [
+            _LabeledField(label: 'نام دوربین', controller: nameCtrl, hint: 'نام'),
+            const SizedBox(height: 12),
+            _LabeledField(label: 'آدرس RTSP', controller: urlCtrl, hint: 'rtsp://...'),
+            const SizedBox(height: 12),
+            _LabeledField(label: 'پرش فریم (۱ تا ۱۰۰۰)', controller: skipCtrl, hint: '15'),
+            if (error != null) ...[
+              const SizedBox(height: 10),
+              Text(error!, style: const TextStyle(color: Color(0xFFEF4444), fontSize: 12)),
+            ],
+          ],
+          onConfirm: () async {
+            final skip = int.tryParse(skipCtrl.text.trim());
+            if (skip == null || skip < 1 || skip > 1000) {
+              setLocal(() => error = 'پرش فریم باید بین ۱ تا ۱۰۰۰ باشد');
+              return;
+            }
+            try {
+              await ref.read(_cameraRepoProvider).updateCamera(
+                    cam.id,
+                    name: nameCtrl.text.trim(),
+                    url: urlCtrl.text.trim(),
+                    skipFrames: skip,
+                  );
+              ref.invalidate(cameraListProvider);
+              if (ctx.mounted) Navigator.pop(ctx);
+            } catch (e) {
+              setLocal(() => error = _errMsg(e));
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  Future<void> _confirmDelete(CameraModel cam) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => _CameraDialog(
+        title: 'حذف دوربین',
+        confirmLabel: 'حذف',
+        danger: true,
+        children: [
+          Text('آیا از حذف «${cam.name.isEmpty ? cam.url : cam.name}» مطمئن هستید؟',
+              style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 13)),
+        ],
+        onConfirm: () => Navigator.pop(ctx, true),
+      ),
+    );
+    if (ok == true) {
+      try {
+        await ref.read(_cameraRepoProvider).deleteCamera(cam.id);
+      } catch (e) {
+        _toast('حذف ناموفق بود: ${_errMsg(e)}');
+      }
+      ref.invalidate(cameraListProvider);
+    }
+  }
+}
+
+// ── Toolbar (start/stop all) ─────────────────────────────────────────────────
+
+class _Toolbar extends StatelessWidget {
+  final CameraRepo repo;
+  final VoidCallback onChanged;
+  const _Toolbar({required this.repo, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: const Color(0xFF111113),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+      ),
+      child: Row(
+        children: [
+          Icon(AppIcons.settings2, size: 14, color: Colors.white.withValues(alpha: 0.4)),
+          const SizedBox(width: 8),
+          Text('کنترل‌ها', style: TextStyle(fontSize: 12, color: Colors.white.withValues(alpha: 0.5))),
+          const Spacer(),
+          ToolbarButton(
+            icon: AppIcons.play,
+            label: 'شروع همه',
+            onTap: () async {
+              try {
+                await repo.startAll();
+              } catch (_) {}
+              onChanged();
+            },
+          ),
+          const SizedBox(width: 8),
+          ToolbarButton(
+            icon: AppIcons.square,
+            label: 'توقف همه',
+            danger: true,
+            onTap: () async {
+              try {
+                await repo.stopAll();
+              } catch (_) {}
+              onChanged();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── Status badge ─────────────────────────────────────────────────────────────
+
+class _StatusBadge extends StatelessWidget {
+  final String status;
+  const _StatusBadge({required this.status});
+
+  @override
+  Widget build(BuildContext context) {
+    Color color;
+    String label;
+    switch (status) {
+      case 'streaming':
+      case 'connected':
+        color = const Color(0xFF10B981);
+        label = 'فعال';
+        break;
+      case 'connecting':
+        color = const Color(0xFFF59E0B);
+        label = 'درحال اتصال';
+        break;
+      case 'queued':
+        color = const Color(0xFF3B82F6);
+        label = 'در صف';
+        break;
+      case 'error':
+        color = const Color(0xFFEF4444);
+        label = 'خطا';
+        break;
+      default:
+        color = const Color(0xFF6B7280);
+        label = 'متوقف';
+    }
+    return Align(
+      alignment: Alignment.centerRight,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(width: 7, height: 7, decoration: BoxDecoration(shape: BoxShape.circle, color: color)),
+            const SizedBox(width: 6),
+            Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: color)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Tabs ──────────────────────────────────────────────────────────────────────
+
+class _Tabs extends StatelessWidget {
+  final int index;
+  final ValueChanged<int> onChanged;
+  const _Tabs({required this.index, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    const items = [
+      (AppIcons.camera, 'دوربین‌های من'),
+      (AppIcons.monitor, 'پایش زنده'),
+      (AppIcons.radar, 'پویشگر شبکه'),
+    ];
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.04),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (var i = 0; i < items.length; i++)
+            MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: () => onChanged(i),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: index == i ? const Color(0xFF3B82F6).withValues(alpha: 0.15) : Colors.transparent,
+                    borderRadius: BorderRadius.circular(7),
+                    border: index == i ? Border.all(color: const Color(0xFF3B82F6).withValues(alpha: 0.3)) : null,
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(items[i].$1, size: 15, color: index == i ? const Color(0xFF3B82F6) : Colors.white.withValues(alpha: 0.4)),
+                      const SizedBox(width: 8),
+                      Text(items[i].$2, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: index == i ? const Color(0xFF3B82F6) : Colors.white.withValues(alpha: 0.5))),
+                    ],
+                  ),
                 ),
-              ],
+              ),
             ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── Shared dialog widgets ──────────────────────────────────────────────────────
+
+class _IconBtn extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String tooltip;
+  final VoidCallback? onTap;
+  const _IconBtn({required this.icon, required this.color, required this.tooltip, this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final disabled = onTap == null;
+    return Tooltip(
+      message: tooltip,
+      child: MouseRegion(
+        cursor: disabled ? SystemMouseCursors.basic : SystemMouseCursors.click,
+        child: GestureDetector(
+          onTap: onTap,
+          child: Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: disabled ? 0.04 : 0.12),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Icon(icon, size: 15, color: color.withValues(alpha: disabled ? 0.3 : 1)),
           ),
         ),
       ),
@@ -245,34 +533,35 @@ class _CamerasViewState extends ConsumerState<CamerasView>
   }
 }
 
-class _DialogInput extends StatelessWidget {
-  final TextEditingController controller;
+class _LabeledField extends StatelessWidget {
   final String label;
+  final TextEditingController controller;
   final String hint;
-  const _DialogInput({required this.controller, required this.label, required this.hint});
+  const _LabeledField({required this.label, required this.controller, required this.hint});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.6))),
+        Text(label, style: TextStyle(fontSize: 12, color: Colors.white.withValues(alpha: 0.6))),
         const SizedBox(height: 6),
         TextField(
           controller: controller,
+          textDirection: TextDirection.rtl,
           style: const TextStyle(fontSize: 13, color: Colors.white),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
+            hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
             filled: true,
-            fillColor: Colors.white.withOpacity(0.04),
+            fillColor: Colors.white.withValues(alpha: 0.04),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Colors.white.withOpacity(0.08)),
+              borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Colors.white.withOpacity(0.08)),
+              borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
             ),
             contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           ),
@@ -282,389 +571,54 @@ class _DialogInput extends StatelessWidget {
   }
 }
 
-// ── Cameras tab ────────────────────────────────────────────────────────────
-
-class _CamerasTab extends StatelessWidget {
-  final AsyncValue<List<CameraModel>> camerasAsync;
-  final WidgetRef ref;
-  const _CamerasTab({required this.camerasAsync, required this.ref});
+class _CameraDialog extends StatelessWidget {
+  final String title;
+  final List<Widget> children;
+  final VoidCallback onConfirm;
+  final String confirmLabel;
+  final bool danger;
+  const _CameraDialog({
+    required this.title,
+    required this.children,
+    required this.onConfirm,
+    this.confirmLabel = 'تأیید',
+    this.danger = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        _TopToolbar(),
-        const SizedBox(height: 16),
-        Expanded(
-          child: camerasAsync.when(
-            loading: () => const Center(child: CircularProgressIndicator(strokeWidth: 2)),
-            error: (e, _) => Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Failed to load cameras: ${_errMsg(e)}',
-                      style: TextStyle(color: Colors.white.withOpacity(0.5))),
-                  const SizedBox(height: 8),
-                  TextButton(
-                    onPressed: () => ref.invalidate(cameraListProvider),
-                    child: const Text('Retry'),
-                  ),
-                ],
-              ),
-            ),
-            data: (cameras) {
-              if (cameras.isEmpty) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(AppIcons.camera, size: 48, color: Colors.white.withOpacity(0.2)),
-                      const SizedBox(height: 12),
-                      Text('No cameras added yet',
-                          style: TextStyle(color: Colors.white.withOpacity(0.4))),
-                    ],
-                  ),
-                );
-              }
-              return _CameraGrid(cameras: cameras);
-            },
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-// ── Top toolbar ────────────────────────────────────────────────────────────
-
-class _TopToolbar extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final repo = ref.read(_cameraRepoProvider);
-
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: const Color(0xFF111113),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.white.withOpacity(0.06)),
-      ),
-      child: Row(
-        children: [
-          Icon(AppIcons.settings2, size: 14, color: Colors.white.withOpacity(0.4)),
-          const SizedBox(width: 8),
-          Text('Controls', style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.5))),
-          const Spacer(),
-          _ActionButton(
-            icon: AppIcons.play,
-            label: 'Start All',
-            onTap: () async {
-              try {
-                await repo.startAll();
-                ref.invalidate(cameraListProvider);
-              } catch (_) {}
-            },
-          ),
-          const SizedBox(width: 8),
-          _ActionButton(
-            icon: AppIcons.square,
-            label: 'Stop All',
-            danger: true,
-            onTap: () async {
-              try {
-                await repo.stopAll();
-                ref.invalidate(cameraListProvider);
-              } catch (_) {}
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ── Camera grid ────────────────────────────────────────────────────────────
-
-class _CameraGrid extends ConsumerWidget {
-  final List<CameraModel> cameras;
-  const _CameraGrid({required this.cameras});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return LayoutBuilder(
-      builder: (ctx, constraints) {
-        final cols = (constraints.maxWidth / 320).floor().clamp(1, 4);
-        return GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: cols,
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 12,
-            childAspectRatio: 1.6,
-          ),
-          itemCount: cameras.length,
-          itemBuilder: (_, i) => _CameraCard(camera: cameras[i])
-              .animate()
-              .fadeIn(duration: 300.ms, delay: (i * 60).ms)
-              .scale(begin: const Offset(0.98, 0.98)),
-        );
-      },
-    );
-  }
-}
-
-class _CameraCard extends ConsumerWidget {
-  final CameraModel camera;
-  const _CameraCard({required this.camera});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final repo = ref.read(_cameraRepoProvider);
-
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF111113),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.06)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Row(
+    return Dialog(
+      backgroundColor: const Color(0xFF18181B),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        width: 420,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: Colors.white)),
+            const SizedBox(height: 18),
+            ...children,
+            const SizedBox(height: 20),
+            Row(
               children: [
-                _CameraStatusDot(status: camera.status),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: danger ? const Color(0xFFEF4444) : const Color(0xFF3B82F6),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                  onPressed: onConfirm,
+                  child: Text(confirmLabel),
+                ),
                 const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    camera.name.isNotEmpty ? camera.name : '(unnamed)',
-                    style: const TextStyle(
-                      fontSize: 13, fontWeight: FontWeight.w500, color: Colors.white),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                // Actions
-                _IconAction(icon: AppIcons.edit2, onTap: () => _showRenameDialog(context, ref, camera)),
-                _IconAction(icon: AppIcons.trash2, onTap: () async {
-                  await repo.deleteCamera(camera.id);
-                  ref.invalidate(cameraListProvider);
-                }),
-              ],
-            ),
-          ),
-          // URL info
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    camera.url,
-                    style: TextStyle(fontSize: 11, color: Colors.white.withOpacity(0.4)),
-                    maxLines: 1, overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Skip: ${camera.skipFrames} frames',
-                    style: TextStyle(fontSize: 11, color: Colors.white.withOpacity(0.3)),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          // Actions bar
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              border: Border(top: BorderSide(color: Colors.white.withOpacity(0.04))),
-            ),
-            child: Row(
-              children: [
-                if (camera.status == 'stopped' || camera.status == 'error')
-                  _SmallButton(
-                    icon: AppIcons.play, label: 'Start',
-                    onTap: camera.name.trim().isEmpty ? null : () async {
-                      await repo.startCamera(camera.id);
-                      ref.invalidate(cameraListProvider);
-                    },
-                  )
-                else
-                  _SmallButton(
-                    icon: AppIcons.square, label: 'Stop', danger: true,
-                    onTap: () async {
-                      await repo.stopCamera(camera.id);
-                      ref.invalidate(cameraListProvider);
-                    },
-                  ),
-                const Spacer(),
-                if (camera.taskId != null && camera.taskId!.isNotEmpty)
-                  _SmallButton(
-                    icon: AppIcons.monitor, label: 'Monitor',
-                    onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => SingleCameraMonitor(camera: camera)),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  static Future<void> _showRenameDialog(BuildContext context, WidgetRef ref, CameraModel cam) async {
-    final ctrl = TextEditingController(text: cam.name);
-    String? error;
-    await showDialog(
-      context: context,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setState) => Dialog(
-          backgroundColor: const Color(0xFF18181B),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            width: 360,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Rename Camera', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white)),
-                const SizedBox(height: 16),
-                _DialogInput(controller: ctrl, label: 'Camera Name', hint: 'Enter name'),
-                if (error != null) ...[
-                  const SizedBox(height: 8),
-                  Text(error!, style: const TextStyle(color: Color(0xFFEF4444), fontSize: 12)),
-                ],
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(onPressed: () => Navigator.pop(ctx),
-                        child: Text('Cancel', style: TextStyle(color: Colors.white.withOpacity(0.5)))),
-                    const SizedBox(width: 8),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF3B82F6),
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      ),
-                      onPressed: () async {
-                        try {
-                          await ref.read(_cameraRepoProvider).updateCamera(cam.id, name: ctrl.text);
-                          ref.invalidate(cameraListProvider);
-                          if (ctx.mounted) Navigator.pop(ctx);
-                        } catch (e) { setState(() => error = _errMsg(e)); }
-                      },
-                      child: const Text('Save'),
-                    ),
-                  ],
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('انصراف', style: TextStyle(color: Colors.white.withValues(alpha: 0.5))),
                 ),
               ],
             ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ── Small widgets ──────────────────────────────────────────────────────────
-
-class _CameraStatusDot extends StatelessWidget {
-  final String status;
-  const _CameraStatusDot({required this.status});
-
-  @override
-  Widget build(BuildContext context) {
-    Color color;
-    switch (status) {
-      case 'streaming': case 'connected': color = const Color(0xFF10B981); break;
-      case 'connecting': color = const Color(0xFFF59E0B); break;
-      case 'error': color = const Color(0xFFEF4444); break;
-      case 'queued': color = const Color(0xFF3B82F6); break;
-      default: color = const Color(0xFF6B7280);
-    }
-    return Container(width: 8, height: 8, decoration: BoxDecoration(shape: BoxShape.circle, color: color));
-  }
-}
-
-class _IconAction extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onTap;
-  const _IconAction({required this.icon, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.all(4),
-        child: Icon(icon, size: 14, color: Colors.white.withOpacity(0.4)),
-      ),
-    );
-  }
-}
-
-class _SmallButton extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback? onTap;
-  final bool danger;
-  const _SmallButton({required this.icon, required this.label, this.onTap, this.danger = false});
-
-  @override
-  Widget build(BuildContext context) {
-    final color = danger ? const Color(0xFFEF4444) : const Color(0xFF3B82F6);
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(6),
-          border: Border.all(color: color.withOpacity(0.2)),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 12, color: color),
-            const SizedBox(width: 4),
-            Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: color)),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ActionButton extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-  final bool primary;
-  final bool danger;
-  const _ActionButton({required this.icon, required this.label, required this.onTap, this.primary = false, this.danger = false});
-
-  @override
-  Widget build(BuildContext context) {
-    final color = danger ? const Color(0xFFEF4444) : primary ? const Color(0xFF3B82F6) : Colors.white.withOpacity(0.6);
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: primary ? const Color(0xFF3B82F6) : Colors.white.withOpacity(0.04),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: primary ? const Color(0xFF3B82F6) : Colors.white.withOpacity(0.08)),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 14, color: primary ? Colors.white : color),
-            const SizedBox(width: 6),
-            Text(label, style: TextStyle(fontSize: 12, color: primary ? Colors.white : color)),
           ],
         ),
       ),

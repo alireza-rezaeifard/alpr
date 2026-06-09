@@ -1,0 +1,57 @@
+﻿........................................................................ [ 26%]
+........................................................................ [ 52%]
+........................................................................ [ 78%]
+...........................................................              [100%]
+============================== warnings summary ===============================
+schemas.py:104
+  C:\Users\alireza\Desktop\dart\labe-github\alpr\schemas.py:104: PytestCollectionWarning: cannot collect test class 'TestUrlRequest' because it has a __init__ constructor (from: tests/test_scanner_integration.py)
+    class TestUrlRequest(BaseModel):
+
+tests/test_detection_query_correctness_property.py::test_detection_query_returns_exactly_matching_records_and_total
+  C:\Users\alireza\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest\threadexception.py:58: PytestUnhandledThreadExceptionWarning: Exception in thread Thread-505 (run_video)
+  
+  Traceback (most recent call last):
+    File "C:\Users\alireza\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1038, in _bootstrap_inner
+      self.run()
+    File "C:\Users\alireza\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 975, in run
+      self._target(*self._args, **self._kwargs)
+    File "C:\Users\alireza\Desktop\dart\labe-github\alpr\routers\detection.py", line 189, in run_video
+      api._tasks[task_id].update(state)
+      ~~~~~~~~~~^^^^^^^^^
+  KeyError: 'e239ed841a224469a2ae1194d0b4f818'
+  
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+    warnings.warn(pytest.PytestUnhandledThreadExceptionWarning(msg))
+
+tests/test_retention_implementation.py::test_put_retention_endpoint_rejects_zero_days
+  C:\Users\alireza\Desktop\dart\labe-github\alpr\tests\test_retention_implementation.py:259: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    update_retention(body, _user=mock_user)
+
+tests/test_retention_implementation.py::test_put_retention_endpoint_rejects_negative_days
+  C:\Users\alireza\Desktop\dart\labe-github\alpr\tests\test_retention_implementation.py:275: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    update_retention(body, _user=mock_user)
+
+tests/test_users_create_validation.py::test_create_user_rejects_unknown_role
+tests/test_users_create_validation.py::test_create_user_rejects_empty_string_role
+  C:\Users\alireza\Desktop\dart\labe-github\alpr\routers\users.py:98: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    _validate_role(body.role)
+
+tests/test_users_last_admin_property.py: 43 warnings
+  C:\Users\alireza\Desktop\dart\labe-github\alpr\tests\test_users_last_admin_property.py:92: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    delete_user(user_id, user=ADMIN)
+
+tests/test_users_last_admin_property.py: 18 warnings
+  C:\Users\alireza\Desktop\dart\labe-github\alpr\tests\test_users_last_admin_property.py:98: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    update_user(user_id, UserUpdate(role="Operator"), user=ADMIN)
+
+tests/test_users_last_admin_property.py: 29 warnings
+  C:\Users\alireza\Desktop\dart\labe-github\alpr\tests\test_users_last_admin_property.py:94: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    update_user(user_id, UserUpdate(disabled=True), user=ADMIN)
+
+tests/test_users_last_admin_property.py: 26 warnings
+  C:\Users\alireza\Desktop\dart\labe-github\alpr\tests\test_users_last_admin_property.py:100: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    update_user(user_id, UserUpdate(role="Viewer"), user=ADMIN)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+275 passed, 122 warnings in 180.01s (0:03:00)

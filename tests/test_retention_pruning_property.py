@@ -186,8 +186,16 @@ def test_set_retention_policy_persists_positive_days(fresh_db, days):
 def test_set_retention_policy_rejects_non_positive_days(fresh_db, days):
     """Req 16.4: setting a policy with days <= 0 is rejected and persists nothing."""
     _reset()
-    with pytest.raises(RetentionPolicyError):
-        set_retention_policy(days)
+    # Resolve the callable and its exception type from the live module at call
+    # time. Other tests (e.g. test_retention_implementation) reload
+    # ``retention.service``, which rebinds ``RetentionPolicyError`` to a new
+    # class object; a name imported at module load would then no longer be the
+    # class actually raised, and ``pytest.raises`` would miss it. Reading both
+    # off the module together keeps them consistent regardless of test ordering.
+    import retention.service as retention_service
+
+    with pytest.raises(retention_service.RetentionPolicyError):
+        retention_service.set_retention_policy(days)
     # No retention_days row should have been written by the rejected call.
     conn = db.get_conn()
     row = conn.execute(

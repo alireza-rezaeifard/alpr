@@ -818,4 +818,9 @@ if __name__ == "__main__":
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8000
     print(f"API server running at http://127.0.0.1:{port}")
     print(f"API docs at http://127.0.0.1:{port}/docs")
-    uvicorn.run(app, host="127.0.0.1", port=port)
+    # Launch via the import string (not the app object) so the served app lives
+    # in the importable ``api`` module. The detection router and camera manager
+    # share the live task registry via ``import api``; running the app object
+    # directly under ``__main__`` would give them a second, empty ``api._tasks``
+    # copy, so camera frames would 404 ("connecting" forever).
+    uvicorn.run("api:app", host="127.0.0.1", port=port)

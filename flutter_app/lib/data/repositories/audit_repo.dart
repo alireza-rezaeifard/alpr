@@ -20,7 +20,15 @@ class AuditRepo {
       queryParameters: {'limit': limit},
       options: ApiClient.withTimeout(ApiClient.viewTimeout),
     );
-    final data = (res.data as Map)['data'] as List;
+    final data = _asList(res.data);
     return data.map((e) => AuditEntry.fromJson(e as Map<String, dynamic>)).toList();
   }
+}
+
+/// Accepts either a bare JSON array (new router) or a ``{ "data": [...] }``
+/// envelope and returns the underlying list.
+List<dynamic> _asList(dynamic body) {
+  if (body is List) return body;
+  if (body is Map && body['data'] is List) return body['data'] as List;
+  return const [];
 }

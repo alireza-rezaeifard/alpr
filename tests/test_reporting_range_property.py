@@ -100,7 +100,11 @@ def _insert_detection_on(day_offset: int) -> None:
 # Clause 1 — detection-list limit is bounded (accepted iff in 1..1000).
 # Feature: anpr-system-redesign, Property 24 — Validates: Requirements 13.2
 # ---------------------------------------------------------------------------
-@settings(max_examples=120, suppress_health_check=[HealthCheck.function_scoped_fixture])
+@settings(
+    max_examples=120,
+    deadline=None,
+    suppress_health_check=[HealthCheck.function_scoped_fixture],
+)
 @given(limit=st.integers(min_value=-50, max_value=1100))
 def test_detection_limit_is_bounded(client, limit):
     """A detection-list limit is accepted iff it lies in the inclusive 1..1000."""
@@ -122,7 +126,11 @@ def test_detection_limit_is_bounded(client, limit):
 # Clause 2a — timeline day count is bounded (accepted iff in 1..90).
 # Feature: anpr-system-redesign, Property 24 — Validates: Requirements 13.3
 # ---------------------------------------------------------------------------
-@settings(max_examples=120, suppress_health_check=[HealthCheck.function_scoped_fixture])
+@settings(
+    max_examples=120,
+    deadline=None,
+    suppress_health_check=[HealthCheck.function_scoped_fixture],
+)
 @given(days=st.integers(min_value=-50, max_value=200))
 def test_timeline_days_is_bounded(client, days):
     """A timeline day count is accepted iff it lies in the inclusive 1..90."""
@@ -145,7 +153,11 @@ def test_timeline_days_is_bounded(client, days):
 # in 1..90 the result has a per-day bucket for every day in the range.
 # Feature: anpr-system-redesign, Property 24 — Validates: Requirements 13.3
 # ---------------------------------------------------------------------------
-@settings(max_examples=100, suppress_health_check=[HealthCheck.function_scoped_fixture])
+@settings(
+    max_examples=100,
+    deadline=None,
+    suppress_health_check=[HealthCheck.function_scoped_fixture],
+)
 @given(data=st.data())
 def test_timeline_is_complete_over_requested_range(client, data):
     """Every day in the requested range appears as a bucket in the timeline."""

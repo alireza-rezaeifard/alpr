@@ -9,7 +9,7 @@ class CameraRepo {
   Future<List<CameraModel>> listCameras() async {
     final res = await _dio.get('/cameras',
         options: ApiClient.withTimeout(ApiClient.viewTimeout));
-    final data = (res.data as Map)['data'] as List;
+    final data = _asList(res.data);
     return data.map((e) => CameraModel.fromJson(e as Map<String, dynamic>)).toList();
   }
 
@@ -50,7 +50,7 @@ class CameraRepo {
   Future<List<StartResultModel>> startAll() async {
     final res = await _dio.post('/cameras/start-all',
         options: ApiClient.withTimeout(ApiClient.viewTimeout));
-    final data = (res.data as Map)['data'] as List;
+    final data = _asList(res.data);
     return data.map((e) => StartResultModel.fromJson(e as Map<String, dynamic>)).toList();
   }
 
@@ -71,4 +71,12 @@ class CameraRepo {
         options: ApiClient.withTimeout(ApiClient.viewTimeout));
     return (res.data as Map)['concurrency_limit'] as int;
   }
+}
+
+/// Accepts either a bare JSON array (new routers) or a ``{ "data": [...] }``
+/// envelope (legacy endpoints) and returns the underlying list.
+List<dynamic> _asList(dynamic body) {
+  if (body is List) return body;
+  if (body is Map && body['data'] is List) return body['data'] as List;
+  return const [];
 }

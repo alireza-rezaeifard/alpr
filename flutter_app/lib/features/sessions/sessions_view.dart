@@ -1,22 +1,23 @@
 // lib/features/sessions/sessions_view.dart
-// Modern sessions view with clean card-based layout.
+// Session history rendered as a PlutoGrid data grid (sorting + column controls,
+// Requirement 17.5), most-recent-first.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../shared/app_icons.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'package:pluto_grid/pluto_grid.dart';
+
+import '../../core/api_client.dart';
+import '../../core/persian_format.dart';
 import '../../data/models/session_model.dart';
 import '../../data/repositories/sessions_repo.dart';
-import '../../core/api_client.dart';
-
-// ── Providers ──────────────────────────────────────────────────────────────
+import '../../shared/app_icons.dart';
+import '../../shared/widgets/app_data_grid.dart';
+import '../../shared/widgets/screen_shell.dart';
 
 final _sessionsRepoProvider = Provider((_) => SessionsRepo());
 
 final sessionsProvider = FutureProvider<List<SessionModel>>((ref) =>
-    ref.read(_sessionsRepoProvider).getSessions(limit: 20));
-
-// ── View ───────────────────────────────────────────────────────────────────
+    ref.read(_sessionsRepoProvider).getSessions(limit: 100));
 
 class SessionsView extends ConsumerWidget {
   const SessionsView({super.key});
@@ -25,244 +26,132 @@ class SessionsView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final sessionsAsync = ref.watch(sessionsProvider);
 
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            _buildHeader(context, ref),
-            const SizedBox(height: 24),
-            // Content
-            Expanded(
-              child: sessionsAsync.when(
-                loading: () => const Center(child: CircularProgressIndicator(strokeWidth: 2)),
-                error: (e, _) => _ErrorState(
-                  message: _errorMsg(e),
-                  onRetry: () => ref.invalidate(sessionsProvider),
-                ),
-                data: (sessions) {
-                  if (sessions.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(AppIcons.layers, size: 48, color: Colors.white.withOpacity(0.2)),
-                          const SizedBox(height: 12),
-                          Text('No sessions yet', style: TextStyle(color: Colors.white.withOpacity(0.4))),
-                        ],
-                      ),
-                    );
-                  }
-                  return ListView.builder(
-                    itemCount: sessions.length,
-                    itemBuilder: (ctx, i) => _SessionCard(sessions[i])
-                        .animate()
-                        .fadeIn(duration: 300.ms, delay: (i * 50).ms)
-                        .slideY(begin: 0.02),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeader(BuildContext context, WidgetRef ref) {
-    return Row(
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Sessions',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-                letterSpacing: -0.5,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Processing session history',
-              style: TextStyle(fontSize: 14, color: Colors.white.withOpacity(0.5)),
-            ),
-          ],
-        ),
-        const Spacer(),
-        _ActionButton(
-          icon: AppIcons.refreshCw,
-          label: 'Refresh',
-          onTap: () => ref.invalidate(sessionsProvider),
-        ),
-      ],
-    ).animate().fadeIn(duration: 400.ms);
-  }
-}
-
-// ── Session card ───────────────────────────────────────────────────────────
-
-class _SessionCard extends StatefulWidget {
-  final SessionModel session;
-  const _SessionCard(this.session);
-
-  @override
-  State<_SessionCard> createState() => _SessionCardState();
-}
-
-class _SessionCardState extends State<_SessionCard> {
-  bool _hovered = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final session = widget.session;
-    final duration = session.durationSeconds;
-    final durationText = duration != null ? _formatDuration(duration) : 'Running...';
-
-    return MouseRegion(
-      onEnter: (_) => setState(() => _hovered = true),
-      onExit: (_) => setState(() => _hovered = false),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: _hovered ? Colors.white.withOpacity(0.04) : const Color(0xFF111113),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.white.withOpacity(0.06)),
-        ),
-        child: Row(
-          children: [
-            // Source icon
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: _sourceColor(session.sourceType).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(
-                _sourceIcon(session.sourceType),
-                size: 20,
-                color: _sourceColor(session.sourceType),
-              ),
-            ),
-            const SizedBox(width: 16),
-            // Info
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    session.sourceFile ?? session.sourceType,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Icon(AppIcons.clock, size: 12, color: Colors.white.withOpacity(0.4)),
-                      const SizedBox(width: 4),
-                      Text(
-                        _formatTimestamp(session.startedAt),
-                        style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.4)),
-                      ),
-                      const SizedBox(width: 16),
-                      Icon(AppIcons.timer, size: 12, color: Colors.white.withOpacity(0.4)),
-                      const SizedBox(width: 4),
-                      Text(
-                        durationText,
-                        style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.4)),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            // Stats
-            Row(
-              children: [
-                _MetricPill(
-                  icon: AppIcons.creditCard,
-                  value: '${session.totalPlates}',
-                  color: const Color(0xFF3B82F6),
-                ),
-                const SizedBox(width: 8),
-                _MetricPill(
-                  icon: AppIcons.fingerprint,
-                  value: '${session.uniquePlates}',
-                  color: const Color(0xFF8B5CF6),
-                ),
-              ],
-            ),
-            const SizedBox(width: 16),
-            // Status badge
-            _StatusBadge(status: session.status),
-          ],
-        ),
-      ),
-    );
-  }
-
-  IconData _sourceIcon(String sourceType) {
-    switch (sourceType) {
-      case 'image': return AppIcons.image;
-      case 'video': return AppIcons.video;
-      default: return AppIcons.camera;
-    }
-  }
-
-  Color _sourceColor(String sourceType) {
-    switch (sourceType) {
-      case 'image': return const Color(0xFF8B5CF6);
-      case 'video': return const Color(0xFF06B6D4);
-      default: return const Color(0xFF10B981);
-    }
-  }
-
-  String _formatTimestamp(String ts) {
-    if (ts.length >= 19) return ts.substring(0, 19).replaceFirst('T', ' ');
-    return ts;
-  }
-
-  String _formatDuration(int seconds) {
-    if (seconds < 60) return '${seconds}s';
-    if (seconds < 3600) return '${seconds ~/ 60}m ${seconds % 60}s';
-    return '${seconds ~/ 3600}h ${(seconds % 3600) ~/ 60}m';
-  }
-}
-
-class _MetricPill extends StatelessWidget {
-  final IconData icon;
-  final String value;
-  final Color color;
-  const _MetricPill({required this.icon, required this.value, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 12, color: color),
-          const SizedBox(width: 4),
-          Text(value, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: color)),
+          ScreenHeader(
+            title: 'جلسات',
+            subtitle: 'تاریخچه جلسات پردازش',
+            actions: [
+              ToolbarButton(
+                icon: AppIcons.refreshCw,
+                label: 'بازخوانی',
+                onTap: () => ref.invalidate(sessionsProvider),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Expanded(
+            child: sessionsAsync.when(
+              loading: () => const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+              error: (e, _) => GridStatePlaceholder(
+                icon: AppIcons.alertCircle,
+                message: 'بارگیری جلسات ممکن نشد\n${_errorMsg(e)}',
+                onRetry: () => ref.invalidate(sessionsProvider),
+              ),
+              data: (sessions) {
+                if (sessions.isEmpty) {
+                  return const GridStatePlaceholder(
+                    icon: AppIcons.layers,
+                    message: 'هنوز جلسه‌ای ثبت نشده است.',
+                  );
+                }
+                return AppDataGrid(
+                  key: ValueKey('sessions_${sessions.length}'),
+                  columns: _columns(),
+                  rows: sessions.map(_rowFor).toList(),
+                );
+              },
+            ),
+          ),
         ],
       ),
     );
   }
+
+  List<PlutoColumn> _columns() => [
+        PlutoColumn(
+          title: 'شناسه',
+          field: 'id',
+          type: PlutoColumnType.number(),
+          width: 90,
+          renderer: (ctx) => Text(
+            PersianFormat.number(ctx.cell.value as num),
+            style: const TextStyle(color: Color(0xFFFAFAFA), fontSize: 13),
+          ),
+        ),
+        PlutoColumn(title: 'نوع منبع', field: 'source', type: PlutoColumnType.text(), width: 120),
+        PlutoColumn(title: 'فایل/منبع', field: 'file', type: PlutoColumnType.text(), minWidth: 180),
+        PlutoColumn(title: 'شروع', field: 'started', type: PlutoColumnType.text(), minWidth: 170),
+        PlutoColumn(
+          title: 'مدت',
+          field: 'duration',
+          type: PlutoColumnType.text(),
+          width: 120,
+        ),
+        PlutoColumn(
+          title: 'پلاک‌ها',
+          field: 'plates',
+          type: PlutoColumnType.number(),
+          width: 100,
+          renderer: (ctx) => Text(
+            PersianFormat.number(ctx.cell.value as num),
+            style: const TextStyle(color: Color(0xFFFAFAFA), fontSize: 13),
+          ),
+        ),
+        PlutoColumn(
+          title: 'یکتا',
+          field: 'unique',
+          type: PlutoColumnType.number(),
+          width: 90,
+          renderer: (ctx) => Text(
+            PersianFormat.number(ctx.cell.value as num),
+            style: const TextStyle(color: Color(0xFFFAFAFA), fontSize: 13),
+          ),
+        ),
+        PlutoColumn(
+          title: 'وضعیت',
+          field: 'status',
+          type: PlutoColumnType.text(),
+          width: 120,
+          renderer: (ctx) => _StatusBadge(status: ctx.cell.value as String),
+        ),
+      ];
+
+  PlutoRow _rowFor(SessionModel s) {
+    final dur = s.durationSeconds;
+    return PlutoRow(cells: {
+      'id': PlutoCell(value: s.id),
+      'source': PlutoCell(value: _sourceLabel(s.sourceType)),
+      'file': PlutoCell(value: s.sourceFile ?? '—'),
+      'started': PlutoCell(value: _formatTs(s.startedAt)),
+      'duration': PlutoCell(value: dur == null ? 'در حال اجرا' : PersianFormat.duration(Duration(seconds: dur))),
+      'plates': PlutoCell(value: s.totalPlates),
+      'unique': PlutoCell(value: s.uniquePlates),
+      'status': PlutoCell(value: s.status),
+    });
+  }
+}
+
+String _sourceLabel(String type) {
+  switch (type) {
+    case 'image':
+      return 'تصویر';
+    case 'video':
+      return 'ویدیو';
+    case 'rtsp':
+      return 'دوربین';
+    default:
+      return type;
+  }
+}
+
+String _formatTs(String ts) {
+  final dt = DateTime.tryParse(ts);
+  if (dt == null) return ts;
+  return PersianFormat.dateTime(dt);
 }
 
 class _StatusBadge extends StatelessWidget {
@@ -272,100 +161,37 @@ class _StatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color color;
-    IconData icon;
+    String label;
     switch (status) {
       case 'done':
         color = const Color(0xFF10B981);
-        icon = AppIcons.checkCircle;
+        label = 'پایان‌یافته';
         break;
       case 'error':
         color = const Color(0xFFEF4444);
-        icon = AppIcons.xCircle;
+        label = 'خطا';
         break;
       case 'running':
         color = const Color(0xFFF59E0B);
-        icon = AppIcons.loader2;
+        label = 'در حال اجرا';
         break;
       default:
         color = const Color(0xFF6B7280);
-        icon = AppIcons.circle;
+        label = status;
     }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: color.withOpacity(0.2)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 12, color: color),
-          const SizedBox(width: 4),
-          Text(
-            status,
-            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: color),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ── Shared widgets ─────────────────────────────────────────────────────────
-
-class _ActionButton extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-  const _ActionButton({required this.icon, required this.label, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
+    return Align(
+      alignment: Alignment.centerRight,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.04),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.white.withOpacity(0.08)),
+          color: color.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 14, color: Colors.white.withOpacity(0.6)),
-            const SizedBox(width: 6),
-            Text(label, style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.6))),
-          ],
+        child: Text(
+          label,
+          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: color),
         ),
-      ),
-    );
-  }
-}
-
-class _ErrorState extends StatelessWidget {
-  final String message;
-  final VoidCallback onRetry;
-  const _ErrorState({required this.message, required this.onRetry});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(AppIcons.alertCircle, size: 48, color: Colors.white.withOpacity(0.2)),
-          const SizedBox(height: 12),
-          Text(message, style: TextStyle(color: Colors.white.withOpacity(0.5))),
-          const SizedBox(height: 12),
-          TextButton.icon(
-            icon: const Icon(AppIcons.refreshCw, size: 14),
-            label: const Text('Retry'),
-            onPressed: onRetry,
-          ),
-        ],
       ),
     );
   }

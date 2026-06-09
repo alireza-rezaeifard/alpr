@@ -89,17 +89,17 @@ def _insert_users(specs) -> list[int]:
 def _apply(op: str, user_id: int) -> None:
     """Apply the named operation to the user via the router functions."""
     if op == "delete":
-        delete_user(user_id, _user=ADMIN)
+        delete_user(user_id, user=ADMIN)
     elif op == "disable":
-        update_user(user_id, UserUpdate(disabled=True), _user=ADMIN)
+        update_user(user_id, UserUpdate(disabled=True), user=ADMIN)
     elif op == "enable":
-        update_user(user_id, UserUpdate(disabled=False), _user=ADMIN)
+        update_user(user_id, UserUpdate(disabled=False), user=ADMIN)
     elif op == "to_operator":
-        update_user(user_id, UserUpdate(role="Operator"), _user=ADMIN)
+        update_user(user_id, UserUpdate(role="Operator"), user=ADMIN)
     elif op == "to_viewer":
-        update_user(user_id, UserUpdate(role="Viewer"), _user=ADMIN)
+        update_user(user_id, UserUpdate(role="Viewer"), user=ADMIN)
     elif op == "to_admin":
-        update_user(user_id, UserUpdate(role="Admin"), _user=ADMIN)
+        update_user(user_id, UserUpdate(role="Admin"), user=ADMIN)
     else:  # pragma: no cover - guard against typos
         raise AssertionError(f"unknown op {op}")
 

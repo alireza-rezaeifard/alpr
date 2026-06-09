@@ -4,11 +4,10 @@
 // Shows live annotated frames (with plate box overlays) + detected plates
 // rendered in colored Iranian plate templates below each camera.
 
-import 'dart:io';
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/api_client.dart';
 import '../../data/models/camera_model.dart';
 import '../../data/models/enhanced_rtsp_history_entry.dart';
 import '../../data/models/plate_metadata_model.dart';
@@ -331,170 +330,75 @@ class _CameraMonitorTile extends ConsumerWidget {
   }
 }
 
-// ── Smooth frame rendering via MJPEG stream ──
+// ── Smooth frame rendering via base64 frame polling (web-compatible) ──
 
-class _SmoothFrame extends StatelessWidget {
+class _SmoothFrame extends ConsumerWidget {
   final String? taskId;
   const _SmoothFrame({this.taskId});
 
   @override
-  Widget build(BuildContext context) {
-    // Use MJPEG stream for smooth real-time video
-    if (taskId != null && taskId!.isNotEmpty) {
-      return _MjpegStreamView(taskId: taskId!);
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (taskId == null || taskId!.isEmpty) {
+      return _message(icon: Icons.videocam, label: 'No stream available');
     }
 
-    return Container(
-      color: Colors.black87,
-      child: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.videocam, color: Colors.grey, size: 28),
-            SizedBox(height: 4),
-            Text('No stream available', style: TextStyle(color: Colors.grey, fontSize: 10)),
-          ],
-        ),
-      ),
-    );
-  }
-}
+    // Reuse the per-camera poll controller, which fetches the latest
+    // pre-encoded JPEG from /api/detect/rtsp/{taskId}/frame. This works on
+    // Flutter web (a dart:io HttpClient MJPEG stream does not).
+    final pollState = ref.watch(cameraPollProvider(taskId!));
+    final bytes = _decodeFrame(pollState.lastAnnotated);
 
-/// MJPEG stream viewer — parses multipart JPEG stream for real-time smooth video.
-class _MjpegStreamView extends StatefulWidget {
-  final String taskId;
-  const _MjpegStreamView({required this.taskId});
-
-  @override
-  State<_MjpegStreamView> createState() => _MjpegStreamViewState();
-}
-
-class _MjpegStreamViewState extends State<_MjpegStreamView> {
-  Uint8List? _currentFrame;
-  bool _connected = false;
-  HttpClient? _client;
-  bool _disposed = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _startStream();
-  }
-
-  @override
-  void didUpdateWidget(_MjpegStreamView oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.taskId != widget.taskId) {
-      _stopStream();
-      _startStream();
-    }
-  }
-
-  @override
-  void dispose() {
-    _disposed = true;
-    _stopStream();
-    super.dispose();
-  }
-
-  void _stopStream() {
-    _client?.close(force: true);
-    _client = null;
-  }
-
-  Future<void> _startStream() async {
-    final baseUrl = ApiClient.instance.options.baseUrl;
-    final rootUrl = baseUrl.endsWith('/api')
-        ? baseUrl.substring(0, baseUrl.length - 4)
-        : baseUrl;
-    final url = '$rootUrl/api/detect/rtsp/${widget.taskId}/mjpeg';
-
-    try {
-      _client = HttpClient();
-      _client!.connectionTimeout = const Duration(seconds: 10);
-      final request = await _client!.getUrl(Uri.parse(url));
-      final response = await request.close();
-
-      if (response.statusCode != 200 || _disposed) return;
-
-      if (mounted) setState(() => _connected = true);
-
-      // Parse MJPEG multipart stream by finding JPEG SOI/EOI markers
-      final List<int> buffer = [];
-
-      await for (final chunk in response) {
-        if (_disposed) break;
-        buffer.addAll(chunk);
-
-        // Extract JPEG frames between SOI (0xFFD8) and EOI (0xFFD9) markers
-        while (true) {
-          final startIdx = _findMarker(buffer, 0xFF, 0xD8);
-          if (startIdx == -1) break;
-          final endIdx = _findMarker(buffer, 0xFF, 0xD9, startIdx + 2);
-          if (endIdx == -1) break;
-
-          // Complete JPEG frame found
-          final frameBytes = Uint8List.fromList(
-            buffer.sublist(startIdx, endIdx + 2),
-          );
-          buffer.removeRange(0, endIdx + 2);
-
-          if (mounted) {
-            setState(() => _currentFrame = frameBytes);
-          }
-        }
-
-        // Prevent unbounded buffer growth
-        if (buffer.length > 500000) {
-          buffer.removeRange(0, buffer.length - 100000);
-        }
-      }
-    } catch (_) {
-      // Reconnect after brief delay
-      if (!_disposed && mounted) {
-        await Future.delayed(const Duration(seconds: 2));
-        if (!_disposed && mounted) _startStream();
-      }
-    }
-  }
-
-  int _findMarker(List<int> buffer, int b1, int b2, [int offset = 0]) {
-    for (int i = offset; i < buffer.length - 1; i++) {
-      if (buffer[i] == b1 && buffer[i + 1] == b2) return i;
-    }
-    return -1;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_currentFrame == null) {
-      return Container(
-        color: Colors.black87,
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (_connected)
-                const CircularProgressIndicator(strokeWidth: 2)
-              else
-                const Icon(Icons.videocam, color: Colors.grey, size: 28),
-              const SizedBox(height: 4),
-              Text(
-                _connected ? 'Loading...' : 'Connecting...',
-                style: const TextStyle(color: Colors.grey, fontSize: 10),
-              ),
-            ],
-          ),
-        ),
+    if (bytes == null) {
+      final connecting = pollState.status != null && !pollState.terminal;
+      return _message(
+        icon: Icons.videocam,
+        label: connecting ? 'Loading...' : 'Connecting...',
+        spinner: connecting,
       );
     }
 
     return Image.memory(
-      _currentFrame!,
+      bytes,
       fit: BoxFit.contain,
       gaplessPlayback: true,
       isAntiAlias: false,
       filterQuality: FilterQuality.low,
+    );
+  }
+
+  /// Decodes a ``data:image/jpeg;base64,...`` data URL (or a bare base64
+  /// string) into raw JPEG bytes; returns null when there is no frame yet.
+  static Uint8List? _decodeFrame(String? dataUrl) {
+    if (dataUrl == null || dataUrl.isEmpty) return null;
+    try {
+      final comma = dataUrl.indexOf(',');
+      final b64 = comma >= 0 ? dataUrl.substring(comma + 1) : dataUrl;
+      return base64Decode(b64);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Widget _message({
+    required IconData icon,
+    required String label,
+    bool spinner = false,
+  }) {
+    return Container(
+      color: Colors.black87,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (spinner)
+              const CircularProgressIndicator(strokeWidth: 2)
+            else
+              Icon(icon, color: Colors.grey, size: 28),
+            const SizedBox(height: 4),
+            Text(label, style: const TextStyle(color: Colors.grey, fontSize: 10)),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -1,16 +1,24 @@
 // lib/features/history/history_view.dart
-// Modern searchable, filterable detection history with clean data table.
+// Detection history as a PlutoGrid data grid (sorting + column controls,
+// Requirement 17.5) with search/source filters and a CSV export button
+// (Requirements 14.1-14.4).
 
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../shared/app_icons.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'package:pluto_grid/pluto_grid.dart';
+
+import '../../core/api_client.dart';
+import '../../core/persian_format.dart';
+import '../../data/controllers/reports_controller.dart';
 import '../../data/models/detection_model.dart';
 import '../../data/repositories/detections_repo.dart';
-import '../../core/api_client.dart';
+import '../../shared/app_icons.dart';
+import '../../shared/download/file_saver.dart';
+import '../../shared/widgets/app_data_grid.dart';
+import '../../shared/widgets/screen_shell.dart';
 
-// ── State ──────────────────────────────────────────────────────────────────
+// ── State + controller ───────────────────────────────────────────────────
 
 class _HistoryState {
   final DetectionsResponse? data;
@@ -52,17 +60,15 @@ class _HistoryState {
       );
 }
 
-// ── Controller ─────────────────────────────────────────────────────────────
-
 class _HistoryController extends StateNotifier<_HistoryState> {
   final DetectionsRepo _repo;
   Timer? _debounce;
 
   _HistoryController(this._repo) : super(const _HistoryState()) {
-    _fetch();
+    fetch();
   }
 
-  Future<void> _fetch() async {
+  Future<void> fetch() async {
     state = state.copyWith(loading: true, clearError: true);
     try {
       final result = await _repo.getDetections(
@@ -79,29 +85,27 @@ class _HistoryController extends StateNotifier<_HistoryState> {
 
   void setSourceType(String type) {
     state = state.copyWith(sourceType: type, offset: 0);
-    _fetch();
+    fetch();
   }
 
   void setSearch(String query) {
     _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 300), () {
       state = state.copyWith(search: query, offset: 0);
-      _fetch();
+      fetch();
     });
   }
 
   void nextPage() {
     state = state.copyWith(offset: state.offset + state.limit);
-    _fetch();
+    fetch();
   }
 
   void prevPage() {
     final newOffset = (state.offset - state.limit).clamp(0, state.offset);
     state = state.copyWith(offset: newOffset);
-    _fetch();
+    fetch();
   }
-
-  void retry() => _fetch();
 
   @override
   void dispose() {
@@ -109,8 +113,6 @@ class _HistoryController extends StateNotifier<_HistoryState> {
     super.dispose();
   }
 }
-
-// ── Providers ──────────────────────────────────────────────────────────────
 
 final _historyRepoProvider = Provider((_) => DetectionsRepo());
 final _historyControllerProvider =
@@ -124,151 +126,194 @@ class HistoryView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            _buildHeader(context),
-            const SizedBox(height: 20),
-            // Filters
-            _FilterBar(),
-            const SizedBox(height: 16),
-            // Table
-            Expanded(child: _HistoryTable()),
-          ],
-        ),
+    final state = ref.watch(_historyControllerProvider);
+    final controller = ref.read(_historyControllerProvider.notifier);
+
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ScreenHeader(
+            title: 'تاریخچه تشخیص‌ها',
+            subtitle: 'مرور و خروجی‌گیری از پلاک‌های ثبت‌شده',
+            actions: [
+              ToolbarButton(
+                icon: AppIcons.refreshCw,
+                label: 'بازخوانی',
+                onTap: controller.fetch,
+              ),
+              const SizedBox(width: 8),
+              const _ExportButton(),
+            ],
+          ),
+          const SizedBox(height: 20),
+          _FilterBar(
+            sourceType: state.sourceType,
+            onSearch: controller.setSearch,
+            onSource: controller.setSourceType,
+          ),
+          const SizedBox(height: 16),
+          Expanded(child: _HistoryBody(state: state, controller: controller)),
+        ],
       ),
     );
   }
+}
 
-  Widget _buildHeader(BuildContext context) {
-    return Row(
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Detection History',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-                letterSpacing: -0.5,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Browse all detected license plates',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.white.withOpacity(0.5),
-              ),
-            ),
-          ],
+// ── Export button ───────────────────────────────────────────────────────────
+
+class _ExportButton extends ConsumerStatefulWidget {
+  const _ExportButton();
+
+  @override
+  ConsumerState<_ExportButton> createState() => _ExportButtonState();
+}
+
+class _ExportButtonState extends ConsumerState<_ExportButton> {
+  bool _busy = false;
+
+  Future<void> _export() async {
+    if (_busy) return;
+    setState(() => _busy = true);
+    final state = ref.read(_historyControllerProvider);
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    try {
+      final bytes = await ref.read(reportsControllerProvider.notifier).exportDetections(
+            sourceType: state.sourceType == 'all' ? null : state.sourceType,
+            search: state.search.isEmpty ? null : state.search,
+          );
+      final stamp = DateTime.now().toIso8601String().substring(0, 19).replaceAll(':', '-');
+      final saved = await saveBytes('detections_$stamp.csv', bytes);
+      messenger?.showSnackBar(
+        SnackBar(
+          content: Text(saved == null ? 'خروجی لغو شد' : 'خروجی ذخیره شد'),
+          backgroundColor: const Color(0xFF18181B),
         ),
-      ],
-    ).animate().fadeIn(duration: 400.ms).slideX(begin: -0.02);
-  }
-}
-
-// ── Filter bar ─────────────────────────────────────────────────────────────
-
-class _FilterBar extends ConsumerStatefulWidget {
-  @override
-  ConsumerState<_FilterBar> createState() => _FilterBarState();
-}
-
-class _FilterBarState extends ConsumerState<_FilterBar> {
-  final _searchCtrl = TextEditingController();
-
-  @override
-  void dispose() {
-    _searchCtrl.dispose();
-    super.dispose();
+      );
+    } catch (e) {
+      messenger?.showSnackBar(
+        SnackBar(
+          content: Text('خطا در خروجی‌گیری: ${_errorMessage(e)}'),
+          backgroundColor: const Color(0xFF7F1D1D),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final controller = ref.read(_historyControllerProvider.notifier);
-    final sourceType = ref.watch(_historyControllerProvider).sourceType;
+    return ToolbarButton(
+      icon: _busy ? AppIcons.loader2 : AppIcons.upload,
+      label: _busy ? 'در حال خروجی...' : 'خروجی CSV',
+      primary: true,
+      onTap: _busy ? null : _export,
+    );
+  }
+}
 
+// ── Filter bar ───────────────────────────────────────────────────────────────
+
+class _FilterBar extends StatelessWidget {
+  final String sourceType;
+  final ValueChanged<String> onSearch;
+  final ValueChanged<String> onSource;
+
+  const _FilterBar({
+    required this.sourceType,
+    required this.onSearch,
+    required this.onSource,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    const sources = <String, String>{
+      'all': 'همه',
+      'image': 'تصویر',
+      'video': 'ویدیو',
+      'rtsp': 'دوربین',
+    };
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: const Color(0xFF111113),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.06)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
       ),
       child: Row(
         children: [
-          // Search
           Expanded(
-            child: Container(
+            child: SizedBox(
               height: 38,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.04),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.white.withOpacity(0.08)),
-              ),
               child: TextField(
-                controller: _searchCtrl,
                 style: const TextStyle(fontSize: 13, color: Colors.white),
+                textDirection: TextDirection.rtl,
                 decoration: InputDecoration(
-                  hintText: 'Search plates...',
-                  hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
-                  prefixIcon: Icon(AppIcons.search, size: 16, color: Colors.white.withOpacity(0.4)),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                  hintText: 'جستجوی پلاک...',
+                  hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
+                  prefixIcon: Icon(AppIcons.search, size: 16, color: Colors.white.withValues(alpha: 0.4)),
+                  filled: true,
+                  fillColor: Colors.white.withValues(alpha: 0.04),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 4),
                 ),
-                onChanged: controller.setSearch,
+                onChanged: onSearch,
               ),
             ),
           ),
           const SizedBox(width: 12),
-          // Source type filter chips
-          _FilterChip(label: 'All', isSelected: sourceType == 'all', onTap: () => controller.setSourceType('all')),
-          const SizedBox(width: 6),
-          _FilterChip(label: 'Image', isSelected: sourceType == 'image', onTap: () => controller.setSourceType('image')),
-          const SizedBox(width: 6),
-          _FilterChip(label: 'Video', isSelected: sourceType == 'video', onTap: () => controller.setSourceType('video')),
-          const SizedBox(width: 6),
-          _FilterChip(label: 'RTSP', isSelected: sourceType == 'rtsp', onTap: () => controller.setSourceType('rtsp')),
+          ...sources.entries.map((e) => Padding(
+                padding: const EdgeInsets.only(left: 6),
+                child: _Chip(
+                  label: e.value,
+                  selected: sourceType == e.key,
+                  onTap: () => onSource(e.key),
+                ),
+              )),
         ],
       ),
-    ).animate().fadeIn(duration: 400.ms, delay: 100.ms);
+    );
   }
 }
 
-class _FilterChip extends StatelessWidget {
+class _Chip extends StatelessWidget {
   final String label;
-  final bool isSelected;
+  final bool selected;
   final VoidCallback onTap;
-
-  const _FilterChip({required this.label, required this.isSelected, required this.onTap});
+  const _Chip({required this.label, required this.selected, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF3B82F6).withOpacity(0.15) : Colors.white.withOpacity(0.04),
-          borderRadius: BorderRadius.circular(6),
-          border: Border.all(
-            color: isSelected ? const Color(0xFF3B82F6).withOpacity(0.3) : Colors.white.withOpacity(0.08),
+    const accent = Color(0xFF3B82F6);
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: selected ? accent.withValues(alpha: 0.15) : Colors.white.withValues(alpha: 0.04),
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(
+              color: selected ? accent.withValues(alpha: 0.3) : Colors.white.withValues(alpha: 0.08),
+            ),
           ),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: isSelected ? const Color(0xFF3B82F6) : Colors.white.withOpacity(0.6),
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: selected ? accent : Colors.white.withValues(alpha: 0.6),
+            ),
           ),
         ),
       ),
@@ -276,312 +321,188 @@ class _FilterChip extends StatelessWidget {
   }
 }
 
-// ── History table ──────────────────────────────────────────────────────────
+// ── Body ─────────────────────────────────────────────────────────────────────
 
-class _HistoryTable extends ConsumerWidget {
+class _HistoryBody extends StatelessWidget {
+  final _HistoryState state;
+  final _HistoryController controller;
+  const _HistoryBody({required this.state, required this.controller});
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(_historyControllerProvider);
-    final controller = ref.read(_historyControllerProvider.notifier);
-
+  Widget build(BuildContext context) {
     if (state.loading && state.data == null) {
       return const Center(child: CircularProgressIndicator(strokeWidth: 2));
     }
-
     if (state.error != null && state.data == null) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(AppIcons.alertCircle, size: 48, color: Colors.white.withOpacity(0.3)),
-            const SizedBox(height: 12),
-            Text('Could not load history',
-                style: TextStyle(color: Colors.white.withOpacity(0.5))),
-            const SizedBox(height: 8),
-            TextButton(onPressed: controller.retry, child: const Text('Retry')),
-          ],
-        ),
+      return GridStatePlaceholder(
+        icon: AppIcons.alertCircle,
+        message: 'بارگیری تاریخچه ممکن نشد\n${state.error}',
+        onRetry: controller.fetch,
       );
     }
-
     final resp = state.data;
+    if (resp == null) return const SizedBox.shrink();
 
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF111113),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.06)),
-      ),
-      child: Column(
-        children: [
-          // Error banner
-          if (state.error != null)
-            Container(
-              padding: const EdgeInsets.all(10),
-              color: const Color(0xFFEF4444).withOpacity(0.1),
-              child: Row(
-                children: [
-                  const Icon(AppIcons.alertCircle, size: 14, color: Color(0xFFEF4444)),
-                  const SizedBox(width: 8),
-                  Text(state.error!, style: const TextStyle(fontSize: 12, color: Color(0xFFEF4444))),
-                  const Spacer(),
-                  TextButton(onPressed: controller.retry, child: const Text('Retry', style: TextStyle(fontSize: 11))),
-                ],
-              ),
-            ),
-          // Count header
-          if (resp != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Row(
-                children: [
-                  Text(
-                    '${resp.total} detection${resp.total == 1 ? '' : 's'}',
-                    style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.5)),
-                  ),
-                  if (state.loading)
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8),
-                      child: SizedBox(
-                        width: 12, height: 12,
-                        child: CircularProgressIndicator(strokeWidth: 1.5, color: Colors.white.withOpacity(0.3)),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          // Table header
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(color: Colors.white.withOpacity(0.06)),
-              ),
-            ),
-            child: Row(
-              children: [
-                _TableHeader('Plate', flex: 3),
-                _TableHeader('Source', flex: 2),
-                _TableHeader('Time', flex: 3),
-                _TableHeader('Confidence', flex: 1),
-              ],
-            ),
-          ),
-          // Rows
-          if (resp != null && resp.data.isEmpty)
-            Expanded(
-              child: Center(
-                child: Text('No detections match the current filter.',
-                    style: TextStyle(color: Colors.white.withOpacity(0.4))),
-              ),
-            )
-          else if (resp != null)
-            Expanded(
-              child: ListView.builder(
-                itemCount: resp.data.length,
-                itemBuilder: (ctx, i) => _TableRow(detection: resp.data[i]),
-              ),
-            ),
-          // Pagination
-          if (resp != null && resp.total > state.limit)
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                border: Border(top: BorderSide(color: Colors.white.withOpacity(0.06))),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _PaginationButton(
-                    icon: AppIcons.chevronLeft,
-                    onPressed: state.offset > 0 ? controller.prevPage : null,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(
-                      '${state.offset + 1}–${state.offset + resp.data.length} of ${resp.total}',
-                      style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.5)),
-                    ),
-                  ),
-                  _PaginationButton(
-                    icon: AppIcons.chevronRight,
-                    onPressed: (state.offset + state.limit) < resp.total ? controller.nextPage : null,
-                  ),
-                ],
-              ),
-            ),
-        ],
-      ),
-    ).animate().fadeIn(duration: 400.ms, delay: 200.ms);
-  }
-}
-
-class _TableHeader extends StatelessWidget {
-  final String label;
-  final int flex;
-  const _TableHeader(this.label, {this.flex = 1});
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      flex: flex,
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          color: Colors.white.withOpacity(0.4),
-          letterSpacing: 0.5,
-        ),
-      ),
-    );
-  }
-}
-
-class _TableRow extends StatefulWidget {
-  final DetectionModel detection;
-  const _TableRow({required this.detection});
-
-  @override
-  State<_TableRow> createState() => _TableRowState();
-}
-
-class _TableRowState extends State<_TableRow> {
-  bool _hovered = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final d = widget.detection;
-    final plateLabel = d.platePersian?.isNotEmpty == true ? d.platePersian! : d.plateDtrb;
-
-    return MouseRegion(
-      onEnter: (_) => setState(() => _hovered = true),
-      onExit: (_) => setState(() => _hovered = false),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: _hovered ? Colors.white.withOpacity(0.02) : Colors.transparent,
-          border: Border(
-            bottom: BorderSide(color: Colors.white.withOpacity(0.03)),
-          ),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              flex: 3,
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF3B82F6).withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: const Icon(AppIcons.creditCard, size: 14, color: Color(0xFF3B82F6)),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      plateLabel,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              flex: 2,
-              child: _SourceBadge(type: d.sourceType),
-            ),
-            Expanded(
-              flex: 3,
-              child: Text(
-                d.timestamp,
-                style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.5)),
-              ),
-            ),
-            Expanded(
-              flex: 1,
-              child: _ConfidenceBadge(value: d.confidence),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _SourceBadge extends StatelessWidget {
-  final String type;
-  const _SourceBadge({required this.type});
-
-  @override
-  Widget build(BuildContext context) {
-    Color color;
-    switch (type) {
-      case 'image': color = const Color(0xFF8B5CF6); break;
-      case 'video': color = const Color(0xFF06B6D4); break;
-      case 'rtsp': color = const Color(0xFF10B981); break;
-      default: color = const Color(0xFF6B7280);
-    }
-    return Row(
+    return Column(
       children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(4),
-          ),
+        Expanded(
+          child: resp.data.isEmpty
+              ? const GridStatePlaceholder(
+                  icon: AppIcons.history,
+                  message: 'تشخیصی مطابق فیلتر فعلی یافت نشد.',
+                )
+              : AppDataGrid(
+                  key: ValueKey('history_${state.offset}_${state.sourceType}_${state.search}'),
+                  columns: _columns(),
+                  rows: resp.data.map(_rowFor).toList(),
+                ),
+        ),
+        const SizedBox(height: 12),
+        _Pager(state: state, controller: controller, total: resp.total),
+      ],
+    );
+  }
+
+  List<PlutoColumn> _columns() => [
+        PlutoColumn(
+          title: 'پلاک',
+          field: 'plate',
+          type: PlutoColumnType.text(),
+          minWidth: 160,
+        ),
+        PlutoColumn(
+          title: 'متن خام',
+          field: 'dtrb',
+          type: PlutoColumnType.text(),
+          minWidth: 120,
+        ),
+        PlutoColumn(
+          title: 'منبع',
+          field: 'source',
+          type: PlutoColumnType.text(),
+          width: 110,
+        ),
+        PlutoColumn(
+          title: 'دوربین',
+          field: 'camera',
+          type: PlutoColumnType.text(),
+          minWidth: 120,
+        ),
+        PlutoColumn(
+          title: 'زمان',
+          field: 'time',
+          type: PlutoColumnType.text(),
+          minWidth: 170,
+        ),
+        PlutoColumn(
+          title: 'اطمینان',
+          field: 'confidence',
+          type: PlutoColumnType.number(),
+          width: 110,
+          renderer: (ctx) {
+            final pct = (ctx.cell.value as num).toDouble();
+            final color = pct >= 80
+                ? const Color(0xFF10B981)
+                : pct >= 60
+                    ? const Color(0xFFF59E0B)
+                    : const Color(0xFFEF4444);
+            return Text(
+              PersianFormat.percentage(pct / 100),
+              style: TextStyle(color: color, fontWeight: FontWeight.w600, fontSize: 13),
+            );
+          },
+        ),
+      ];
+
+  PlutoRow _rowFor(DetectionModel d) {
+    final plate = (d.platePersian?.isNotEmpty ?? false) ? d.platePersian! : d.plateDtrb;
+    return PlutoRow(cells: {
+      'plate': PlutoCell(value: plate),
+      'dtrb': PlutoCell(value: d.plateDtrb),
+      'source': PlutoCell(value: _sourceLabel(d.sourceType)),
+      'camera': PlutoCell(value: d.cameraName ?? '—'),
+      'time': PlutoCell(value: _formatTs(d.timestamp)),
+      'confidence': PlutoCell(value: double.parse((d.confidence * 100).toStringAsFixed(1))),
+    });
+  }
+}
+
+String _sourceLabel(String type) {
+  switch (type) {
+    case 'image':
+      return 'تصویر';
+    case 'video':
+      return 'ویدیو';
+    case 'rtsp':
+      return 'دوربین';
+    default:
+      return type;
+  }
+}
+
+String _formatTs(String ts) {
+  final dt = DateTime.tryParse(ts);
+  if (dt == null) return ts;
+  return PersianFormat.dateTime(dt);
+}
+
+class _Pager extends StatelessWidget {
+  final _HistoryState state;
+  final _HistoryController controller;
+  final int total;
+  const _Pager({required this.state, required this.controller, required this.total});
+
+  @override
+  Widget build(BuildContext context) {
+    final shown = state.data?.data.length ?? 0;
+    final from = total == 0 ? 0 : state.offset + 1;
+    final to = state.offset + shown;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _PagerBtn(
+          icon: AppIcons.chevronRight,
+          onTap: state.offset > 0 ? controller.prevPage : null,
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
-            type,
-            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: color),
+            '${PersianFormat.number(from)}–${PersianFormat.number(to)} از ${PersianFormat.number(total)}',
+            style: TextStyle(fontSize: 12, color: Colors.white.withValues(alpha: 0.5)),
           ),
+        ),
+        _PagerBtn(
+          icon: AppIcons.chevronLeft,
+          onTap: (state.offset + state.limit) < total ? controller.nextPage : null,
         ),
       ],
     );
   }
 }
 
-class _ConfidenceBadge extends StatelessWidget {
-  final double value;
-  const _ConfidenceBadge({required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    final pct = value * 100;
-    final color = pct >= 80 ? const Color(0xFF10B981) :
-                  pct >= 60 ? const Color(0xFFF59E0B) : const Color(0xFFEF4444);
-    return Text(
-      '${pct.toStringAsFixed(1)}%',
-      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: color),
-    );
-  }
-}
-
-class _PaginationButton extends StatelessWidget {
+class _PagerBtn extends StatelessWidget {
   final IconData icon;
-  final VoidCallback? onPressed;
-  const _PaginationButton({required this.icon, this.onPressed});
+  final VoidCallback? onTap;
+  const _PagerBtn({required this.icon, this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        padding: const EdgeInsets.all(6),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.04),
-          borderRadius: BorderRadius.circular(6),
-          border: Border.all(color: Colors.white.withOpacity(0.08)),
-        ),
-        child: Icon(
-          icon, size: 16,
-          color: onPressed != null ? Colors.white.withOpacity(0.6) : Colors.white.withOpacity(0.2),
+    return MouseRegion(
+      cursor: onTap == null ? SystemMouseCursors.basic : SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.04),
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+          ),
+          child: Icon(
+            icon,
+            size: 16,
+            color: onTap != null ? Colors.white.withValues(alpha: 0.7) : Colors.white.withValues(alpha: 0.2),
+          ),
         ),
       ),
     );

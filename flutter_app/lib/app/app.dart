@@ -3,6 +3,7 @@
 // Requirements: 17.1, 17.2, 17.3
 
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter/material.dart' as m;
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'router.dart';
@@ -31,6 +32,18 @@ class PlprApp extends ConsumerWidget {
         ],
         routerConfig: router,
         debugShowCheckedModeBanner: false,
+        // The feature screens use Material widgets (TextField, PlutoGrid,
+        // CircularProgressIndicator, SnackBar) which require a Material +
+        // ScaffoldMessenger ancestor. FluentApp does not provide these, so we
+        // inject them here for every route (including login).
+        builder: (context, child) {
+          return m.ScaffoldMessenger(
+            child: m.Material(
+              type: m.MaterialType.transparency,
+              child: child ?? const SizedBox.shrink(),
+            ),
+          );
+        },
       ),
     );
   }

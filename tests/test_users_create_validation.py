@@ -50,7 +50,7 @@ def test_create_user_valid_returns_userview_with_role(fresh_db):
     db, users = fresh_db
     body = users.UserCreate(username="alice", password="s3cret", role="Operator")
 
-    result = users.create_user(body=body, _user=_admin(users))
+    result = users.create_user(body=body, user=_admin(users))
 
     assert isinstance(result, users.UserView)
     assert result.username == "alice"
@@ -71,7 +71,7 @@ def test_create_user_accepts_each_supported_role(fresh_db, role):
     db, users = fresh_db
     body = users.UserCreate(username=f"user_{role}", password="pw", role=role)
 
-    result = users.create_user(body=body, _user=_admin(users))
+    result = users.create_user(body=body, user=_admin(users))
 
     assert result.role == role
 
@@ -84,7 +84,7 @@ def test_create_user_rejects_unknown_role(fresh_db):
     body = users.UserCreate(username="bob", password="pw", role="Superuser")
 
     with pytest.raises(HTTPException) as exc:
-        users.create_user(body=body, _user=_admin(users))
+        users.create_user(body=body, user=_admin(users))
 
     assert exc.value.status_code == 422
     assert exc.value.detail["code"] == "validation_error"
@@ -97,7 +97,7 @@ def test_create_user_rejects_empty_string_role(fresh_db):
     body = users.UserCreate(username="carol", password="pw", role="")
 
     with pytest.raises(HTTPException) as exc:
-        users.create_user(body=body, _user=_admin(users))
+        users.create_user(body=body, user=_admin(users))
 
     assert exc.value.status_code == 422
     assert exc.value.detail["code"] == "validation_error"

@@ -21,7 +21,8 @@ class AlertsRepo {
       queryParameters: queryParams,
       options: ApiClient.withTimeout(ApiClient.viewTimeout),
     );
-    final data = (res.data as Map)['data'] as List;
+    // GET /api/alerts returns a JSON array (list[AlertView]).
+    final data = _asList(res.data);
     return data.map((e) => Alert.fromJson(e as Map<String, dynamic>)).toList();
   }
 
@@ -33,4 +34,12 @@ class AlertsRepo {
     );
     return Alert.fromJson(res.data as Map<String, dynamic>);
   }
+}
+
+/// Accepts either a bare JSON array or a ``{ "data": [...] }`` envelope and
+/// returns the underlying list.
+List<dynamic> _asList(dynamic body) {
+  if (body is List) return body;
+  if (body is Map && body['data'] is List) return body['data'] as List;
+  return const [];
 }

@@ -265,7 +265,14 @@ class FakeFrameProcessor:
 
 @pytest.fixture()
 def api_client(tmp_path, monkeypatch):
-    """FastAPI TestClient over api.app with a temp DB and a clean task registry."""
+    """FastAPI TestClient over api.app with a temp DB and a clean task registry.
+
+    The detection/live-stream endpoints now live in ``routers/detection.py``
+    behind ``require_permission("run_detection")`` (which itself depends on
+    ``current_user``). Tests authenticate by overriding ``current_user`` with an
+    Admin identity via FastAPI ``dependency_overrides``; the permission guard
+    then resolves against the real RBAC matrix (Admin holds ``run_detection``).
+    """
     path = str(tmp_path / "api_stream_integration.db")
     monkeypatch.setattr(db, "DB_PATH", path)
     db.init_db()
@@ -275,13 +282,38 @@ def api_client(tmp_path, monkeypatch):
     importlib.reload(api_module)  # re-run module init against the patched DB path
 
     from fastapi.testclient import TestClient
+    # Override the *exact* ``current_user`` object the detection router captured
+    # at import time. Other tests reload ``auth.dependencies`` (e.g.
+    # test_auth_router_edge), which rebinds ``auth.dependencies.current_user`` to
+    # a new object; the detection router — imported once and never reloaded —
+    # still references the original. Reading it back off the router module
+    # guarantees the override key matches whatever the router actually uses,
+    # regardless of test ordering.
+    from routers import detection as detection_module
+    from auth.dependencies import AuthenticatedUser
+    current_user = detection_module.current_user
+
+    def _admin_user() -> AuthenticatedUser:
+        return AuthenticatedUser(
+            id=1,
+            username="admin",
+            role="Admin",
+            disabled=False,
+            jti="test-jti",
+            token_exp=4_000_000_000,
+        )
+
+    api_module.app.dependency_overrides[current_user] = _admin_user
 
     # Clear any inherited tasks and register our fakes.
     with api_module._tasks_lock:
         api_module._tasks.clear()
 
-    with TestClient(api_module.app) as client:
-        yield client, api_module
+    try:
+        with TestClient(api_module.app) as client:
+            yield client, api_module
+    finally:
+        api_module.app.dependency_overrides.pop(current_user, None)
 
 
 def test_latest_frame_returns_annotated_frame_and_status(api_client):

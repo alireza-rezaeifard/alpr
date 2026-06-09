@@ -236,6 +236,12 @@ def process_frame(image, detector, recognizer, opt, fast_mode=False):
 
 
 class VideoProcessor:
+    # Same-plate cooldown: a plate emitted within this many seconds is treated
+    # as the same observation and is not re-emitted (no DB save, no alert, no
+    # new live-feed line, no history-count bump). 60s gives a clean per-visit
+    # record without spamming the same car/screen multiple times in 3 seconds.
+    _DEDUP_WINDOW_SECONDS = 60.0
+
     def __init__(self, detector, recognizer, opt, on_detection=None):
         self.detector = detector
         self.recognizer = recognizer
@@ -257,6 +263,10 @@ class VideoProcessor:
             self.status = "idle"
             self.error = None
             self.last_overlay = None
+            # plate_text -> last emission monotonic timestamp; consulted before
+            # any DB save / live-feed line so the same plate doesn't get
+            # recorded multiple times within _DEDUP_WINDOW_SECONDS.
+            self._recent_emit_times = {}
 
     def process_video(self, input_path, skip_frames=30, fast_mode=False):
         self.stop()
@@ -350,6 +360,18 @@ class VideoProcessor:
                         # no log entry, no box drawn, no DB save.
                         if not validation.is_valid:
                             continue
+
+                        # Same-plate cooldown: skip if this exact plate was
+                        # already emitted within the dedup window. Box-drawing
+                        # still happens via cached_plates so the overlay stays
+                        # visible while the car is in frame.
+                        now_ts = time.time()
+                        last_ts = self._recent_emit_times.get(dtrb_text, 0.0)
+                        if now_ts - last_ts < self._DEDUP_WINDOW_SECONDS:
+                            valid_plates.append(plate)
+                            valid_dtrb.append(dtrb_text)
+                            continue
+                        self._recent_emit_times[dtrb_text] = now_ts
 
                         persian_display = validator_format_persian(dtrb_text)
 

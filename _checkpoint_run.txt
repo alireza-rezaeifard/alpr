@@ -1,0 +1,129 @@
+﻿......................................................FFFF.............. [ 26%]
+........................................................................ [ 52%]
+........................................................................ [ 78%]
+.....F.....................................................              [100%]
+================================== FAILURES ===================================
+____________ test_latest_frame_returns_annotated_frame_and_status _____________
+tests\test_camera_stream_integration.py:322: in test_latest_frame_returns_annotated_frame_and_status
+    assert resp.status_code == 200
+E   assert 401 == 200
+E    +  where 401 = <Response [401 Unauthorized]>.status_code
+---------------------------- Captured stdout setup ----------------------------
+Starting ANPR backend...
+ANPR backend started successfully
+----------------------------- Captured log setup ------------------------------
+WARNING  routers.auth:auth.py:165 Created default Admin account 'admin' with the default password. Change this password immediately.
+-------------------------- Captured stdout teardown ---------------------------
+Shutting down ANPR backend...
+ANPR backend shutdown complete
+______________ test_latest_frame_unknown_task_returns_not_found _______________
+tests\test_camera_stream_integration.py:336: in test_latest_frame_unknown_task_returns_not_found
+    assert resp.status_code == 404
+E   assert 401 == 404
+E    +  where 401 = <Response [401 Unauthorized]>.status_code
+---------------------------- Captured stdout setup ----------------------------
+Starting ANPR backend...
+ANPR backend started successfully
+----------------------------- Captured log setup ------------------------------
+WARNING  routers.auth:auth.py:165 Created default Admin account 'admin' with the default password. Change this password immediately.
+-------------------------- Captured stdout teardown ---------------------------
+Shutting down ANPR backend...
+ANPR backend shutdown complete
+_________________ test_mjpeg_stream_delivers_annotated_frames _________________
+tests\test_camera_stream_integration.py:351: in test_mjpeg_stream_delivers_annotated_frames
+    assert resp.status_code == 200
+E   assert 401 == 200
+E    +  where 401 = <Response [401 Unauthorized]>.status_code
+---------------------------- Captured stdout setup ----------------------------
+Starting ANPR backend...
+ANPR backend started successfully
+----------------------------- Captured log setup ------------------------------
+WARNING  routers.auth:auth.py:165 Created default Admin account 'admin' with the default password. Change this password immediately.
+-------------------------- Captured stdout teardown ---------------------------
+Shutting down ANPR backend...
+ANPR backend shutdown complete
+______________ test_mjpeg_stream_unknown_task_returns_not_found _______________
+tests\test_camera_stream_integration.py:365: in test_mjpeg_stream_unknown_task_returns_not_found
+    assert resp.status_code == 404
+E   assert 401 == 404
+E    +  where 401 = <Response [401 Unauthorized]>.status_code
+---------------------------- Captured stdout setup ----------------------------
+Starting ANPR backend...
+ANPR backend started successfully
+----------------------------- Captured log setup ------------------------------
+WARNING  routers.auth:auth.py:165 Created default Admin account 'admin' with the default password. Change this password immediately.
+-------------------------- Captured stdout teardown ---------------------------
+Shutting down ANPR backend...
+ANPR backend shutdown complete
+_____________ test_set_retention_policy_rejects_non_positive_days _____________
+tests\test_retention_pruning_property.py:181: in test_set_retention_policy_rejects_non_positive_days
+    max_examples=100,
+               ^^^^^^^
+tests\test_retention_pruning_property.py:190: in test_set_retention_policy_rejects_non_positive_days
+    set_retention_policy(days)
+retention\service.py:49: in set_retention_policy
+    raise RetentionPolicyError(
+E   retention.service.RetentionPolicyError: retention policy days must be greater than zero, got 0
+E   Falsifying example: test_set_retention_policy_rejects_non_positive_days(
+E       fresh_db=<module 'db' from 'C:\\Users\\alireza\\Desktop\\dart\\labe-github\\alpr\\db.py'>,
+E       days=0,  # or any other generated value
+E   )
+============================== warnings summary ===============================
+schemas.py:104
+  C:\Users\alireza\Desktop\dart\labe-github\alpr\schemas.py:104: PytestCollectionWarning: cannot collect test class 'TestUrlRequest' because it has a __init__ constructor (from: tests/test_scanner_integration.py)
+    class TestUrlRequest(BaseModel):
+
+tests/test_detection_query_correctness_property.py::test_detection_query_returns_exactly_matching_records_and_total
+  C:\Users\alireza\AppData\Local\Programs\Python\Python311\Lib\site-packages\_pytest\threadexception.py:58: PytestUnhandledThreadExceptionWarning: Exception in thread Thread-478 (run_video)
+  
+  Traceback (most recent call last):
+    File "C:\Users\alireza\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1038, in _bootstrap_inner
+      self.run()
+    File "C:\Users\alireza\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 975, in run
+      self._target(*self._args, **self._kwargs)
+    File "C:\Users\alireza\Desktop\dart\labe-github\alpr\routers\detection.py", line 189, in run_video
+      api._tasks[task_id].update(state)
+      ~~~~~~~~~~^^^^^^^^^
+  KeyError: '0b6f5373481a4764a366155fba7a7c42'
+  
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+    warnings.warn(pytest.PytestUnhandledThreadExceptionWarning(msg))
+
+tests/test_retention_implementation.py::test_put_retention_endpoint_rejects_zero_days
+  C:\Users\alireza\Desktop\dart\labe-github\alpr\tests\test_retention_implementation.py:259: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    update_retention(body, _user=mock_user)
+
+tests/test_retention_implementation.py::test_put_retention_endpoint_rejects_negative_days
+  C:\Users\alireza\Desktop\dart\labe-github\alpr\tests\test_retention_implementation.py:275: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    update_retention(body, _user=mock_user)
+
+tests/test_users_create_validation.py::test_create_user_rejects_unknown_role
+tests/test_users_create_validation.py::test_create_user_rejects_empty_string_role
+  C:\Users\alireza\Desktop\dart\labe-github\alpr\routers\users.py:98: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    _validate_role(body.role)
+
+tests/test_users_last_admin_property.py: 35 warnings
+  C:\Users\alireza\Desktop\dart\labe-github\alpr\tests\test_users_last_admin_property.py:92: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    delete_user(user_id, user=ADMIN)
+
+tests/test_users_last_admin_property.py: 15 warnings
+  C:\Users\alireza\Desktop\dart\labe-github\alpr\tests\test_users_last_admin_property.py:98: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    update_user(user_id, UserUpdate(role="Operator"), user=ADMIN)
+
+tests/test_users_last_admin_property.py: 34 warnings
+  C:\Users\alireza\Desktop\dart\labe-github\alpr\tests\test_users_last_admin_property.py:94: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    update_user(user_id, UserUpdate(disabled=True), user=ADMIN)
+
+tests/test_users_last_admin_property.py: 23 warnings
+  C:\Users\alireza\Desktop\dart\labe-github\alpr\tests\test_users_last_admin_property.py:100: DeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+    update_user(user_id, UserUpdate(role="Viewer"), user=ADMIN)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_camera_stream_integration.py::test_latest_frame_returns_annotated_frame_and_status
+FAILED tests/test_camera_stream_integration.py::test_latest_frame_unknown_task_returns_not_found
+FAILED tests/test_camera_stream_integration.py::test_mjpeg_stream_delivers_annotated_frames
+FAILED tests/test_camera_stream_integration.py::test_mjpeg_stream_unknown_task_returns_not_found
+FAILED tests/test_retention_pruning_property.py::test_set_retention_policy_rejects_non_positive_days
+5 failed, 270 passed, 113 warnings in 185.21s (0:03:05)

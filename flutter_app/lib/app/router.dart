@@ -14,6 +14,12 @@ import '../features/analytics/analytics_view.dart';
 import '../features/sessions/sessions_view.dart';
 import '../features/detection/detection_view.dart';
 import '../features/cameras/cameras_view.dart';
+import '../features/watchlists/watchlists_view.dart';
+import '../features/users/users_view.dart';
+import '../features/audit/audit_view.dart';
+import '../features/monitoring/live_monitoring_view.dart';
+import '../features/license/license_view.dart';
+import '../features/settings/settings_view.dart';
 import 'shell_scaffold.dart';
 
 /// Route path for the login screen.
@@ -21,6 +27,37 @@ const String kLoginRoute = '/login';
 
 /// Default route once authenticated.
 const String kDashboardRoute = '/dashboard';
+
+/// Pure redirect decision used by the router's guard.
+///
+/// Kept as a top-level function so the routing rules can be exercised in
+/// isolation (and reused by a lightweight test harness) without standing up
+/// the full Fluent UI screen tree.
+///
+/// - Unauthenticated (or a 401 raised [needsReauth]): force [kLoginRoute]
+///   unless already there (Requirements 18.1, 18.3).
+/// - Authenticated but sitting on the login screen: go to [kDashboardRoute]
+///   (Requirement 18.2).
+/// - Authenticated and navigating a protected route: stay put so the session
+///   is preserved (Requirement 18.5).
+String? authRedirect({
+  required bool loggedIn,
+  required bool needsReauth,
+  required String matchedLocation,
+}) {
+  final atLogin = matchedLocation == kLoginRoute;
+
+  // Not authenticated (or a 401 cleared the session): force the login screen.
+  if (!loggedIn || needsReauth) {
+    return atLogin ? null : kLoginRoute;
+  }
+
+  // Authenticated but sitting on the login screen: go to the dashboard.
+  if (atLogin) return kDashboardRoute;
+
+  // Authenticated and navigating a protected route: preserve the session.
+  return null;
+}
 
 /// Provides the app's [GoRouter] with a redirect guard wired to auth state.
 ///
@@ -43,18 +80,11 @@ final routerProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) {
       final loggedIn = ref.read(authControllerProvider).isAuthenticated;
       final needsReauth = AuthInterceptor.needsReauthentication;
-      final atLogin = state.matchedLocation == kLoginRoute;
-
-      // Not authenticated (or a 401 cleared the session): force the login screen.
-      if (!loggedIn || needsReauth) {
-        return atLogin ? null : kLoginRoute;
-      }
-
-      // Authenticated but sitting on the login screen: go to the dashboard.
-      if (atLogin) return kDashboardRoute;
-
-      // Authenticated and navigating a protected route: preserve the session.
-      return null;
+      return authRedirect(
+        loggedIn: loggedIn,
+        needsReauth: needsReauth,
+        matchedLocation: state.matchedLocation,
+      );
     },
     errorBuilder: (context, state) => const _ErrorPage(),
     routes: [
@@ -102,6 +132,42 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/cameras',
             pageBuilder: (context, state) => _noTransition(
               state, const CamerasView(),
+            ),
+          ),
+          GoRoute(
+            path: '/watchlists',
+            pageBuilder: (context, state) => _noTransition(
+              state, const WatchlistsView(),
+            ),
+          ),
+          GoRoute(
+            path: '/users',
+            pageBuilder: (context, state) => _noTransition(
+              state, const UsersView(),
+            ),
+          ),
+          GoRoute(
+            path: '/audit',
+            pageBuilder: (context, state) => _noTransition(
+              state, const AuditView(),
+            ),
+          ),
+          GoRoute(
+            path: '/live-monitor',
+            pageBuilder: (context, state) => _noTransition(
+              state, const LiveMonitoringView(),
+            ),
+          ),
+          GoRoute(
+            path: '/license',
+            pageBuilder: (context, state) => _noTransition(
+              state, const LicenseView(),
+            ),
+          ),
+          GoRoute(
+            path: '/settings',
+            pageBuilder: (context, state) => _noTransition(
+              state, const SettingsView(),
             ),
           ),
         ],
