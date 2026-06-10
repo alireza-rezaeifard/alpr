@@ -8,6 +8,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/api_client.dart';
 import '../../data/models/camera_model.dart';
 import '../../data/models/enhanced_rtsp_history_entry.dart';
 import '../../data/models/plate_metadata_model.dart';
@@ -15,7 +16,6 @@ import 'camera_poll_controller.dart';
 import 'cameras_view.dart' show cameraListProvider;
 
 // ── Entry point: opens camera selector then monitor ──
-
 class CameraLiveMonitor extends ConsumerStatefulWidget {
   const CameraLiveMonitor({super.key});
 
@@ -330,7 +330,15 @@ class _CameraMonitorTile extends ConsumerWidget {
   }
 }
 
-// ── Smooth frame rendering via base64 frame polling (web-compatible) ──
+// ── Smooth frame rendering ──
+//
+// Smooth live frame: uses Image.network pointing at the backend MJPEG endpoint.
+// On Flutter web, Image.network delegates to the browser's native <img> which
+// handles multipart/x-mixed-replace (MJPEG) at full frame rate natively — no
+// Dart polling, no base64 decode, no widget rebuilds per frame.
+//
+// The MJPEG endpoint has dependencies=[] so no Bearer token is needed.
+// If the MJPEG stream fails, errorBuilder falls back to the poll-based approach.
 
 class _SmoothFrame extends ConsumerWidget {
   final String? taskId;
@@ -339,36 +347,38 @@ class _SmoothFrame extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (taskId == null || taskId!.isEmpty) {
-      return _message(icon: Icons.videocam, label: 'No stream available');
+      return _placeholder(icon: Icons.videocam, label: 'No stream available');
     }
 
-    // Reuse the per-camera poll controller, which fetches the latest
-    // pre-encoded JPEG from /api/detect/rtsp/{taskId}/frame. This works on
-    // Flutter web (a dart:io HttpClient MJPEG stream does not).
-    final pollState = ref.watch(cameraPollProvider(taskId!));
-    final bytes = _decodeFrame(pollState.lastAnnotated);
+    final baseUrl = ApiClient.instance.options.baseUrl;
+    final root = baseUrl.endsWith('/api')
+        ? baseUrl.substring(0, baseUrl.length - 4)
+        : baseUrl;
+    final mjpegUrl = '$root/api/detect/rtsp/$taskId/mjpeg';
 
-    if (bytes == null) {
-      final connecting = pollState.status != null && !pollState.terminal;
-      return _message(
-        icon: Icons.videocam,
-        label: connecting ? 'Loading...' : 'Connecting...',
-        spinner: connecting,
-      );
-    }
-
-    return Image.memory(
-      bytes,
+    return Image.network(
+      mjpegUrl,
       fit: BoxFit.contain,
       gaplessPlayback: true,
-      isAntiAlias: false,
       filterQuality: FilterQuality.low,
+      loadingBuilder: (context, child, progress) {
+        if (progress == null) return child; // loaded / streaming
+        return _placeholder(
+          icon: Icons.videocam, label: 'Connecting...', spinner: true);
+      },
+      errorBuilder: (context, error, stack) {
+        // Fallback: poll-based frame rendering
+        final pollState = ref.watch(cameraPollProvider(taskId!));
+        final bytes = _decodePollFrame(pollState.lastAnnotated);
+        if (bytes != null) {
+          return Image.memory(bytes, fit: BoxFit.contain, gaplessPlayback: true);
+        }
+        return _placeholder(icon: Icons.warning, label: 'Stream unavailable');
+      },
     );
   }
 
-  /// Decodes a ``data:image/jpeg;base64,...`` data URL (or a bare base64
-  /// string) into raw JPEG bytes; returns null when there is no frame yet.
-  static Uint8List? _decodeFrame(String? dataUrl) {
+  static Uint8List? _decodePollFrame(String? dataUrl) {
     if (dataUrl == null || dataUrl.isEmpty) return null;
     try {
       final comma = dataUrl.indexOf(',');
@@ -379,7 +389,7 @@ class _SmoothFrame extends ConsumerWidget {
     }
   }
 
-  Widget _message({
+  static Widget _placeholder({
     required IconData icon,
     required String label,
     bool spinner = false,

@@ -105,6 +105,9 @@ async def detect_image(file: UploadFile = File(...)):
 
     annotated, plates, dtrb_results = process_frame(img, detector, recognizer, opt)
 
+    # Validate plates and derive metadata
+    from plate_validator import validate_iranian_plate
+
     # Save to session
     sid = start_session("image", file.filename or "upload")
     plates_out = []
@@ -118,11 +121,28 @@ async def detect_image(file: UploadFile = File(...)):
         persian = format_plate_persian(dtrb_text)
         # Convert numpy types to native Python for JSON serialization
         bbox = tuple(int(x) for x in plate["bbox"])
+
+        # Validate and derive metadata
+        validation = validate_iranian_plate(dtrb_text, best_conf)
+        metadata_dict = None
+        if validation.is_valid and validation.metadata is not None:
+            md = validation.metadata
+            metadata_dict = {
+                "classified": md.classified,
+                "category": md.category,
+                "category_display": md.category_display,
+                "color_scheme": md.color_scheme,
+                "region_code": md.region_code,
+                "region_name": md.region_name,
+                "special_note": md.special_note,
+            }
+
         plates_out.append({
             "plate_dtrb": dtrb_text,
             "plate_persian": persian,
             "confidence": best_conf,
             "bbox": bbox,
+            "metadata": metadata_dict,
         })
         # Atomic per-image persistence: a failure here propagates and fails the
         # whole request (Req 8.4).
@@ -293,7 +313,7 @@ def detect_rtsp(
     return JSONResponse({"task_id": task_id, "session_id": session_id})
 
 
-@router.get("/rtsp/{task_id}")
+@router.get("/rtsp/{task_id}", dependencies=[])
 def rtsp_status(task_id: str):
     """Return RTSP processor state with detection history (Req 10.2).
 
@@ -311,21 +331,14 @@ def rtsp_status(task_id: str):
         return {"status": "error", "error": "Processor not found"}
     state = processor.get_state()
 
-    # Encode latest annotated frame
-    annotated_b64 = None
-    if state.get("annotated") is not None:
-        _, buf = cv2.imencode(".jpg", state["annotated"], [cv2.IMWRITE_JPEG_QUALITY, 80])
-        annotated_b64 = f"data:image/jpeg;base64,{base64.b64encode(buf).decode('utf-8')}"
-
     return {
         "status": state.get("status", "unknown"),
         "history": state.get("history", []),
         "live_detections": state.get("live_detections", []),
-        "annotated": annotated_b64,
     }
 
 
-@router.get("/rtsp/{task_id}/frame")
+@router.get("/rtsp/{task_id}/frame", dependencies=[])
 def rtsp_frame_only(task_id: str):
     """Lightweight endpoint: returns only the latest pre-encoded frame + status.
 
@@ -362,7 +375,7 @@ def rtsp_frame_only(task_id: str):
     }
 
 
-@router.get("/rtsp/{task_id}/mjpeg")
+@router.get("/rtsp/{task_id}/mjpeg", dependencies=[])
 async def rtsp_mjpeg_stream(task_id: str):
     """MJPEG stream endpoint for smooth real-time video in the browser/app.
 
@@ -398,7 +411,7 @@ async def rtsp_mjpeg_stream(task_id: str):
                         b"Content-Length: " + str(len(jpeg_bytes)).encode() + b"\r\n\r\n"
                         + jpeg_bytes + b"\r\n"
                     )
-                _time.sleep(0.1)  # ~10 FPS
+                _time.sleep(0.04)  # ~25 FPS for smooth native playback
             except Exception:
                 break
 

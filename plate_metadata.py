@@ -111,6 +111,30 @@ def derive_metadata(raw: str | None) -> PlateMetadata:
         return PlateMetadata(classified=False, reason=f"Internal error: {exc}")
 
 
+def derive_free_zone_metadata(normalized: str) -> PlateMetadata:
+    """Derive metadata for a Free Zone plate (all-numeric, 5 or 7 digits).
+
+    Free Zone plates use the first 2 digits as a zone identifier:
+    - "22" = Arvand, "44" = Anzali, "55" = Aras, "66" = Kish,
+    - "77" = Maku, "88" = Chabahar, "99" = Qeshm
+
+    If the prefix doesn't match a known zone, still classified as FreeZone.
+    """
+    prefix = normalized[:2]
+    zone_name = FREE_ZONE_PREFIXES.get(prefix)
+    special_note = zone_name if zone_name else f"منطقه آزاد (Free Zone - prefix {prefix})"
+
+    return PlateMetadata(
+        classified=True,
+        category="FreeZone",
+        category_display=CATEGORY_DISPLAY.get("FreeZone", "منطقه آزاد (Free Zone)"),
+        color_scheme=CATEGORY_TO_COLOR.get("FreeZone", "white"),
+        region_code=prefix,
+        region_name=special_note,
+        special_note=special_note,
+    )
+
+
 def _derive(raw: str | None) -> PlateMetadata:
     # Step 1: reject empty / whitespace-only
     if raw is None:

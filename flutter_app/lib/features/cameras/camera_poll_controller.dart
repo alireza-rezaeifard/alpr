@@ -44,8 +44,9 @@ class CameraPollController extends StateNotifier<CameraPollState> {
 
   void start(String taskId) {
     _stopTimers();
-    // Frame polling at 500ms (matches ~10 FPS server-side JPEG rate)
-    _frameTimer = Timer.periodic(const Duration(milliseconds: 500), (_) {
+    // Frame polling at ~100ms (~10 FPS) for smooth playback. The backend
+    // reader thread + pre-encoded JPEG means each poll returns a fresh frame.
+    _frameTimer = Timer.periodic(const Duration(milliseconds: 100), (_) {
       _pollFrame(taskId);
     });
     // Full status poll every 3 seconds (for complete history)

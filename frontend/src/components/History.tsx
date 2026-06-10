@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { getDetections } from '../api'
 import type { Detection } from '../types'
+import PlateTemplate from './PlateTemplate'
 
 export default function History() {
   const [data, setData] = useState<Detection[]>([])
@@ -56,7 +57,7 @@ export default function History() {
             ) : data.map(d => (
               <tr key={d.id}>
                 <td style={{ color: 'var(--text-muted)', fontSize: 12 }}>{d.timestamp?.slice(0, 19).replace('T', ' ')}</td>
-                <td>{d.plate_persian || d.plate_dtrb}</td>
+                <td><PlateTemplate plateText={d.plate_dtrb} size="sm" /></td>
                 <td>{d.source_type?.charAt(0).toUpperCase() + d.source_type?.slice(1)}</td>
                 <td style={{ color: 'var(--success)' }}>{(d.confidence * 100).toFixed(1)}%</td>
                 <td style={{ color: 'var(--text-muted)', fontSize: 12 }}>{d.source_file?.split(/[/\\]/).pop() || '-'}</td>

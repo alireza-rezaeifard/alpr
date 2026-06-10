@@ -97,24 +97,9 @@ def validate_iranian_plate(
     """
     Validate a DTRB-recognized plate string against Iranian plate formats.
 
-    Steps:
-    1. Check minimum confidence threshold
-    2. Normalize text (strip spaces, convert Persian/Arabic digits)
-    3. Check length == 8 characters
-    4. Validate structure: [2 digits][1 letter][3 digits][2 digits]
-    5. Validate letter is a known Iranian plate series letter
-    6. Validate region code exists in REGION_CODE_TO_PROVINCE
-    7. Return metadata via derive_metadata() if valid
-
-    Preconditions:
-    - dtrb_text is a string (not None)
-    - 0.0 <= confidence <= 1.0
-    - 0.0 <= min_confidence <= 1.0
-
-    Postconditions:
-    - Returns ValidationResult with is_valid=True iff ALL checks pass
-    - When is_valid=True: metadata is non-null and metadata.classified=True
-    - When is_valid=False: rejection_reason is a non-empty string, metadata is None
+    Supports:
+    - Standard plates: [2 digits][1 letter][3 digits][2 digits] (8 chars)
+    - Free Zone plates: all-numeric, 5 digits or 7 digits
     """
     # Step 1: Confidence gate
     if confidence < min_confidence:
@@ -128,6 +113,11 @@ def validate_iranian_plate(
     normalized = _normalize_digits(dtrb_text)
     normalized = _strip_separators(normalized)
 
+    # --- Try Free Zone format first (all-numeric, 5 or 7 digits) ---
+    if normalized.isdigit() and len(normalized) in (5, 7):
+        return _validate_free_zone(normalized)
+
+    # --- Standard Iranian plate format (8 chars) ---
     # Step 3: Length check
     if len(normalized) != 8:
         return ValidationResult(
@@ -190,18 +180,50 @@ def validate_iranian_plate(
     )
 
 
+def _validate_free_zone(normalized: str) -> ValidationResult:
+    """Validate a Free Zone plate (all-numeric, 5 or 7 digits).
+
+    Free Zone plates in Iran are assigned to vehicles registered in
+    special economic zones. They contain only digits with no letter.
+    Formats:
+    - 5 digits: e.g. "12356"
+    - 7 digits: e.g. "1122236" (displayed as "11222-36")
+    """
+    from plate_metadata import derive_free_zone_metadata
+
+    metadata = derive_free_zone_metadata(normalized)
+    return ValidationResult(
+        is_valid=True,
+        plate_text=normalized,
+        metadata=metadata,
+        rejection_reason=None,
+    )
+
+
 def format_plate_persian(dtrb_text: str) -> str:
     """
-    Format a plate string into Persian display format like "۱۲ ب ۳۴۵-۶۷".
+    Format a plate string into Persian display format.
+
+    Standard plates: "۱۲ ب ۳۴۵-۶۷"
+    Free Zone 7-digit: "۱۱۲۲۲-۳۶"
+    Free Zone 5-digit: "۱۲۳۵۶"
 
     Accepts raw DTRB text (latin letters, mixed digit formats).
-    If the text cannot be parsed into 8-char plate structure, returns
+    If the text cannot be parsed into known plate structure, returns
     the original text with Persian digit conversion applied.
     """
     # Normalize digits and strip separators
     normalized = _normalize_digits(dtrb_text)
     normalized = _strip_separators(normalized)
 
+    # Free Zone: all-numeric, 5 or 7 digits
+    if normalized.isdigit() and len(normalized) == 7:
+        # Format as XXXXX-XX (first 5 digits, dash, last 2)
+        return f"{normalized[:5].translate(_TO_PERSIAN)}-{normalized[5:].translate(_TO_PERSIAN)}"
+    if normalized.isdigit() and len(normalized) == 5:
+        return normalized.translate(_TO_PERSIAN)
+
+    # Standard 8-char plate
     if len(normalized) != 8:
         # Cannot format as standard plate; return with Persian digits
         return dtrb_text.translate(_TO_PERSIAN)

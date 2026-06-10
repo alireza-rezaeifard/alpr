@@ -68,6 +68,7 @@ export interface PlateResult {
   plate_persian: string
   confidence: number
   bbox: [number, number, number, number]
+  metadata?: PlateMetadata | null
 }
 
 export interface DetectImageResponse {
@@ -91,6 +92,8 @@ export interface VideoTaskStatus {
     plate_text: string
     dtrb_text: string
     confidence: number
+    persian_display?: string
+    metadata?: PlateMetadata | null
   }>
   live_detections: string[]
   error?: string
@@ -111,7 +114,19 @@ export interface RTSPTaskStatus {
     first_seen: string
     last_seen: string
     count: number
+    persian_display?: string
+    metadata?: PlateMetadata | null
   }>
   live_detections: string[]
   annotated?: string
+}
+
+export interface PlateMetadata {
+  classified: boolean
+  category?: string
+  category_display?: string
+  color_scheme?: string
+  region_code?: string
+  region_name?: string
+  special_note?: string
 }

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { detectImage, detectVideo, getVideoTaskStatus, stopVideoTask, startRTSP, getRTSPTaskStatus, stopRTSPTask } from '../api'
 import type { PlateResult, VideoTaskStatus, RTSPTaskStatus } from '../types'
+import PlateTemplate from './PlateTemplate'
 
 const SUB_TABS = ['Image', 'Video', 'RTSP'] as const
 type SubTab = (typeof SUB_TABS)[number]
@@ -67,7 +68,7 @@ function ImageTab() {
                   <tbody>
                     {result.plates.map((p, i) => (
                       <tr key={i}>
-                        <td>{p.plate_persian}</td>
+                        <td><PlateTemplate plateText={p.plate_dtrb} metadata={p.metadata} size="sm" /></td>
                         <td style={{ color: 'var(--success)' }}>{(p.confidence * 100).toFixed(1)}%</td>
                       </tr>
                     ))}
@@ -201,7 +202,7 @@ function VideoTab() {
                   <tr key={i}>
                     <td style={{ color: 'var(--text-muted)', fontSize: 12 }}>{e.frame}</td>
                     <td style={{ color: 'var(--text-muted)', fontSize: 12 }}>{e.time}</td>
-                    <td>{e.plate_text}</td>
+                    <td><PlateTemplate plateText={e.dtrb_text} metadata={e.metadata} size="sm" /></td>
                     <td style={{ color: 'var(--success)' }}>{e.confidence.toFixed(2)}</td>
                   </tr>
                 ))}
@@ -230,7 +231,7 @@ function RTSPTab() {
     try {
       const s = await getRTSPTaskStatus(tid)
       setStatus(s)
-      if (s.status.startsWith('error')) {
+      if (s.status.startsWith('error') || s.status === 'stopped') {
         if (intervalRef.current) clearInterval(intervalRef.current)
         setLoading(false)
       }
@@ -244,7 +245,8 @@ function RTSPTab() {
     try {
       const res = await startRTSP(urlInput.trim(), false, 15)
       setTaskId(res.task_id)
-      intervalRef.current = setInterval(() => poll(res.task_id), 1000)
+      // Poll status/history every 2s (plates table only), video is via MJPEG stream
+      intervalRef.current = setInterval(() => poll(res.task_id), 2000)
     } catch (e) {
       alert(String(e))
       setLoading(false)
@@ -302,7 +304,7 @@ function RTSPTab() {
               <tbody>
                 {status.history.slice().reverse().map((p, i) => (
                   <tr key={i}>
-                    <td>{p.dtrb_text}</td>
+                    <td><PlateTemplate plateText={p.dtrb_text} metadata={p.metadata} size="sm" /></td>
                     <td>{p.count}</td>
                     <td style={{ color: 'var(--success)' }}>{(p.confidence * 100).toFixed(1)}%</td>
                   </tr>
@@ -314,11 +316,16 @@ function RTSPTab() {
       </div>
 
       <div style={{ flex: '1 1 300px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        {status?.annotated ? (
-          <img src={status.annotated} alt="live feed" style={{
-            width: '100%', maxHeight: 360, objectFit: 'contain',
-            borderRadius: 8, border: '1px solid var(--border)',
-          }} />
+        {taskId && loading ? (
+          <img
+            src={`/api/detect/rtsp/${taskId}/mjpeg`}
+            alt="live feed"
+            style={{
+              width: '100%', maxHeight: 460, objectFit: 'contain',
+              borderRadius: 8, border: '1px solid var(--border)',
+              background: '#000',
+            }}
+          />
         ) : (
           <div style={{
             width: '100%', height: 260, borderRadius: 8, border: '1px solid var(--border)',

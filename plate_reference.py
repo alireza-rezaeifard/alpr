@@ -122,6 +122,7 @@ CATEGORY_TO_COLOR: dict[str, str] = {
     "Temporary_Transit":     "white",
     "Disabled":              "white",   # black on white (with ♿ symbol)
     "Diplomatic":            "black",
+    "FreeZone":              "white",   # black on white (Free Zone)
     "FreeZone_Arvand":       "white",   # black on white
     "Unknown":               "white",
 }
@@ -141,6 +142,7 @@ CATEGORY_DISPLAY: dict[str, str] = {
     "Temporary_Transit":     "گذر موقت (Temporary / Transit)",
     "Disabled":              "معلولین و جانبازان (Disabled)",
     "Diplomatic":            "سیاسی / دیپلماتیک (Diplomatic)",
+    "FreeZone":              "منطقه آزاد (Free Zone)",
     "FreeZone_Arvand":       "منطقه آزاد (Free Zone)",
     "Unknown":               "نامشخص (Unknown)",
 }
@@ -150,12 +152,23 @@ CATEGORY_DISPLAY: dict[str, str] = {
 # ---------------------------------------------------------------------------
 
 FREE_ZONE_PREFIXES: dict[str, str] = {
-    "22": "منطقه آزاد ارونداروند (Arvand Free Zone)",
+    "10": "منطقه آزاد اروند (Arvand Free Zone)",
+    "11": "منطقه آزاد اروند (Arvand Free Zone)",
+    "20": "منطقه آزاد انزلی (Anzali Free Zone)",
+    "22": "منطقه آزاد اروند (Arvand Free Zone)",
+    "30": "منطقه آزاد ارس (Aras Free Zone)",
+    "33": "منطقه آزاد ارس (Aras Free Zone)",
+    "40": "منطقه آزاد کیش (Kish Free Zone)",
     "44": "منطقه آزاد انزلی (Anzali Free Zone)",
+    "50": "منطقه آزاد ماکو (Maku Free Zone)",
     "55": "منطقه آزاد ارس (Aras Free Zone)",
+    "60": "منطقه آزاد چابهار (Chabahar Free Zone)",
     "66": "منطقه آزاد کیش (Kish Free Zone)",
+    "70": "منطقه آزاد قشم (Qeshm Free Zone)",
     "77": "منطقه آزاد ماکو (Maku Free Zone)",
+    "80": "منطقه آزاد قصرشیرین (Qasr-e Shirin Free Zone)",
     "88": "منطقه آزاد چابهار (Chabahar Free Zone)",
+    "90": "منطقه آزاد مازندران (Mazandaran Free Zone)",
     "99": "منطقه آزاد قشم (Qeshm Free Zone)",
 }
 

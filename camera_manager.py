@@ -16,6 +16,10 @@ from db import (
     create_camera, list_cameras, get_camera, update_camera, delete_camera,
     start_session, end_session, get_concurrency_limit, set_concurrency_limit as _db_set_limit,
 )
+from error_handler import (
+    report_error, report_exception,
+    ErrorCategory, ErrorSeverity,
+)
 
 
 @dataclass
@@ -429,8 +433,10 @@ class CameraManager:
                 try:
                     self._start_processor_locked(rt)
                     running += 1
-                except Exception:
+                except Exception as e:
                     # Error isolation: a start failure must not block later queue entries
+                    report_exception(e, ErrorCategory.CAMERA,
+                                     source=f"CameraManager.promote(cam={next_id})")
                     rt.status = "error"
 
     def _to_view(self, camera_id: int) -> dict:

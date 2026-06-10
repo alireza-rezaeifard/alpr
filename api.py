@@ -154,6 +154,27 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+# ---------------------------------------------------------------------------
+# Global exception handler — catches unhandled errors, logs them to the
+# centralized error store, and returns a clean JSON envelope.
+# ---------------------------------------------------------------------------
+from error_handler import report_exception, ErrorCategory
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request, exc):
+    """Catch any unhandled exception across the API layer."""
+    from fastapi.responses import JSONResponse as _JSONResp
+    report_exception(exc, ErrorCategory.SYSTEM, source=f"api:{request.url.path}")
+    return _JSONResp(
+        status_code=500,
+        content={
+            "error": "An internal server error occurred.",
+            "code": "internal_error",
+            "detail": str(exc) if os.environ.get("DEBUG") else None,
+        },
+    )
+
 # Include all routers
 app.include_router(auth.router)
 app.include_router(users.router)
