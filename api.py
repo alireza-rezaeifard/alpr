@@ -40,8 +40,9 @@ def _load_models():
     from deep_text_recognition_benchmark.dtrb import DTRB
     import argparse
 
-    DETECTOR_PATH = "plate_detector.pt"
-    RECOGNIZER_PATH = "weigths/dtrb-recoginzer/dtrb-None-VGG-BiLSTM-CTC-license-plate-recognizer.pth"
+    MODEL_DIR = os.environ.get("MODEL_DIR", "weigths")
+    DETECTOR_PATH = os.path.join(MODEL_DIR, "..", "plate_detector.pt") if MODEL_DIR != "weigths" else "plate_detector.pt"
+    RECOGNIZER_PATH = os.path.join(MODEL_DIR, "dtrb-recoginzer", "dtrb-None-VGG-BiLSTM-CTC-license-plate-recognizer.pth")
 
     _opt = argparse.Namespace(
         workers=0, batch_size=192, batch_max_length=25,

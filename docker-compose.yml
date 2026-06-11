@@ -1,0 +1,27 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PYTHON_VERSION: "3.11"
+        TORCH_VERSION: "cpu"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./weigths:/app/weigths:ro        # Model weights (read-only)
+      - ./db:/app/db                      # SQLite database persistence
+      - ./io:/app/io                      # Detection output files
+    environment:
+      - DEBUG=1
+      - PYTHONDONTWRITEBYTECODE=1
+      - MODEL_DIR=/app/weigths
+      - DATABASE_DIR=/app/db
+      - OUTPUT_DIR=/app/io/output
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    restart: unless-stopped

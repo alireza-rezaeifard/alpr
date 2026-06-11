@@ -1,0 +1,40 @@
+# Version control
+.git
+.gitattributes
+
+# Python caches
+.hypothesis
+.pytest_cache
+__pycache__
+*.pyc
+*.pyo
+
+# Flutter/Dart app (separate build)
+flutter_app
+
+# Frontend dist (not needed in API container)
+frontend/node_modules
+
+# Runtime data — mounted as volumes
+io/output
+weigths
+db/*.db
+
+# Model weights — mounted at runtime
+*.pt
+*.pth
+
+# Environment and secrets
+.env
+.env.*
+
+# IDE configurations
+.vscode
+.idea
+.kiro
+.opencode
+.agents
+
+# OS files
+Thumbs.db
+.DS_Store
