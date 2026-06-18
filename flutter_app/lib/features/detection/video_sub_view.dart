@@ -337,17 +337,31 @@ class _BoxOverlayPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final stroke = Paint()
+    final plateStroke = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.5
       ..color = const Color(0xFF10B981);
 
+    final carStroke = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.5
+      ..color = const Color(0xFF3B82F6);
+
     for (final e in boxes) {
+      // Car bounding box (blue)
+      if (e.carBbox != null && e.carBbox!.length >= 4) {
+        final carRect = Rect.fromLTRB(
+          e.carBbox![0] * size.width, e.carBbox![1] * size.height,
+          e.carBbox![2] * size.width, e.carBbox![3] * size.height);
+        canvas.drawRRect(RRect.fromRectAndRadius(carRect, const Radius.circular(3)), carStroke);
+      }
+
+      // Plate bounding box (green)
       if (e.bbox.length < 4) continue;
       final rect = Rect.fromLTRB(
         e.bbox[0] * size.width, e.bbox[1] * size.height,
         e.bbox[2] * size.width, e.bbox[3] * size.height);
-      canvas.drawRRect(RRect.fromRectAndRadius(rect, const Radius.circular(3)), stroke);
+      canvas.drawRRect(RRect.fromRectAndRadius(rect, const Radius.circular(3)), plateStroke);
 
       final label = e.persianDisplay.isNotEmpty ? e.persianDisplay : e.dtrbText;
       final tp = TextPainter(

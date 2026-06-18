@@ -267,6 +267,7 @@ class _LiveDetectionsWidgetState extends State<_LiveDetectionsWidget> {
       confidence: h.confidence, bbox: const [0, 0, 0, 0],
       persianDisplay: h.persianDisplay,
       isValidIranian: h.isValidIranian, metadata: h.metadata,
+      carColor: h.carColor, carType: h.carType, city: h.city,
     );
   }
 

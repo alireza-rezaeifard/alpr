@@ -70,8 +70,8 @@ function parsePlate(text: string, category?: string): {
     return { type: 'freezone', freeText: normalized }
   }
 
-  // Check if all-numeric 5 or 7 digits (auto-detect Free Zone)
-  if (/^\d{5}$/.test(normalized) || /^\d{7}$/.test(normalized)) {
+  // Check if all-numeric 5, 6, or 7 digits (auto-detect Free Zone)
+  if (/^\d{5}$/.test(normalized) || /^\d{6}$/.test(normalized) || /^\d{7}$/.test(normalized)) {
     return { type: 'freezone', freeText: normalized }
   }
 
@@ -151,6 +151,9 @@ export default function PlateTemplate({ plateText, metadata, colorScheme, size =
     if (digits.replace(/\D/g, '').length === 7) {
       const nums = digits.replace(/\D/g, '')
       displayText = toPersianDigits(nums.slice(0, 5)) + '-' + toPersianDigits(nums.slice(5))
+    } else if (digits.replace(/\D/g, '').length === 6) {
+      const nums = digits.replace(/\D/g, '')
+      displayText = toPersianDigits(nums.slice(0, 4)) + '-' + toPersianDigits(nums.slice(4))
     } else if (digits.replace(/\D/g, '').length === 5) {
       displayText = toPersianDigits(digits.replace(/\D/g, ''))
     } else {

@@ -15,6 +15,9 @@ class EnhancedRtspHistoryEntry {
   final String persianDisplay;
   final bool isValidIranian;
   final PlateMetadataModel? metadata;
+  final String? carColor;
+  final String? carType;
+  final String? city;
 
   const EnhancedRtspHistoryEntry({
     required this.dtrbText,
@@ -26,6 +29,9 @@ class EnhancedRtspHistoryEntry {
     required this.persianDisplay,
     required this.isValidIranian,
     this.metadata,
+    this.carColor,
+    this.carType,
+    this.city,
   });
 
   factory EnhancedRtspHistoryEntry.fromJson(Map<String, dynamic> json) =>
@@ -42,5 +48,8 @@ class EnhancedRtspHistoryEntry {
             ? PlateMetadataModel.fromJson(
                 json['metadata'] as Map<String, dynamic>)
             : null,
+        carColor: json['car_color'] as String?,
+        carType: json['car_type'] as String?,
+        city: json['city'] as String?,
       );
 }

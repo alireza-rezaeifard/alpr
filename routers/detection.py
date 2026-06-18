@@ -91,7 +91,7 @@ async def detect_image(file: UploadFile = File(...)):
     """
     import api
 
-    detector, recognizer, opt = api._ensure_models()
+    engine = api._ensure_models()
     from video_processor import format_plate_persian, process_frame
 
     contents = await file.read()
@@ -103,21 +103,26 @@ async def detect_image(file: UploadFile = File(...)):
             status_code=400,
         )
 
-    annotated, plates, dtrb_results = process_frame(img, detector, recognizer, opt)
+    annotated, plates, alpr_results = process_frame(img, engine)
 
     # Validate plates and derive metadata
     from plate_validator import validate_iranian_plate
+    from video_processor import best_plate_text
 
     # Save to session
     sid = start_session("image", file.filename or "upload")
     plates_out = []
     for idx, plate in enumerate(plates):
-        dtrb_entry = dtrb_results[idx] if idx < len(dtrb_results) else ("-", 0.0)
-        if isinstance(dtrb_entry, tuple):
-            dtrb_text, dtrb_conf = dtrb_entry
-        else:
-            dtrb_text, dtrb_conf = dtrb_entry, plate["confidence"]
-        best_conf = max(float(plate["confidence"]), dtrb_conf)
+        # alpr_results contains AlprResult objects; extract plate_text as dtrb_text
+        plate_text = plate["plate_text"]
+        plate_conf = float(plate["confidence"])
+
+        # Try validation with plate text directly
+        dtrb_text, best_conf = best_plate_text(
+            plate_text, plate_conf,
+            plate_text, plate_conf
+        )
+
         persian = format_plate_persian(dtrb_text)
         # Convert numpy types to native Python for JSON serialization
         bbox = tuple(int(x) for x in plate["bbox"])
@@ -143,6 +148,9 @@ async def detect_image(file: UploadFile = File(...)):
             "confidence": best_conf,
             "bbox": bbox,
             "metadata": metadata_dict,
+            "car_color": plate.get("car_color"),
+            "car_type": plate.get("car_type"),
+            "city": plate.get("city"),
         })
         # Atomic per-image persistence: a failure here propagates and fails the
         # whole request (Req 8.4).
@@ -177,7 +185,7 @@ async def detect_video(
     """
     import api
 
-    detector, recognizer, opt = api._ensure_models()
+    engine = api._ensure_models()
     from video_processor import VideoProcessor, format_plate_persian
 
     # Save uploaded file
@@ -193,7 +201,7 @@ async def detect_video(
     def run_video(task_id, sid, inp, skip, fast):
         def on_det(src, text, conf, sf, frame, ftime):
             save_detection(sid, src, text, format_plate_persian(text), conf, sf, frame, ftime)
-        vp = VideoProcessor(detector, recognizer, opt, on_detection=on_det)
+        vp = VideoProcessor(engine, on_detection=on_det)
         with api._tasks_lock:
             api._tasks[task_id]["processor"] = vp
         vp.process_video(inp, skip_frames=skip, fast_mode=fast)
@@ -293,7 +301,7 @@ def detect_rtsp(
     """
     import api
 
-    detector, recognizer, opt = api._ensure_models()
+    engine = api._ensure_models()
     from video_processor import RTSPStreamProcessor, format_plate_persian
 
     task_id = uuid.uuid4().hex
@@ -302,7 +310,7 @@ def detect_rtsp(
     def on_det(src, text, conf, sf, frame, ftime):
         save_detection(session_id, src, text, format_plate_persian(text), conf, sf, frame, ftime)
 
-    processor = RTSPStreamProcessor(detector, recognizer, opt, url,
+    processor = RTSPStreamProcessor(engine, url,
                                      fast_mode=fast_mode, skip_frames=skip_frames,
                                      on_detection=on_det)
     processor.start()

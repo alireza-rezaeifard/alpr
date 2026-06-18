@@ -274,7 +274,7 @@ class CameraManager:
         from video_processor import format_plate_persian
         from db import save_detection
 
-        detector, recognizer, opt = self._ensure_models()
+        engine = self._ensure_models()
         task_id = uuid.uuid4().hex
         session_id = start_session("rtsp", rt.url)
 
@@ -290,7 +290,7 @@ class CameraManager:
             )
 
         processor = RTSPStreamProcessor(
-            detector, recognizer, opt, rt.url,
+            engine, rt.url,
             fast_mode=False, skip_frames=rt.skip_frames,
             on_detection=on_det,
         )

@@ -94,6 +94,38 @@ class PlateDetailCard extends StatelessWidget {
                             ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                       ),
                     ),
+                  // Car info: color + type
+                  if (entry.carColor != null || entry.carType != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Row(
+                        children: [
+                          if (entry.carColor != null)
+                            _carColorDot(entry.carColor!),
+                          if (entry.carColor != null && entry.carType != null)
+                            const SizedBox(width: 4),
+                          Text(
+                            [entry.carColor, entry.carType]
+                                .where((e) => e != null)
+                                .join(' · '),
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  // City
+                  if (entry.city != null && entry.city!.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Text(
+                        entry.city!,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
                   const SizedBox(height: 4),
                   // Frame / timestamp / confidence (Req 6.5)
                   Text(
@@ -139,6 +171,32 @@ class PlateDetailCard extends StatelessWidget {
                       color: theme.colorScheme.outline,
                     ),
                   ),
+                  // Car info (even for unclassified plates)
+                  if (entry.carColor != null || entry.carType != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Row(
+                        children: [
+                          if (entry.carColor != null)
+                            _carColorDot(entry.carColor!),
+                          if (entry.carColor != null && entry.carType != null)
+                            const SizedBox(width: 4),
+                          Text(
+                            [entry.carColor, entry.carType]
+                                .where((e) => e != null)
+                                .join(' · '),
+                            style: theme.textTheme.bodySmall
+                                ?.copyWith(color: theme.colorScheme.outline),
+                          ),
+                        ],
+                      ),
+                    ),
+                  if (entry.city != null && entry.city!.isNotEmpty)
+                    Text(
+                      entry.city!,
+                      style: theme.textTheme.bodySmall
+                          ?.copyWith(color: theme.colorScheme.outline),
+                    ),
                   const SizedBox(height: 4),
                   Text(
                     'Frame ${entry.frame} @ ${entry.time} | '
@@ -165,6 +223,40 @@ class PlateDetailCard extends StatelessWidget {
         color: color,
         shape: BoxShape.circle,
         border: Border.all(color: Colors.grey.shade400, width: 1.5),
+      ),
+    );
+  }
+
+  /// Maps car color name to a Flutter Color.
+  Color _carColorToFlutterColor(String name) {
+    switch (name.toLowerCase()) {
+      case 'black':   return const Color(0xFF1A1A1A);
+      case 'blue':    return const Color(0xFF3B82F6);
+      case 'brown':   return const Color(0xFF8B4513);
+      case 'crimson':
+      case 'crismon': return const Color(0xFFDC143C);
+      case 'gray':
+      case 'grey':    return const Color(0xFF808080);
+      case 'green':   return const Color(0xFF22C55E);
+      case 'orange':  return const Color(0xFFF97316);
+      case 'purple':  return const Color(0xFFA855F7);
+      case 'red':     return const Color(0xFFEF4444);
+      case 'silver':  return const Color(0xFFC0C0C0);
+      case 'white':   return const Color(0xFFF5F5F5);
+      case 'yellow':  return const Color(0xFFEAB308);
+      default:        return Colors.grey;
+    }
+  }
+
+  /// Small colored dot for car color.
+  Widget _carColorDot(String colorName) {
+    return Container(
+      width: 10,
+      height: 10,
+      decoration: BoxDecoration(
+        color: _carColorToFlutterColor(colorName),
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.grey.shade500, width: 0.5),
       ),
     );
   }

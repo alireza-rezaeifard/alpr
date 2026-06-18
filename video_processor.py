@@ -142,6 +142,12 @@ def draw_plate_overlay_fast(image_np, plates, dtrb_results):
         # Green bounding box
         cv2.rectangle(frame, (bx1, by1), (bx2, by2), (0, 200, 50), 2)
 
+        # Draw car bounding box (blue)
+        car_bbox = plate.get("car_bbox")
+        if car_bbox is not None:
+            cx1, cy1, cx2, cy2 = car_bbox
+            cv2.rectangle(frame, (cx1, cy1), (cx2, cy2), (50, 100, 255), 2)
+
         # Confidence + raw plate text (ASCII) above the box
         dtrb_text = dtrb_results[idx] if idx < len(dtrb_results) else "?"
         label = f"{dtrb_text} ({confidence:.0%})"
@@ -194,9 +200,15 @@ def draw_plate_template(image_np, plates, dtrb_results):
         odraw = ImageDraw.Draw(pil_img)
         odraw.rectangle([bx1, by1, bx2, by2], outline=(0, 200, 50), width=3)
 
-        for ch in plate["chars"]:
+        for ch in plate.get("chars", []):
             cx1, cy1, cx2, cy2 = ch["bbox"]
             odraw.rectangle([cx1, cy1, cx2, cy2], outline=(50, 255, 100), width=2)
+
+        # Draw car bounding box (blue)
+        car_bbox = plate.get("car_bbox")
+        if car_bbox is not None:
+            cx1, cy1, cx2, cy2 = car_bbox
+            odraw.rectangle([cx1, cy1, cx2, cy2], outline=(50, 100, 255), width=3)
 
         label_font = get_persian_font(28)
         conf_font = get_persian_font(16)
@@ -210,8 +222,22 @@ def draw_plate_template(image_np, plates, dtrb_results):
         conf_w = conf_bbox[2] - conf_bbox[0]
         conf_h = conf_bbox[3] - conf_bbox[1]
 
+        # Car info line
+        car_parts = []
+        if plate.get("car_color"):
+            car_parts.append(plate["car_color"])
+        if plate.get("car_type"):
+            car_parts.append(plate["car_type"])
+        if plate.get("city"):
+            car_parts.append(plate["city"])
+        car_info = " | ".join(car_parts) if car_parts else ""
+        car_h = 0
+        if car_info:
+            car_bbox_t = draw.textbbox((0, 0), car_info, font=conf_font)
+            car_h = car_bbox_t[3] - car_bbox_t[1]
+
         panel_w = label_w + 30
-        panel_h = label_h + conf_h + 24
+        panel_h = label_h + conf_h + car_h + 30
         panel_x = min(bx1, w - panel_w - 10)
         panel_y = max(0, by1 - panel_h - 10)
 
@@ -234,78 +260,91 @@ def draw_plate_template(image_np, plates, dtrb_results):
             conf_text,
             font=conf_font, fill=(200, 200, 200),
         )
+        if car_info:
+            draw.text(
+                (panel_x + 15, panel_y + label_h + conf_h + 18),
+                car_info,
+                font=conf_font, fill=(100, 180, 255),
+            )
 
     result = cv2.cvtColor(np.array(pil_img.convert("RGB")), cv2.COLOR_RGB2BGR)
     return result
 
 
-def detect_plates(image, detector, recognizer, opt, fast_mode=False):
-    """Run detection + recognition WITHOUT drawing overlays.
+def detect_plates(image, engine, fast_mode=False):
+    """Run ALPR pipeline WITHOUT drawing overlays.
 
-    Returns (image_copy, plates, dtrb_results) so callers can validate/filter
-    plates before deciding which boxes to draw. This keeps invalid (non-Iranian)
-    detections from being burned into the annotated frame.
+    Returns (image_copy, plates, alpr_results) so callers can validate/filter
+    plates before deciding which boxes to draw.
+
+    Each plate dict contains: bbox, confidence, plate_text, chars,
+    car_bbox, car_color, car_type, city.
     """
     image = image.copy()
-    results = detector.predict(image, verbose=False)
+    if engine is None:
+        return image, [], []
 
-    char_detections = []
-    for result in results:
-        if result.boxes is None:
-            continue
-        for i in range(len(result.boxes.xyxy)):
-            conf = result.boxes.conf[i].item()
-            if conf > opt.threshold:
-                cls_id = int(result.boxes.cls[i].item())
-                label = detector.names[cls_id]
-                bbox = result.boxes.xyxy[i].cpu().detach().numpy().astype(int)
-                x1, y1, x2, y2 = bbox
-                char_detections.append({
-                    "bbox": (x1, y1, x2, y2),
-                    "confidence": conf,
-                    "class_id": cls_id,
-                    "char": label,
-                })
+    try:
+        results = engine.run(image)
+    except Exception as exc:
+        logger.error("ALPR pipeline failed: %s", exc)
+        return image, [], []
 
-    plates = group_detections(char_detections)
+    plates = []
+    alpr_results = []
+    for r in results:
+        plates.append({
+            "bbox": r.plate_bbox,
+            "plate_text": r.plate_text,
+            "confidence": r.confidence,
+            "chars": [{"bbox": b, "char": ""} for b in r.char_bboxes],
+            "car_bbox": r.car_bbox,
+            "car_color": r.car_color,
+            "car_type": r.car_type,
+            "city": r.city,
+        })
+        alpr_results.append(r)
 
-    dtrb_results = []
-    for plate in plates:
-        x1, y1, x2, y2 = plate["bbox"]
-        plate_crop = image[y1:y2, x1:x2].copy()
-        if plate_crop.size == 0:
-            dtrb_results.append(("-", 0.0))
-            continue
-        if fast_mode:
-            dtrb_results.append((plate["plate_text"], plate["confidence"]))
-            continue
-        plate_resized = cv2.resize(plate_crop, (opt.imgW, opt.imgH))
-        plate_gray = cv2.cvtColor(plate_resized, cv2.COLOR_BGR2GRAY)
-        result = recognizer.predict(plate_gray, opt)
-        # Handle both old (str) and new (str, float) return formats
-        if isinstance(result, tuple):
-            dtrb_label, dtrb_conf = result
-        else:
-            dtrb_label = result
-            dtrb_conf = plate["confidence"]
-        dtrb_results.append((dtrb_label, dtrb_conf))
-
-    return image, plates, dtrb_results
+    return image, plates, alpr_results
 
 
-def process_frame(image, detector, recognizer, opt, fast_mode=False):
+def best_plate_text(dtrb_text: str, dtrb_conf: float, yolo_text: str, yolo_conf: float) -> tuple[str, float]:
+    """Choose the best plate text between DTRB and YOLO readings.
+
+    Strategy: Try DTRB first (usually more accurate for standard plates).
+    If DTRB text fails validation, fall back to YOLO char-by-char text.
+    This is critical for Free Zone plates where DTRB may produce wrong-length
+    output but YOLO character detection is correct.
+
+    Returns (best_text, best_confidence).
+    """
+    from plate_validator import validate_iranian_plate
+
+    # Try DTRB text first
+    dtrb_validation = validate_iranian_plate(dtrb_text, dtrb_conf)
+    if dtrb_validation.is_valid:
+        return dtrb_text, max(dtrb_conf, yolo_conf)
+
+    # DTRB failed — try YOLO text as fallback
+    if yolo_text and yolo_text != dtrb_text:
+        yolo_validation = validate_iranian_plate(yolo_text, yolo_conf)
+        if yolo_validation.is_valid:
+            return yolo_text, yolo_conf
+
+    # Neither passed — return DTRB text (caller will reject it via validation)
+    return dtrb_text, max(dtrb_conf, yolo_conf)
+
+
+def process_frame(image, engine, fast_mode=False):
     """Detect plates and draw overlays for ALL detections.
 
     Kept for the image endpoint. Real-time video/RTSP paths use detect_plates +
     explicit validation so only valid Iranian plates get drawn.
     """
-    img, plates, dtrb_results = detect_plates(
-        image, detector, recognizer, opt, fast_mode
-    )
-    # Extract text strings for drawing (dtrb_results are now (text, conf) tuples)
-    dtrb_texts = [r[0] if isinstance(r, tuple) else r for r in dtrb_results]
-    annotated = draw_plate_template(img, plates, dtrb_texts)
-    return annotated, plates, dtrb_results
+    img, plates, alpr_results = detect_plates(image, engine, fast_mode)
+    texts = [r.plate_text for r in alpr_results]
+    annotated = draw_plate_template(img, plates, texts)
+    return annotated, plates, alpr_results
 
 
 class VideoProcessor:
@@ -315,10 +354,8 @@ class VideoProcessor:
     # record without spamming the same car/screen multiple times in 3 seconds.
     _DEDUP_WINDOW_SECONDS = 60.0
 
-    def __init__(self, detector, recognizer, opt, on_detection=None):
-        self.detector = detector
-        self.recognizer = recognizer
-        self.opt = opt
+    def __init__(self, engine, on_detection=None):
+        self.engine = engine
         self.on_detection = on_detection
         self.lock = threading.Lock()
         self.reset()
@@ -407,24 +444,25 @@ class VideoProcessor:
                 # in the output video. The dedup gate below throttles DB writes
                 # and the live-feed strip so the same plate isn't recorded
                 # multiple times per second.
-                img_copy, plates, dtrb_results = detect_plates(
-                    frame, self.detector, self.recognizer,
-                    self.opt, fast_mode,
+                img_copy, plates, alpr_results = detect_plates(
+                    frame, self.engine, fast_mode,
                 )
 
                 live_lines = []
                 valid_plates = []
                 valid_dtrb = []
                 for idx, plate in enumerate(plates):
-                    dtrb_entry = dtrb_results[idx] if idx < len(dtrb_results) else ("-", 0.0)
-                    if isinstance(dtrb_entry, tuple):
-                        dtrb_text, dtrb_conf = dtrb_entry
-                    else:
-                        dtrb_text, dtrb_conf = dtrb_entry, plate["confidence"]
+                    dtrb_text = plate["plate_text"]
+                    dtrb_conf = plate["confidence"]
                     px1, py1, px2, py2 = plate["bbox"]
 
-                    # Use the higher confidence between YOLO and DTRB
-                    best_conf = max(plate["confidence"], dtrb_conf)
+                    best_conf = dtrb_conf
+
+                    # Try DTRB text first, fall back to YOLO text for Free Zone plates
+                    dtrb_text, best_conf = best_plate_text(
+                        dtrb_text, dtrb_conf,
+                        plate["plate_text"], plate["confidence"]
+                    )
 
                     # Validate against Iranian plate format
                     validation = validate_iranian_plate(dtrb_text, best_conf)
@@ -461,6 +499,17 @@ class VideoProcessor:
                         "special_note": md.special_note,
                     } if md is not None else None
 
+                    # Normalized car bbox (0-1)
+                    car_bbox_norm = None
+                    raw_car = plate.get("car_bbox")
+                    if raw_car is not None:
+                        car_bbox_norm = [
+                            round(float(raw_car[0]) / width, 4),
+                            round(float(raw_car[1]) / height, 4),
+                            round(float(raw_car[2]) / width, 4),
+                            round(float(raw_car[3]) / height, 4),
+                        ]
+
                     plate_log.append({
                         "frame": frame_idx,
                         "time": f"{frame_idx / fps:.2f}s",
@@ -478,6 +527,10 @@ class VideoProcessor:
                         "persian_display": persian_display,
                         "is_valid_iranian": True,
                         "metadata": metadata_dict,
+                        "car_color": plate.get("car_color"),
+                        "car_type": plate.get("car_type"),
+                        "city": plate.get("city"),
+                        "car_bbox": car_bbox_norm,
                     })
 
                     live_lines.append(
@@ -560,12 +613,10 @@ class RTSPStreamProcessor:
     # on every detection so the visual stays locked to the plate.
     _DEDUP_WINDOW_SECONDS = 60.0
 
-    def __init__(self, detector, recognizer, opt, source,
+    def __init__(self, engine, source,
                  fast_mode=False, skip_frames=15, on_detection=None,
                  max_reconnect_attempts=3, reconnect_delay=2.0):
-        self.detector = detector
-        self.recognizer = recognizer
-        self.opt = opt
+        self.engine = engine
         self.source = source
         self.fast_mode = fast_mode
         self.skip_frames = skip_frames
@@ -790,8 +841,7 @@ class RTSPStreamProcessor:
 
                 try:
                     img_copy, plates, dtrb_results = detect_plates(
-                        frame_to_process, self.detector, self.recognizer,
-                        self.opt, self.fast_mode,
+                        frame_to_process, self.engine, self.fast_mode,
                     )
 
                     # --- Plate validation ---
@@ -800,8 +850,16 @@ class RTSPStreamProcessor:
                     new_emissions = []
 
                     for idx, plate in enumerate(plates):
-                        dtrb_text, dtrb_conf = dtrb_results[idx] if idx < len(dtrb_results) else ("-", 0.0)
-                        best_conf = max(plate["confidence"], dtrb_conf)
+                        dtrb_text = plate["plate_text"]
+                        dtrb_conf = plate["confidence"]
+                        best_conf = dtrb_conf
+
+                        # Try DTRB first, fall back to YOLO text for Free Zone plates
+                        dtrb_text, best_conf = best_plate_text(
+                            dtrb_text, dtrb_conf,
+                            plate["plate_text"], plate["confidence"]
+                        )
+
                         validation = validate_iranian_plate(dtrb_text, best_conf)
 
                         if not validation.is_valid:
@@ -954,6 +1012,13 @@ class RTSPStreamProcessor:
                 # Update confidence if new detection has higher confidence
                 if conf > p["confidence"]:
                     p["confidence"] = conf
+                # Refresh car info if newly available
+                if plate.get("car_color") is not None:
+                    p["car_color"] = plate.get("car_color")
+                if plate.get("car_type") is not None:
+                    p["car_type"] = plate.get("car_type")
+                if plate.get("city") is not None:
+                    p["city"] = plate.get("city")
                 return
 
         self.plate_history.append({
@@ -966,6 +1031,9 @@ class RTSPStreamProcessor:
             "persian_display": persian_display,
             "is_valid_iranian": is_valid_iranian,
             "metadata": metadata_dict,
+            "car_color": plate.get("car_color"),
+            "car_type": plate.get("car_type"),
+            "city": plate.get("city"),
         })
 
     def get_state(self):

@@ -15,6 +15,10 @@ class EnhancedPlateLogEntry {
   final String persianDisplay;
   final bool isValidIranian;
   final PlateMetadataModel? metadata;
+  final String? carColor;
+  final String? carType;
+  final String? city;
+  final List<double>? carBbox;
 
   const EnhancedPlateLogEntry({
     required this.frame,
@@ -27,6 +31,10 @@ class EnhancedPlateLogEntry {
     required this.persianDisplay,
     required this.isValidIranian,
     this.metadata,
+    this.carColor,
+    this.carType,
+    this.city,
+    this.carBbox,
   });
 
   factory EnhancedPlateLogEntry.fromJson(Map<String, dynamic> json) =>
@@ -46,6 +54,12 @@ class EnhancedPlateLogEntry {
         metadata: json['metadata'] != null
             ? PlateMetadataModel.fromJson(
                 json['metadata'] as Map<String, dynamic>)
+            : null,
+        carColor: json['car_color'] as String?,
+        carType: json['car_type'] as String?,
+        city: json['city'] as String?,
+        carBbox: json['car_bbox'] != null
+            ? (json['car_bbox'] as List).map((e) => (e as num).toDouble()).toList()
             : null,
       );
 }

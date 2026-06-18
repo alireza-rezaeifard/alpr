@@ -260,6 +260,10 @@ class _PlateList extends StatelessWidget {
                       final persian = plate['plate_persian'] as String?;
                       final dtrb = plate['plate_dtrb'] as String? ?? '';
                       final conf = ((plate['confidence'] as num?)?.toDouble() ?? 0.0) * 100;
+                      final carColor = plate['car_color'] as String?;
+                      final carType = plate['car_type'] as String?;
+                      final city = plate['city'] as String?;
+                      final carParts = [carColor, carType].where((e) => e != null).join(' · ');
                       return GestureDetector(
                         onTap: () => onTap(plate),
                         child: Container(
@@ -280,6 +284,12 @@ class _PlateList extends StatelessWidget {
                                       fontSize: 13, fontWeight: FontWeight.w500, color: Colors.white)),
                                     Text('Confidence: ${conf.toStringAsFixed(1)}%', style: TextStyle(
                                       fontSize: 11, color: Colors.white.withOpacity(0.4))),
+                                    if (carParts.isNotEmpty)
+                                      Text(carParts, style: TextStyle(
+                                        fontSize: 10, color: Colors.white.withOpacity(0.5))),
+                                    if (city != null && city.isNotEmpty)
+                                      Text(city, style: TextStyle(
+                                        fontSize: 10, color: Colors.white.withOpacity(0.5))),
                                   ],
                                 ),
                               ),

@@ -27,44 +27,29 @@ from routers.cameras import restore_cameras, set_camera_manager
 from retention.service import prune_detections
 
 # ── Detection model loading (lazy) ──
-_detector = None
-_recognizer = None
-_opt = None
+_engine = None
 
 
 def _load_models():
-    global _detector, _recognizer, _opt
-    if _detector is not None:
+    global _engine
+    if _engine is not None:
         return
-    from ultralytics import YOLO
-    from deep_text_recognition_benchmark.dtrb import DTRB
-    import argparse
+    from alpr_engine import AlprEngine
 
     MODEL_DIR = os.environ.get("MODEL_DIR", "weigths")
-    DETECTOR_PATH = os.path.join(MODEL_DIR, "..", "plate_detector.pt") if MODEL_DIR != "weigths" else "plate_detector.pt"
-    RECOGNIZER_PATH = os.path.join(MODEL_DIR, "dtrb-recoginzer", "dtrb-None-VGG-BiLSTM-CTC-license-plate-recognizer.pth")
-
-    _opt = argparse.Namespace(
-        workers=0, batch_size=192, batch_max_length=25,
-        imgH=32, imgW=100, rgb=False,
-        character='0123456789abcdefghijklmnopqrstuvwxyz',
-        sensitive=False, PAD=False,
-        Transformation="TPS", FeatureExtraction="ResNet",
-        SequenceModeling="BiLSTM", Prediction="Attn",
-        num_fiducial=20, input_channel=1, output_channel=512,
-        hidden_size=256, threshold=0.6,
-    )
-    print("Loading detector...")
-    _detector = YOLO(DETECTOR_PATH)
-    print("Loading recognizer...")
-    _recognizer = DTRB(RECOGNIZER_PATH, _opt)
-    print("Models loaded.")
+    print("Loading ALPR models...")
+    try:
+        _engine = AlprEngine(MODEL_DIR)
+        print("ALPR models loaded.")
+    except Exception as e:
+        print(f"[ERROR] Failed to load ALPR models: {e}")
+        _engine = None
 
 
 def _ensure_models():
-    if _detector is None:
+    if _engine is None:
         _load_models()
-    return _detector, _recognizer, _opt
+    return _engine
 
 
 # ── Background task state ──
@@ -126,7 +111,10 @@ async def lifespan(app: FastAPI):
     
     # 5. Schedule retention pruning background task (Requirement 16.2)
     _pruning_task = asyncio.create_task(_retention_pruning_loop())
-    
+
+    # 6. Eager-load ALPR models at startup for faster first request
+    _load_models()
+
     print("ANPR backend started successfully")
     
     yield
