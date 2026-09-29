@@ -1,0 +1,122 @@
+{
+  "schema": "alpr-model-manifest/v1",
+  "generated_at": "2026-09-29",
+  "note": "Phase 0 registry skeleton (design Part 6.5). Records what actually exists on disk, with sha256. No weights were changed, retrained, or replaced. 'classes' documents the class-index discipline that prevents the silent class-map drift found in the audit; runtime class names are still read from the model file itself.",
+  "models": {
+    "plate_det_model.pt": {
+      "sha256": "c70a91b5d695c2b8302bbe4f8ab6112ddc7845159f2fcc91cd50072d401ed00c",
+      "bytes": 5477267,
+      "task": "detect",
+      "framework": "ultralytics",
+      "architecture": "YOLO11n (probe: yaml_file=yolo11n.yaml, params 2,590,035)",
+      "num_classes": 1,
+      "classes": {
+        "0": "LicensePlate"
+      },
+      "pinned_imgsz": 640,
+      "runtime_conf": 0.6,
+      "used_by": "alpr_engine.AlprEngine._plate_model",
+      "status": "in-use",
+      "baseline": "eval/baselines/v1-latency.json"
+    },
+    "car_det_model.pt": {
+      "sha256": "0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1",
+      "bytes": 5613764,
+      "task": "detect",
+      "framework": "ultralytics",
+      "architecture": "YOLO11n (probe: yaml_file=yolo11n.yaml, params 2,624,080)",
+      "num_classes": 80,
+      "runtime_classes_used": [
+        2,
+        3,
+        5,
+        7
+      ],
+      "pinned_imgsz": 640,
+      "runtime_conf": 0.6,
+      "used_by": "alpr_engine.AlprEngine._car_model",
+      "status": "in-use",
+      "baseline": "eval/baselines/v1-latency.json"
+    },
+    "char_model.pt": {
+      "sha256": "08cf1bb9898e364513b5f4872a6e12175d9de6eb0f41a53d8fc3c8ac58d8a709",
+      "bytes": 6218616,
+      "task": "detect",
+      "framework": "ultralytics",
+      "architecture": "YOLO detector (params 3,016,113)",
+      "num_classes": 27,
+      "classes": {
+        "0": "1",
+        "1": "10",
+        "2": "11",
+        "3": "12",
+        "4": "13",
+        "5": "14",
+        "6": "15",
+        "7": "16",
+        "8": "17",
+        "9": "18",
+        "10": "19",
+        "11": "2",
+        "12": "20",
+        "13": "21",
+        "14": "22",
+        "15": "23",
+        "16": "24",
+        "17": "25",
+        "18": "26",
+        "19": "27",
+        "20": "3",
+        "21": "4",
+        "22": "5",
+        "23": "6",
+        "24": "7",
+        "25": "8",
+        "26": "9"
+      },
+      "class_map_risk": "Model class NAMES are label indices ('1'..'27'); the runtime maps class INDEX through CHAR_CLASSNAMES in alpr_engine.py:27-31, which contains duplicate letters (n, s) and multi-character tokens (ein, gh, sad, ta, malul). Phase 1 work item P1-7: freeze this mapping in one place.",
+      "pinned_imgsz": 640,
+      "runtime_conf": 0.3,
+      "used_by": "alpr_engine.AlprEngine._char_model",
+      "status": "in-use",
+      "baseline": "eval/baselines/v1-latency.json"
+    },
+    "car_name_model.pth": {
+      "sha256": "674c2dae68d1e0f37e92d4027ac5669f925befb3ce5315e2ad0aa8d9b21d60b1",
+      "bytes": 44841766,
+      "task": "classify",
+      "framework": "torchvision",
+      "architecture": "ResNet18 fp32 state_dict (params 11,199,983)",
+      "num_classes": 27,
+      "input_resize": [
+        220,
+        165
+      ],
+      "runtime_threshold": 0.65,
+      "used_by": "alpr_engine.AlprEngine._car_name_model",
+      "status": "in-use (Phase 2 target: event-level gating)",
+      "baseline": "eval/baselines/v1-latency.json"
+    },
+    "color_model.pt": {
+      "sha256": "88e9c6d08f6d8ffc04b097be2cb3b507f3688f3746bc89d09b3d8b7f30de361b",
+      "bytes": 44811614,
+      "task": "classify",
+      "framework": "torchvision",
+      "architecture": "ResNet18 fp32 state_dict (params 11,182,668)",
+      "num_classes": 12,
+      "input_resize": [
+        220,
+        165
+      ],
+      "runtime_threshold": 0.7,
+      "used_by": "alpr_engine.AlprEngine._color_model",
+      "status": "in-use (Phase 2 target: event-level gating)",
+      "baseline": "eval/baselines/v1-latency.json"
+    }
+  },
+  "absent_or_unused": {
+    "weigths/dtrb-recoginzer/": "empty placeholder; referenced only by the legacy main.py/ui.py paths",
+    "weigths/yolov8-detector/": "empty placeholder",
+    "weigths/Plates/city_plateinfo.txt": "city lookup CSV loaded by AlprEngine._load_city_data"
+  }
+}

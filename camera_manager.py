@@ -293,6 +293,7 @@ class CameraManager:
             engine, rt.url,
             fast_mode=False, skip_frames=rt.skip_frames,
             on_detection=on_det,
+            camera_id=camera_id, camera_name=camera_name,
         )
         processor.start()
 

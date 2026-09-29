@@ -1,0 +1,88 @@
+{
+  "generated_at": "2026-09-29T13:31:40",
+  "image": "car_a.jpg",
+  "image_shape": [
+    1280,
+    960,
+    3
+  ],
+  "iterations": 20,
+  "environment": {
+    "platform": "Windows-10-10.0.26200-SP0",
+    "python": "3.11.4",
+    "torch": "2.12.0+cpu",
+    "torch_threads": 8,
+    "cuda_available": false,
+    "gpu": null,
+    "device_used": "cpu"
+  },
+  "notes": [
+    "gpu is null when torch.cuda.is_available() is False \u2014 no GPU numbers are synthesised.",
+    "per-stage n = calls across measured iterations (several per iteration when multiple objects are present).",
+    "wrappers exist only in this process; alpr_engine.py is untouched."
+  ],
+  "total_run": {
+    "n": 20,
+    "avg_ms": 100.52,
+    "p50_ms": 99.01,
+    "p95_ms": 102.08,
+    "max_ms": 140.05
+  },
+  "cpu_load_during_measurement": {
+    "available": true,
+    "process_cpu_seconds": 15.922,
+    "wall_seconds": 2.022,
+    "process_cpu_percent_of_one_core": 787.3,
+    "logical_cores": 12
+  },
+  "per_stage_ms": {
+    "ocr_char_detector": {
+      "n": 20,
+      "avg_ms": 8.59,
+      "p50_ms": 8.9,
+      "p95_ms": 9.35,
+      "max_ms": 9.51
+    },
+    "ocr_char_yolo": {
+      "n": 20,
+      "avg_ms": 8.51,
+      "p50_ms": 8.82,
+      "p95_ms": 9.26,
+      "max_ms": 9.42
+    },
+    "plate_detector_yolo": {
+      "n": 20,
+      "avg_ms": 23.2,
+      "p50_ms": 23.44,
+      "p95_ms": 24.08,
+      "max_ms": 24.38
+    },
+    "resnet_car_type": {
+      "n": 40,
+      "avg_ms": 10.79,
+      "p50_ms": 11.51,
+      "p95_ms": 12.77,
+      "max_ms": 12.97
+    },
+    "resnet_color": {
+      "n": 40,
+      "avg_ms": 10.79,
+      "p50_ms": 11.22,
+      "p95_ms": 12.96,
+      "max_ms": 15.68
+    },
+    "vehicle_detector_yolo": {
+      "n": 20,
+      "avg_ms": 25.18,
+      "p50_ms": 23.34,
+      "p95_ms": 25.21,
+      "max_ms": 61.78
+    }
+  },
+  "plates_last_run": [
+    [
+      "28y68923",
+      0.8659
+    ]
+  ]
+}

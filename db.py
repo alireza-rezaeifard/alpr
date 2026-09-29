@@ -113,10 +113,44 @@ def init_db():
         CREATE INDEX IF NOT EXISTS idx_alerts_created ON alerts(created_at);
         CREATE INDEX IF NOT EXISTS idx_audit_ts ON audit_log(timestamp);
         CREATE INDEX IF NOT EXISTS idx_wl_entries_norm ON watchlist_entries(plate_norm);
+        -- Phase 1 (M1, minimal): one durable row per finalized vehicle visit.
+        -- UNIQUE(event_key) is the persistence-boundary idempotency guarantee:
+        -- "INSERT ... ON CONFLICT(event_key) DO UPDATE" can never create a second
+        -- row for the same track lifetime, even across process restarts.
+        CREATE TABLE IF NOT EXISTS vehicle_events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            event_key TEXT NOT NULL UNIQUE,
+            track_id TEXT NOT NULL,
+            camera_id INTEGER,
+            camera_name TEXT,
+            session_id INTEGER,
+            source_type TEXT NOT NULL DEFAULT 'rtsp',
+            source_file TEXT,
+            first_seen TEXT NOT NULL,
+            last_seen TEXT NOT NULL,
+            duration_ms INTEGER NOT NULL DEFAULT 0,
+            frame_count INTEGER NOT NULL DEFAULT 0,
+            observation_count INTEGER NOT NULL DEFAULT 0,
+            plate_number TEXT NOT NULL,
+            plate_norm TEXT NOT NULL,
+            confidence REAL NOT NULL DEFAULT 0,
+            agreement_ratio REAL NOT NULL DEFAULT 0,
+            status TEXT NOT NULL DEFAULT 'confirmed',
+            needs_review INTEGER NOT NULL DEFAULT 0,
+            finalize_reason TEXT,
+            plate_valid INTEGER NOT NULL DEFAULT 0,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+        );
+        CREATE INDEX IF NOT EXISTS idx_events_camera_time ON vehicle_events(camera_id, last_seen DESC);
+        CREATE INDEX IF NOT EXISTS idx_events_plate_norm ON vehicle_events(plate_norm, last_seen DESC);
     """)
     # Migrate existing detections table – safe to re-run on any database version
     _ensure_column(conn, "detections", "camera_id",   "camera_id INTEGER")
     _ensure_column(conn, "detections", "camera_name", "camera_name TEXT")
+    # Phase 1 (M2, minimal): link legacy rows to the event that emitted them
+    # (NULL for all legacy rows — no backfill, nothing breaks).
+    _ensure_column(conn, "detections", "event_key",   "event_key TEXT")
     conn.commit()
     conn.close()
 
@@ -182,6 +216,118 @@ def save_detection(session_id, source_type, plate_dtrb, plate_persian, confidenc
         pass
 
     return detection_id
+
+
+# ---------------------------------------------------------------------------
+# Phase 1: durable vehicle-event persistence (idempotent upsert boundary)
+# ---------------------------------------------------------------------------
+_UPSERT_EVENT_SQL = """
+INSERT INTO vehicle_events (
+    event_key, track_id, camera_id, camera_name, session_id, source_type,
+    source_file, first_seen, last_seen, duration_ms, frame_count,
+    observation_count, plate_number, plate_norm, confidence, agreement_ratio,
+    status, needs_review, finalize_reason, plate_valid, created_at, updated_at
+) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+ON CONFLICT(event_key) DO UPDATE SET
+    last_seen = excluded.last_seen,
+    duration_ms = excluded.duration_ms,
+    frame_count = excluded.frame_count,
+    observation_count = excluded.observation_count,
+    plate_number = excluded.plate_number,
+    plate_norm = excluded.plate_norm,
+    confidence = excluded.confidence,
+    agreement_ratio = excluded.agreement_ratio,
+    status = excluded.status,
+    needs_review = excluded.needs_review,
+    finalize_reason = excluded.finalize_reason,
+    updated_at = excluded.updated_at
+"""
+
+
+def upsert_vehicle_event(event) -> tuple[int, bool]:
+    """Durably persist one finalized vehicle event, idempotently.
+
+    ``event`` is a ``pipeline.types.VehicleEvent`` (duck-typed: only the
+    attributes written to the table are read — keeps db.py decoupled from the
+    pipeline package).
+
+    The UNIQUE constraint on ``vehicle_events.event_key`` is the persistence
+    boundary: repeated finalization of the same track — including after a
+    process restart — updates the existing row instead of creating one.
+
+    Returns ``(event_row_id, created)`` where ``created`` is True only when a
+    new row was inserted (False when an existing event was updated/suppressed).
+    """
+    now = datetime.now().isoformat()
+    conn = get_conn()
+    try:
+        # Existence check first (fast path); the UNIQUE constraint plus the
+        # IntegrityError handler below still covers concurrent races.
+        existing = conn.execute(
+            "SELECT id FROM vehicle_events WHERE event_key = ?", (event.event_key,)
+        ).fetchone()
+        conn.execute(
+            _UPSERT_EVENT_SQL,
+            (
+                event.event_key,
+                event.track_id,
+                event.camera_id,
+                event.camera_name,
+                event.session_id,
+                event.source_type,
+                event.source_file,
+                event.first_seen,
+                event.last_seen,
+                event.duration_ms,
+                event.frame_count,
+                event.observation_count,
+                event.plate_number,
+                event.plate_norm,
+                event.confidence,
+                event.agreement_ratio,
+                event.status,
+                1 if event.needs_review else 0,
+                getattr(event, "finalize_reason", None),
+                1 if event.plate_valid else 0,
+                now,
+                now,
+            ),
+        )
+        conn.commit()
+        row = conn.execute(
+            "SELECT id FROM vehicle_events WHERE event_key = ?", (event.event_key,)
+        ).fetchone()
+        row_id = int(row["id"]) if row else 0
+        return row_id, existing is None
+    except sqlite3.IntegrityError:
+        # Raced with another writer on the same event_key: the row exists, so
+        # this call is a suppressed duplicate at the persistence boundary.
+        conn.rollback()
+        row = conn.execute(
+            "SELECT id FROM vehicle_events WHERE event_key = ?", (event.event_key,)
+        ).fetchone()
+        return (int(row["id"]), False) if row else (0, False)
+    finally:
+        conn.close()
+
+
+def get_vehicle_event_stats() -> dict:
+    """Bounded observability totals over the vehicle_events table."""
+    conn = get_conn()
+    try:
+        row = conn.execute(
+            "SELECT COUNT(*) AS total, "
+            "SUM(CASE WHEN status = 'confirmed' THEN 1 ELSE 0 END) AS confirmed, "
+            "SUM(CASE WHEN needs_review = 1 THEN 1 ELSE 0 END) AS needs_review "
+            "FROM vehicle_events"
+        ).fetchone()
+        return {
+            "total_events": int(row["total"] or 0),
+            "confirmed_events": int(row["confirmed"] or 0),
+            "needs_review_events": int(row["needs_review"] or 0),
+        }
+    finally:
+        conn.close()
 
 
 def _match_detection_against_watchlists(detection_id, plate_dtrb, plate_persian):

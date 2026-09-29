@@ -339,10 +339,20 @@ def rtsp_status(task_id: str):
         return {"status": "error", "error": "Processor not found"}
     state = processor.get_state()
 
+    # Phase 1 (additive): bounded-cardinality pipeline metrics when the event
+    # pipeline is enabled. Legacy clients ignore unknown keys.
+    pipeline_metrics = None
+    if getattr(processor, "event_pipeline", None) is not None:
+        try:
+            pipeline_metrics = processor.event_pipeline.get_metrics()
+        except Exception:
+            pipeline_metrics = None
+
     return {
         "status": state.get("status", "unknown"),
         "history": state.get("history", []),
         "live_detections": state.get("live_detections", []),
+        "pipeline": pipeline_metrics,
     }
 
 

@@ -74,6 +74,13 @@ class AlprResult:
     car_type: str | None = None
     city: str | None = None
     char_bboxes: list[tuple[int, int, int, int]] = field(default_factory=list)
+    # Phase 1 additive fields (default values → existing call sites unaffected):
+    # raw plate-detector box confidence (the "is this a plate" score), the raw
+    # mean OCR character confidence, and all vehicle boxes so the event pipeline
+    # can associate plates to vehicles without a second detector pass.
+    plate_det_conf: float = 0.0
+    char_conf: float = 0.0
+    vehicle_boxes: list[tuple[int, int, int, int]] = field(default_factory=list)
 
 
 # ── Engine ───────────────────────────────────────────────────────────────────
@@ -298,6 +305,8 @@ class AlprEngine:
 
         # Step 1+2: Car detection + vehicle classification
         car_info: dict[int, dict] = {}  # index -> {car_type, car_color, bbox}
+        # Phase 1: exposure only — no second pass, no behavioural change.
+        vehicle_boxes: list[tuple[int, int, int, int]] = []
         if self._car_model is not None:
             try:
                 car_detections = self._car_model(
@@ -337,6 +346,9 @@ class AlprEngine:
                 break
         if best_car is None and car_info:
             best_car = next(iter(car_info.values()))
+
+        # Phase 1: expose all vehicle boxes (no second pass, no extra calls).
+        vehicle_boxes = [ci["bbox"] for ci in car_info.values()]
 
         # Step 3+4: Plate detection + character recognition
         try:
@@ -385,6 +397,9 @@ class AlprEngine:
                         car_type=best_car["car_type"] if best_car else None,
                         city=city,
                         char_bboxes=char_bboxes,
+                        plate_det_conf=float(plate_det_conf),
+                        char_conf=float(char_conf),
+                        vehicle_boxes=vehicle_boxes,
                     ))
         except Exception as exc:
             logger.warning("Plate detection failed: %s", exc)

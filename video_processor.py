@@ -28,6 +28,10 @@ from error_handler import (
 
 logger = logging.getLogger(__name__)
 
+# Phase 1: event-based pipeline opt-in check (evaluated per processor
+# construction so a flag change requires a camera restart, never mid-stream).
+from pipeline.flags import use_event_pipeline as _use_event_pipeline
+
 OUTPUT_DIR = "io/output"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
@@ -354,10 +358,22 @@ class VideoProcessor:
     # record without spamming the same car/screen multiple times in 3 seconds.
     _DEDUP_WINDOW_SECONDS = 60.0
 
-    def __init__(self, engine, on_detection=None):
+    def __init__(self, engine, on_detection=None, camera_id=None, camera_name=None):
         self.engine = engine
         self.on_detection = on_detection
         self.lock = threading.Lock()
+        # Phase 1: event pipeline opt-in for uploaded video files
+        # (ALPR_PIPELINE_VIDEO / ALPR_PIPELINE_MODE). None = legacy path only.
+        self.event_pipeline = None
+        if _use_event_pipeline("video"):
+            try:
+                from pipeline.integration import EventPipeline
+                self.event_pipeline = EventPipeline(source_type="video",
+                                                    camera_id=camera_id,
+                                                    camera_name=camera_name)
+            except Exception as exc:  # fail safe: legacy on any wiring error
+                logger.warning("Event pipeline disabled (init failed): %s", exc)
+                self.event_pipeline = None
         self.reset()
 
     def reset(self):
@@ -447,6 +463,20 @@ class VideoProcessor:
                 img_copy, plates, alpr_results = detect_plates(
                     frame, self.engine, fast_mode,
                 )
+
+                # --- Phase 1: event pipeline (opt-in) ------------------------
+                # Same inference loop, no second pass; events finalize per
+                # track exactly as the RTSP path does.
+                if self.event_pipeline is not None:
+                    try:
+                        h, w = frame.shape[:2]
+                        self.event_pipeline.process_results(
+                            frame_idx, w, h, alpr_results,
+                        )
+                    except Exception as ep_exc:
+                        report_detection_error(
+                            ep_exc, source="VideoProcessor.event_pipeline"
+                        )
 
                 live_lines = []
                 valid_plates = []
@@ -564,6 +594,14 @@ class VideoProcessor:
             cap.release()
             writer.release()
 
+            # Phase 1: flush open tracks at end-of-video so trailing visits
+            # finalize instead of being lost (§2.4 any→EXPIRED).
+            if self.event_pipeline is not None:
+                try:
+                    self.event_pipeline.expire("video_end")
+                except Exception as exc:
+                    logger.warning("Event pipeline flush failed: %s", exc)
+
             with self.lock:
                 self.output_path = output_path
                 self.plate_log = plate_log
@@ -615,7 +653,8 @@ class RTSPStreamProcessor:
 
     def __init__(self, engine, source,
                  fast_mode=False, skip_frames=15, on_detection=None,
-                 max_reconnect_attempts=3, reconnect_delay=2.0):
+                 max_reconnect_attempts=3, reconnect_delay=2.0,
+                 camera_id=None, camera_name=None):
         self.engine = engine
         self.source = source
         self.fast_mode = fast_mode
@@ -623,6 +662,20 @@ class RTSPStreamProcessor:
         self.on_detection = on_detection
         self.max_reconnect_attempts = max_reconnect_attempts
         self.reconnect_delay = reconnect_delay
+        # Phase 1: per-source event pipeline (opt-in via ALPR_PIPELINE_RTSP /
+        # ALPR_PIPELINE_MODE). When disabled, the EventPipeline object is never
+        # constructed and the legacy dedup path below runs unchanged.
+        self.event_pipeline = None
+        if _use_event_pipeline("rtsp"):
+            try:
+                from pipeline.integration import EventPipeline
+                self.event_pipeline = EventPipeline(
+                    source_type="rtsp", camera_id=camera_id,
+                    camera_name=camera_name,
+                )
+            except Exception as exc:  # fail safe: legacy on any wiring error
+                logger.warning("Event pipeline disabled (init failed): %s", exc)
+                self.event_pipeline = None
 
         self.cap = None
         self.running = False
@@ -654,6 +707,13 @@ class RTSPStreamProcessor:
         self.running = False
         if hasattr(self, 'thread') and self.thread and self.thread.is_alive():
             self.thread.join(timeout=3.0)
+        # Phase 1: flush open tracks so a stop/reconnect never loses a visit
+        # (§2.4 any→EXPIRED). Harmless no-op when the event pipeline is off.
+        if self.event_pipeline is not None:
+            try:
+                self.event_pipeline.expire("processor_stop")
+            except Exception as exc:
+                logger.warning("Event pipeline flush failed: %s", exc)
 
     def _run(self):
         from plate_validator import validate_iranian_plate, format_plate_persian as _format_persian
@@ -843,6 +903,21 @@ class RTSPStreamProcessor:
                     img_copy, plates, dtrb_results = detect_plates(
                         frame_to_process, self.engine, self.fast_mode,
                     )
+
+                    # --- Phase 1: event pipeline (opt-in) -------------------
+                    # Feed the raw AlprResult list into the tracker/lifecycle/
+                    # consensus stack BEFORE the legacy dedup gate. This runs
+                    # in the same ML worker thread — no second inference loop.
+                    if self.event_pipeline is not None:
+                        try:
+                            h, w = frame_to_process.shape[:2]
+                            self.event_pipeline.process_results(
+                                self.frame_count, w, h, dtrb_results,
+                            )
+                        except Exception as ep_exc:
+                            report_detection_error(
+                                ep_exc, source="RTSPStreamProcessor.event_pipeline"
+                            )
 
                     # --- Plate validation ---
                     valid_plates = []
