@@ -48,3 +48,6 @@ benchmarks/diagnostics/phase2b/ab_diagnostics.html
 /smerr.txt
 # local agent metadata
 .freebuff/
+
+# Phase 3.5 annotation GT snapshots (local backups, regenerable)
+benchmarks/dataset/phase3/backups/

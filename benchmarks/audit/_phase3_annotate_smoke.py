@@ -167,15 +167,51 @@ def main() -> int:
             "(empty verified text)",
             st == 200 and out.get("ok") is False
             and out.get("errors")))
-
         bad2 = dict(test_payload)
         bad2["plate_bbox"] = {"x1": 300, "y1": 200,
                               "x2": 100, "y2": 260}
         st, out = post("/api/save", bad2)
+        checks.append(("POST /api/save rejects inverted box",
+                       st == 200 and out.get("ok") is False
+                       and out.get("errors")))
+
+        # ---- Phase 3.5 additions (baseline 10 above) ----
+        st, body = get("/api/queue?camera=cam2")
+        qd = json.loads(body)
+        q = qd.get("queue", [])
+        prios = [e["priority"] for e in q]
         checks.append((
-            "POST /api/save rejects inverted box",
-            st == 200 and out.get("ok") is False
-            and out.get("errors")))
+            "GET /api/queue (cam2 priority order)",
+            st == 200 and len(q) == 120
+            and qd.get("summary", {}).get("UNLABELED") == 78
+            and prios == sorted(prios)
+            and any(e["phase2b_sample"] for e in q)))
+
+        st, body = get("/api/instances?camera=cam2")
+        inst = json.loads(body).get("instances", [])
+        checks.append(("GET /api/instances (cam2)",
+                       st == 200 and len(inst) == 9
+                       and all(v["frames"]
+                               for v in inst)))
+
+        st, body = get("/")
+        html = body.decode("utf-8")
+        checks.append((
+            "UI: readability classes / shortcuts / "
+            "coordinate convention",
+            "INVALID_SAMPLE" in html
+            and "previous frame" in html
+            and "[x1,x2)" in html
+            and "PENDING_HUMAN_REVIEW" in html))
+
+        bname = f"plates.{before[:12]}.jsonl"
+        bpath = ("benchmarks/dataset/phase3/backups/"
+                 + bname)
+        checks.append((
+            "GT backup snapshot byte-identical (§29)",
+            __import__("os").path.isfile(bpath)
+            and sha_file(bpath) == before))
+
 
         print()
         failed = 0
@@ -206,6 +242,30 @@ def main() -> int:
               f"({n_before} -> {n_after} records)")
         if before != after:
             print("FAIL: dataset file not restored!")
+            return 1
+        # ---- Phase 3.5 §29/§30: backup recovery path ----
+        bname = f"plates.{before[:12]}.jsonl"
+        bpath = ("benchmarks/dataset/phase3/backups/"
+                 + bname)
+        backup_ok = (__import__("os").path.isfile(bpath)
+                     and sha_file(bpath) == before)
+        print(f"backup snapshot byte-identical: "
+              f"{backup_ok}")
+        restore_ok = False
+        if backup_ok:
+            # no-op restore: exercises the recovery code path
+            # against identical bytes (must not change GT).
+            r = subprocess.run(
+                [sys.executable,
+                 "benchmarks/phase3_annotate.py",
+                 "--restore-backup", bname],
+                capture_output=True, text=True)
+            restore_ok = (r.returncode == 0
+                          and sha_file(GT) == before)
+            print(f"backup recovery (no-op restore) ok: "
+                  f"{restore_ok}")
+        if not backup_ok or not restore_ok:
+            print("FAIL: backup/recovery check failed!")
             return 1
 
 
