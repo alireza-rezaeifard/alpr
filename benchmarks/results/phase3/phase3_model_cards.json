@@ -1,0 +1,58 @@
+{
+ "generated_at": "2026-10-04 11:31:19",
+ "detector_a_current": {
+  "role": "CURRENT_PRODUCTION baseline",
+  "model_path": "weigths/plate_det_model.pt",
+  "sha256": "C70A91B5D695C2B8302BBE4F8AB6112DDC7845159F2FCC91CD50072D401ED00C",
+  "architecture": "ultralytics-YOLO plate detector",
+  "classes": {
+   "0": "LicensePlate"
+  },
+  "input_size": 640,
+  "inference_parameters": {
+   "conf": 0.5,
+   "iou": 0.45,
+   "max_det": 12,
+   "imgsz": 640,
+   "agnostic_nms": false,
+   "half": false
+  },
+  "license": "repo LICENSE (production asset)",
+  "source": "project weights (weigths/)",
+  "benchmark_configuration": "protocol-frozen call site; no adapter defaults"
+ },
+ "detector_b_iranplate": {
+  "role": "IranPlate-Vision candidate (evaluation only)",
+  "model_path": "bench/IranPlate-Vision-main/IranPlate-Vision-main/best.pt",
+  "sha256": "308C24643EAF49FC38930CEBFC46CA7455E7472F1D83FE98A2AE24443043DE40",
+  "architecture": "ultralytics-YOLO plate detector",
+  "classes": {
+   "0": "Plates"
+  },
+  "input_size": 640,
+  "inference_parameters": {
+   "conf": 0.5,
+   "iou": 0.45,
+   "max_det": 12,
+   "imgsz": 640,
+   "agnostic_nms": false,
+   "half": false
+  },
+  "license": "unknown — no LICENSE file in the bench checkout; evaluation-only use in this benchmark; verify before any other use",
+  "source": "bench/IranPlate-Vision-main",
+  "benchmark_configuration": "protocol-frozen call site; no adapter defaults"
+ },
+ "ocr_production": {
+  "role": "CURRENT_PRODUCTION baseline (AlprEngine._assemble_chars)",
+  "model_path": "weigths/char_model.pt",
+  "sha256": "08CF1BB9898E364513B5F4872A6E12175D9DE6EB0F41A53D8FC3C8AC58D8A709",
+  "architecture": "ultralytics-YOLO character detector + x1-sort assembly",
+  "input_size": "plate crop as-is (char YOLO letterboxes internally)",
+  "inference_parameters": {
+   "conf": 0.3,
+   "iou": 0.45
+  },
+  "license": "repo LICENSE (production asset)",
+  "source": "project weights (weigths/)"
+ }
+}

@@ -1,0 +1,58 @@
+{
+ "frozen_at": "2026-10-03 14:56:15",
+ "detector_conf": 0.5,
+ "detector_iou": 0.45,
+ "detector_max_det": 12,
+ "imgsz": 640,
+ "agnostic_nms": false,
+ "half": false,
+ "crop_rounding": "trunc",
+ "crop_rounding_definition": "truncation toward zero, identical to numpy.astype(int) used at alpr_engine.py:363",
+ "clip": true,
+ "padding": {
+  "pad_x": 0,
+  "pad_y": 0
+ },
+ "crop_operation_order": "convert -> pad -> clip -> validate",
+ "conventions_measured": [
+  "round",
+  "floor",
+  "ceil",
+  "trunc",
+  "floor_dy-1"
+ ],
+ "canonical_selection_inputs": [
+  "production_equivalent",
+  "degenerate_count",
+  "shrinks_box_count"
+ ],
+ "canonical_selection_excluded": [
+  "ground_truth_accuracy"
+ ],
+ "ocr": "CURRENT_PRODUCTION",
+ "normalization": "benchmarks/normalization.normalize_plate_text",
+ "dataset": "benchmarks/dataset/gt_labels.json (verified ranges only)",
+ "ground_truth_policy": "verified_only",
+ "box_ground_truth": "NO_BOX_GROUND_TRUTH",
+ "applied_identically_to_both_detectors": true,
+ "environment": {
+  "python": "3.11.4",
+  "torch": "2.12.0+cpu",
+  "ultralytics": "8.4.56",
+  "opencv": "4.13.0",
+  "cuda_available": false,
+  "platform": "Windows-10-10.0.26200-SP0",
+  "processor": "AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD",
+  "cpu_count": 12
+ },
+ "detectors": {
+  "A_current_production": {
+   "weights": "weigths/plate_det_model.pt",
+   "sha256": "C70A91B5D695C2B8302BBE4F8AB6112DDC7845159F2FCC91CD50072D401ED00C"
+  },
+  "B_iranplate_vision": {
+   "weights": "bench/IranPlate-Vision-main/IranPlate-Vision-main/best.pt",
+   "sha256": "308C24643EAF49FC38930CEBFC46CA7455E7472F1D83FE98A2AE24443043DE40"
+  }
+ }
+}

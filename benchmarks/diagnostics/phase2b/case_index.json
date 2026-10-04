@@ -1,0 +1,10 @@
+{
+ "current_correct_iranplate_wrong": 0,
+ "iranplate_correct_current_wrong": 0,
+ "both_wrong": 0,
+ "clipped": 0,
+ "small_crop": 6,
+ "cam2": 8,
+ "width_delta": 0,
+ "convention_sensitivity": 17
+}

@@ -1,0 +1,6 @@
+{
+ "split": "validation",
+ "vehicle_instance_ids": [],
+ "strategy": "single_evaluation_set",
+ "rationale": "only 2 verified vehicle instance(s) exist (need >= 5 for a statistically meaningful instance-level split); ALL verified instances are kept in the single evaluation (test) split and train/validation are left empty. No statistical significance is manufactured. Provisional (unverified) instances are listed in the test split as evaluation context only; they never enter accuracy metrics."
+}

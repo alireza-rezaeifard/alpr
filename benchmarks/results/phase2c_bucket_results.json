@@ -1,0 +1,340 @@
+{
+ "generated_at": "2026-10-03 16:19:17",
+ "canonical_convention": "trunc",
+ "buckets": {
+  "detector_a_current": {
+   "lt80": {
+    "N": 7,
+    "labeled": 0,
+    "exact": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "char_accuracy": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "invalid": {
+     "numerator": 6,
+     "denominator": 7,
+     "value": 0.8571
+    },
+    "failed": {
+     "numerator": 0,
+     "denominator": 7,
+     "value": 0.0
+    },
+    "median_width": 70.0,
+    "median_height": 34.0,
+    "median_ocr_latency_ms": 11.228,
+    "median_detector_latency_ms": 19.1147,
+    "clipping_rate": {
+     "numerator": 0,
+     "denominator": 7,
+     "value": 0.0
+    }
+   },
+   "80-99": {
+    "N": 20,
+    "labeled": 0,
+    "exact": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "char_accuracy": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "invalid": {
+     "numerator": 17,
+     "denominator": 20,
+     "value": 0.85
+    },
+    "failed": {
+     "numerator": 5,
+     "denominator": 20,
+     "value": 0.25
+    },
+    "median_width": 82.0,
+    "median_height": 40.0,
+    "median_ocr_latency_ms": 11.5399,
+    "median_detector_latency_ms": 20.302,
+    "clipping_rate": {
+     "numerator": 0,
+     "denominator": 20,
+     "value": 0.0
+    }
+   },
+   "100-149": {
+    "N": 31,
+    "labeled": 21,
+    "exact": {
+     "numerator": 21,
+     "denominator": 21,
+     "value": 1.0
+    },
+    "char_accuracy": {
+     "numerator": 21.0,
+     "denominator": 21,
+     "value": 1.0
+    },
+    "invalid": {
+     "numerator": 8,
+     "denominator": 31,
+     "value": 0.2581
+    },
+    "failed": {
+     "numerator": 6,
+     "denominator": 31,
+     "value": 0.1935
+    },
+    "median_width": 138.0,
+    "median_height": 58.0,
+    "median_ocr_latency_ms": 10.577,
+    "median_detector_latency_ms": 19.7575,
+    "clipping_rate": {
+     "numerator": 0,
+     "denominator": 31,
+     "value": 0.0
+    }
+   },
+   "150-199": {
+    "N": 2,
+    "labeled": 0,
+    "exact": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "char_accuracy": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "invalid": {
+     "numerator": 2,
+     "denominator": 2,
+     "value": 1.0
+    },
+    "failed": {
+     "numerator": 2,
+     "denominator": 2,
+     "value": 1.0
+    },
+    "median_width": 180.0,
+    "median_height": 61.0,
+    "median_ocr_latency_ms": 9.6077,
+    "median_detector_latency_ms": 19.3102,
+    "clipping_rate": {
+     "numerator": 0,
+     "denominator": 2,
+     "value": 0.0
+    }
+   },
+   "ge200": {
+    "N": 41,
+    "labeled": 41,
+    "exact": {
+     "numerator": 41,
+     "denominator": 41,
+     "value": 1.0
+    },
+    "char_accuracy": {
+     "numerator": 41.0,
+     "denominator": 41,
+     "value": 1.0
+    },
+    "invalid": {
+     "numerator": 0,
+     "denominator": 41,
+     "value": 0.0
+    },
+    "failed": {
+     "numerator": 0,
+     "denominator": 41,
+     "value": 0.0
+    },
+    "median_width": 228.0,
+    "median_height": 66.0,
+    "median_ocr_latency_ms": 9.0713,
+    "median_detector_latency_ms": 20.0899,
+    "clipping_rate": {
+     "numerator": 0,
+     "denominator": 41,
+     "value": 0.0
+    }
+   }
+  },
+  "detector_b_iranplate": {
+   "lt80": {
+    "N": 2,
+    "labeled": 0,
+    "exact": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "char_accuracy": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "invalid": {
+     "numerator": 2,
+     "denominator": 2,
+     "value": 1.0
+    },
+    "failed": {
+     "numerator": 0,
+     "denominator": 2,
+     "value": 0.0
+    },
+    "median_width": 69.0,
+    "median_height": 24.0,
+    "median_ocr_latency_ms": 9.0699,
+    "median_detector_latency_ms": 19.7658,
+    "clipping_rate": {
+     "numerator": 0,
+     "denominator": 2,
+     "value": 0.0
+    }
+   },
+   "80-99": {
+    "N": 5,
+    "labeled": 0,
+    "exact": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "char_accuracy": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "invalid": {
+     "numerator": 4,
+     "denominator": 5,
+     "value": 0.8
+    },
+    "failed": {
+     "numerator": 0,
+     "denominator": 5,
+     "value": 0.0
+    },
+    "median_width": 83.0,
+    "median_height": 29.0,
+    "median_ocr_latency_ms": 9.7603,
+    "median_detector_latency_ms": 20.864,
+    "clipping_rate": {
+     "numerator": 0,
+     "denominator": 5,
+     "value": 0.0
+    }
+   },
+   "100-149": {
+    "N": 26,
+    "labeled": 21,
+    "exact": {
+     "numerator": 15,
+     "denominator": 21,
+     "value": 0.7143
+    },
+    "char_accuracy": {
+     "numerator": 20.3334,
+     "denominator": 21,
+     "value": 0.9683
+    },
+    "invalid": {
+     "numerator": 9,
+     "denominator": 26,
+     "value": 0.3462
+    },
+    "failed": {
+     "numerator": 0,
+     "denominator": 26,
+     "value": 0.0
+    },
+    "median_width": 140.0,
+    "median_height": 51.0,
+    "median_ocr_latency_ms": 9.7551,
+    "median_detector_latency_ms": 19.8213,
+    "clipping_rate": {
+     "numerator": 0,
+     "denominator": 26,
+     "value": 0.0
+    }
+   },
+   "150-199": {
+    "N": 10,
+    "labeled": 0,
+    "exact": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "char_accuracy": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "invalid": {
+     "numerator": 0,
+     "denominator": 10,
+     "value": 0.0
+    },
+    "failed": {
+     "numerator": 0,
+     "denominator": 10,
+     "value": 0.0
+    },
+    "median_width": 157.0,
+    "median_height": 37.0,
+    "median_ocr_latency_ms": 9.2882,
+    "median_detector_latency_ms": 19.6862,
+    "clipping_rate": {
+     "numerator": 0,
+     "denominator": 10,
+     "value": 0.0
+    }
+   },
+   "ge200": {
+    "N": 41,
+    "labeled": 41,
+    "exact": {
+     "numerator": 41,
+     "denominator": 41,
+     "value": 1.0
+    },
+    "char_accuracy": {
+     "numerator": 41.0,
+     "denominator": 41,
+     "value": 1.0
+    },
+    "invalid": {
+     "numerator": 0,
+     "denominator": 41,
+     "value": 0.0
+    },
+    "failed": {
+     "numerator": 0,
+     "denominator": 41,
+     "value": 0.0
+    },
+    "median_width": 202.0,
+    "median_height": 53.0,
+    "median_ocr_latency_ms": 9.1731,
+    "median_detector_latency_ms": 20.2062,
+    "clipping_rate": {
+     "numerator": 0,
+     "denominator": 41,
+     "value": 0.0
+    }
+   }
+  }
+ }
+}

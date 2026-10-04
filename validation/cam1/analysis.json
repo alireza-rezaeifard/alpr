@@ -1,0 +1,92 @@
+{
+  "video": {
+    "file": "cam1.mp4",
+    "path": "D:\\alpr\\cam1.mp4",
+    "fps": 30.99,
+    "frame_count": 360,
+    "width": 1920,
+    "height": 1032,
+    "duration_s": 11.62
+  },
+  "metrics": {
+    "frames_processed": 360,
+    "ocr_observations": 315,
+    "observations_accepted": 315,
+    "observations_rejected": 0,
+    "tracks_created": 3,
+    "tracks_rejected_new": 0,
+    "tracks_expired": 2,
+    "final_events": 3,
+    "duplicate_finalizations_suppressed": 1,
+    "finalization_reasons": {
+      "consensus_confirm": 3
+    },
+    "detections_per_event": 1.0,
+    "OCR_per_event": 105.0,
+    "tracks_per_event": 1.0,
+    "needs_review_events": 0,
+    "invalid_plate_events": 0
+  },
+  "case_a_same_track_singletons": 1,
+  "case_b_possible_duplicates": [
+    {
+      "plate_norm": "28y68923",
+      "event_1": "cam1:0:1",
+      "event_2": "cam1:0:3",
+      "track_1": "cam1:0:1",
+      "track_2": "cam1:0:3",
+      "gap_s": 23.08,
+      "conf_1": 1.0,
+      "conf_2": 1.0
+    }
+  ],
+  "case_c_possible_false_merges": [],
+  "possible_false_splits": [],
+  "events": [
+    {
+      "event_id": "cam1:0:1",
+      "camera_id": "cam1",
+      "track_id": "cam1:0:1",
+      "plate": "28y68923",
+      "confidence": 1.0,
+      "agreement": 1.0,
+      "observation_count": 3,
+      "finalization_reason": "consensus_confirm",
+      "first_seen": "2026-09-30T09:22:21.576893",
+      "last_seen": "2026-09-30T09:22:21.757600",
+      "status": "confirmed",
+      "needs_review": false,
+      "plate_valid": true
+    },
+    {
+      "event_id": "cam1:0:2",
+      "camera_id": "cam1",
+      "track_id": "cam1:0:2",
+      "plate": "12d67413",
+      "confidence": 1.0,
+      "agreement": 1.0,
+      "observation_count": 3,
+      "finalization_reason": "consensus_confirm",
+      "first_seen": "2026-09-30T09:22:36.339107",
+      "last_seen": "2026-09-30T09:22:36.561611",
+      "status": "confirmed",
+      "needs_review": false,
+      "plate_valid": true
+    },
+    {
+      "event_id": "cam1:0:3",
+      "camera_id": "cam1",
+      "track_id": "cam1:0:3",
+      "plate": "28y68923",
+      "confidence": 1.0,
+      "agreement": 1.0,
+      "observation_count": 3,
+      "finalization_reason": "consensus_confirm",
+      "first_seen": "2026-09-30T09:22:44.836810",
+      "last_seen": "2026-09-30T09:22:45.015397",
+      "status": "confirmed",
+      "needs_review": false,
+      "plate_valid": true
+    }
+  ]
+}

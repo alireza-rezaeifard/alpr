@@ -1,0 +1,52 @@
+{
+ "current_detector@1.00": {
+  "n_crops": 39,
+  "median_w": 83,
+  "invalid_rate": 0.8205
+ },
+ "iranplate_vision@1.00": {
+  "n_crops": 12,
+  "median_w": 98.0,
+  "invalid_rate": 0.9167
+ },
+ "current_detector@1.10": {
+  "n_crops": 39,
+  "median_w": 91,
+  "invalid_rate": 0.8974
+ },
+ "iranplate_vision@1.10": {
+  "n_crops": 12,
+  "median_w": 108.0,
+  "invalid_rate": 0.8333
+ },
+ "current_detector@1.20": {
+  "n_crops": 39,
+  "median_w": 99,
+  "invalid_rate": 0.7949
+ },
+ "iranplate_vision@1.20": {
+  "n_crops": 12,
+  "median_w": 118.0,
+  "invalid_rate": 0.5833
+ },
+ "current_detector@1.30": {
+  "n_crops": 39,
+  "median_w": 108,
+  "invalid_rate": 0.8462
+ },
+ "iranplate_vision@1.30": {
+  "n_crops": 12,
+  "median_w": 127.5,
+  "invalid_rate": 0.8333
+ },
+ "current_detector@1.40": {
+  "n_crops": 39,
+  "median_w": 117,
+  "invalid_rate": 0.8205
+ },
+ "iranplate_vision@1.40": {
+  "n_crops": 12,
+  "median_w": 137.5,
+  "invalid_rate": 0.8333
+ }
+}

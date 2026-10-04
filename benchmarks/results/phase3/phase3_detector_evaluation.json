@@ -1,0 +1,98 @@
+{
+ "generated_at": "2026-10-04 11:31:19",
+ "protocol": {
+  "conf": 0.5,
+  "iou": 0.45,
+  "max_det": 12,
+  "imgsz": 640,
+  "agnostic_nms": false,
+  "half": false
+ },
+ "evaluation": {
+  "detector_a_current|cam1": {
+   "label": "detector_a_current|cam1",
+   "localization_available": false,
+   "tp": null,
+   "fp": null,
+   "fn": null,
+   "precision": null,
+   "recall": null,
+   "f1": null,
+   "note": "plate-box GT is pending human annotation; precision/recall/F1/IoU are NOT_AVAILABLE. Detection counts are diagnostic only and must never be read as recall.",
+   "frames_sampled": 72,
+   "frames_with_detection": 62,
+   "frames_without_detection": 10,
+   "diagnostic_note": "counts only, not recall: no box GT exists"
+  },
+  "detector_a_current|cam2": {
+   "label": "detector_a_current|cam2",
+   "localization_available": false,
+   "tp": null,
+   "fp": null,
+   "fn": null,
+   "precision": null,
+   "recall": null,
+   "f1": null,
+   "note": "plate-box GT is pending human annotation; precision/recall/F1/IoU are NOT_AVAILABLE. Detection counts are diagnostic only and must never be read as recall.",
+   "frames_sampled": 120,
+   "frames_with_detection": 42,
+   "frames_without_detection": 78,
+   "diagnostic_note": "counts only, not recall: no box GT exists"
+  },
+  "detector_b_iranplate|cam1": {
+   "label": "detector_b_iranplate|cam1",
+   "localization_available": false,
+   "tp": null,
+   "fp": null,
+   "fn": null,
+   "precision": null,
+   "recall": null,
+   "f1": null,
+   "note": "plate-box GT is pending human annotation; precision/recall/F1/IoU are NOT_AVAILABLE. Detection counts are diagnostic only and must never be read as recall.",
+   "frames_sampled": 72,
+   "frames_with_detection": 72,
+   "frames_without_detection": 0,
+   "diagnostic_note": "counts only, not recall: no box GT exists"
+  },
+  "detector_b_iranplate|cam2": {
+   "label": "detector_b_iranplate|cam2",
+   "localization_available": false,
+   "tp": null,
+   "fp": null,
+   "fn": null,
+   "precision": null,
+   "recall": null,
+   "f1": null,
+   "note": "plate-box GT is pending human annotation; precision/recall/F1/IoU are NOT_AVAILABLE. Detection counts are diagnostic only and must never be read as recall.",
+   "frames_sampled": 120,
+   "frames_with_detection": 12,
+   "frames_without_detection": 108,
+   "diagnostic_note": "counts only, not recall: no box GT exists"
+  },
+  "paired_AB_verified_trunc": {
+   "table": {
+    "both_correct": 56,
+    "a_correct_b_wrong": 6,
+    "a_wrong_b_correct": 0,
+    "both_wrong": 0
+   },
+   "discordant_ids": {
+    "a_correct_b_wrong": [
+     "cam1@180",
+     "cam1@185",
+     "cam1@210",
+     "cam1@215",
+     "cam1@330",
+     "cam1@335"
+    ],
+    "a_wrong_b_correct": [],
+    "both_wrong": []
+   },
+   "mcnemar": {
+    "discordant_pairs": 6,
+    "p": 0.03125
+   },
+   "verified_frames": 62
+  }
+ }
+}

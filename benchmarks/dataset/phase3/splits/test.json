@@ -1,0 +1,18 @@
+{
+ "split": "test",
+ "vehicle_instance_ids": [
+  "cam1_s001_v001",
+  "cam1_s001_v002",
+  "cam2_s001_v001",
+  "cam2_s001_v002",
+  "cam2_s001_v003",
+  "cam2_s001_v004",
+  "cam2_s001_v005",
+  "cam2_s001_v006",
+  "cam2_s001_v007",
+  "cam2_s001_v008",
+  "cam2_s001_v009"
+ ],
+ "strategy": "single_evaluation_set",
+ "rationale": "only 2 verified vehicle instance(s) exist (need >= 5 for a statistically meaningful instance-level split); ALL verified instances are kept in the single evaluation (test) split and train/validation are left empty. No statistical significance is manufactured. Provisional (unverified) instances are listed in the test split as evaluation context only; they never enter accuracy metrics."
+}

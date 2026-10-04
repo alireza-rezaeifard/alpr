@@ -1,0 +1,11 @@
+{
+ "camera_id": "cam2",
+ "source": "cam2.mp4",
+ "width": 1920,
+ "height": 1080,
+ "fps": 25.0,
+ "frame_count": 599,
+ "role": "diagnostic-camera",
+ "diversity_notes": "fixed roadside camera, dusk/night, multiple vehicles, small plates",
+ "sha256": "237E30A0545D82ACC267CC29985D597C39C29D407D7AD69888BBFB16D77D64F1"
+}

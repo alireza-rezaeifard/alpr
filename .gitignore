@@ -25,3 +25,26 @@ frontend/node_modules/
 # Log files
 log_demo_result.txt
 /cuba_v12.1
+
+# ALPR benchmark: external repos/weights and source videos must never be committed
+bench/
+*.mp4
+# extracted plate crops contain video frames - keep out of git
+benchmarks/dataset/crops/
+
+# Phase 0-3 generated visual artifacts / scratch logs (regenerable; large)
+benchmarks/dataset/2c/**/*.png
+benchmarks/dataset/2c/**/*.jpg
+benchmarks/audit/cam2_gt/*.png
+benchmarks/audit/phase3/
+benchmarks/audit/*.png
+benchmarks/audit/phase2c_crop_fidelity.html
+benchmarks/audit/_*.txt
+benchmarks/diagnostics/phase2b/ab_diagnostics.html
+# local temp benchmark run logs
+/*_err.txt
+/*_out.txt
+/sm.txt
+/smerr.txt
+# local agent metadata
+.freebuff/

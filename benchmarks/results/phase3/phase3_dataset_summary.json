@@ -1,0 +1,33 @@
+{
+ "generated_at": "2026-10-04 11:31:19",
+ "cameras": [
+  "cam1",
+  "cam2"
+ ],
+ "n_cameras": 2,
+ "n_sessions": 2,
+ "n_vehicle_instances": 11,
+ "n_verified_vehicle_instances": 2,
+ "n_annotations": 104,
+ "n_verified_text": 62,
+ "n_provisional_or_pending": 42,
+ "n_verified_boxes": 0,
+ "n_readable": 0,
+ "n_unreadable": 0,
+ "n_pending_review": 104,
+ "n_frames": 192,
+ "n_sampled_frames_cam1": 72,
+ "n_sampled_frames_cam2": 120,
+ "splits": {
+  "train": 0,
+  "validation": 0,
+  "test": 11
+ },
+ "plate_width": {
+  "min": 66,
+  "p25": 99.0,
+  "median": 138.0,
+  "p75": 227.0,
+  "max": 230
+ }
+}

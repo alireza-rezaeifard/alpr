@@ -1,0 +1,191 @@
+{
+  "video": {
+    "file": "cam2.mp4",
+    "path": "D:\\alpr\\cam2.mp4",
+    "fps": 25.0,
+    "frame_count": 599,
+    "width": 1920,
+    "height": 1080,
+    "duration_s": 23.96
+  },
+  "metrics": {
+    "frames_processed": 599,
+    "ocr_observations": 108,
+    "observations_accepted": 100,
+    "observations_rejected": 8,
+    "tracks_created": 8,
+    "tracks_rejected_new": 1,
+    "tracks_expired": 8,
+    "final_events": 7,
+    "duplicate_finalizations_suppressed": 0,
+    "finalization_reasons": {
+      "force_at_close": 7
+    },
+    "detections_per_event": 1.14,
+    "OCR_per_event": 14.29,
+    "tracks_per_event": 1.14,
+    "needs_review_events": 7,
+    "invalid_plate_events": 5
+  },
+  "case_a_same_track_singletons": 5,
+  "case_b_possible_duplicates": [],
+  "case_c_possible_false_merges": [
+    {
+      "event_1": "cam2:0:4",
+      "plate_1": "h9h",
+      "event_2": "cam2:0:3",
+      "plate_2": "9hh",
+      "overlap_s": 6.05
+    },
+    {
+      "event_1": "cam2:0:4",
+      "plate_1": "h9h",
+      "event_2": "cam2:0:5",
+      "plate_2": "99h98999",
+      "overlap_s": 5.64
+    },
+    {
+      "event_1": "cam2:0:4",
+      "plate_1": "h9h",
+      "event_2": "cam2:0:6",
+      "plate_2": "235h284999",
+      "overlap_s": 2.78
+    },
+    {
+      "event_1": "cam2:0:3",
+      "plate_1": "9hh",
+      "event_2": "cam2:0:5",
+      "plate_2": "99h98999",
+      "overlap_s": 6.25
+    },
+    {
+      "event_1": "cam2:0:3",
+      "plate_1": "9hh",
+      "event_2": "cam2:0:6",
+      "plate_2": "235h284999",
+      "overlap_s": 3.39
+    },
+    {
+      "event_1": "cam2:0:5",
+      "plate_1": "99h98999",
+      "event_2": "cam2:0:7",
+      "plate_2": "235h284999",
+      "overlap_s": 2.0
+    },
+    {
+      "event_1": "cam2:0:5",
+      "plate_1": "99h98999",
+      "event_2": "cam2:0:6",
+      "plate_2": "235h284999",
+      "overlap_s": 5.39
+    }
+  ],
+  "possible_false_splits": [],
+  "events": [
+    {
+      "event_id": "cam2:0:1",
+      "camera_id": "cam2",
+      "track_id": "cam2:0:1",
+      "plate": "999999696",
+      "confidence": 0.351,
+      "agreement": 0.0,
+      "observation_count": 10,
+      "finalization_reason": "force_at_close",
+      "first_seen": "2026-09-30T09:24:55.234587",
+      "last_seen": "2026-09-30T09:25:04.426092",
+      "status": "unconfirmed",
+      "needs_review": true,
+      "plate_valid": false
+    },
+    {
+      "event_id": "cam2:0:4",
+      "camera_id": "cam2",
+      "track_id": "cam2:0:4",
+      "plate": "h9h",
+      "confidence": 0.761,
+      "agreement": 0.522,
+      "observation_count": 2,
+      "finalization_reason": "force_at_close",
+      "first_seen": "2026-09-30T09:25:17.362584",
+      "last_seen": "2026-09-30T09:25:23.411420",
+      "status": "unconfirmed",
+      "needs_review": true,
+      "plate_valid": false
+    },
+    {
+      "event_id": "cam2:0:3",
+      "camera_id": "cam2",
+      "track_id": "cam2:0:3",
+      "plate": "9hh",
+      "confidence": 0.64,
+      "agreement": 0.28,
+      "observation_count": 4,
+      "finalization_reason": "force_at_close",
+      "first_seen": "2026-09-30T09:25:16.463377",
+      "last_seen": "2026-09-30T09:25:24.021278",
+      "status": "unconfirmed",
+      "needs_review": true,
+      "plate_valid": false
+    },
+    {
+      "event_id": "cam2:0:5",
+      "camera_id": "cam2",
+      "track_id": "cam2:0:5",
+      "plate": "99h98999",
+      "confidence": 0.506,
+      "agreement": 0.322,
+      "observation_count": 6,
+      "finalization_reason": "force_at_close",
+      "first_seen": "2026-09-30T09:25:17.770431",
+      "last_seen": "2026-09-30T09:25:26.016947",
+      "status": "unconfirmed",
+      "needs_review": true,
+      "plate_valid": true
+    },
+    {
+      "event_id": "cam2:0:7",
+      "camera_id": "cam2",
+      "track_id": "cam2:0:7",
+      "plate": "235h284999",
+      "confidence": 0.737,
+      "agreement": 0.598,
+      "observation_count": 10,
+      "finalization_reason": "force_at_close",
+      "first_seen": "2026-09-30T09:25:24.021278",
+      "last_seen": "2026-09-30T09:25:31.612046",
+      "status": "unconfirmed",
+      "needs_review": true,
+      "plate_valid": false
+    },
+    {
+      "event_id": "cam2:0:6",
+      "camera_id": "cam2",
+      "track_id": "cam2:0:6",
+      "plate": "235h284999",
+      "confidence": 0.728,
+      "agreement": 0.639,
+      "observation_count": 27,
+      "finalization_reason": "force_at_close",
+      "first_seen": "2026-09-30T09:25:20.630995",
+      "last_seen": "2026-09-30T09:25:34.697536",
+      "status": "unconfirmed",
+      "needs_review": true,
+      "plate_valid": false
+    },
+    {
+      "event_id": "cam2:0:8",
+      "camera_id": "cam2",
+      "track_id": "cam2:0:8",
+      "plate": "25h28999",
+      "confidence": 0.506,
+      "agreement": 0.175,
+      "observation_count": 30,
+      "finalization_reason": "force_at_close",
+      "first_seen": "2026-09-30T09:25:54.301088",
+      "last_seen": "2026-09-30T09:26:16.446097",
+      "status": "unconfirmed",
+      "needs_review": true,
+      "plate_valid": true
+    }
+  ]
+}

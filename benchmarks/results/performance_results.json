@@ -1,0 +1,394 @@
+{
+ "hardware": {
+  "gpu": "NOT_AVAILABLE (torch.cuda.is_available()=False)",
+  "cpu_only": true
+ },
+ "warmup": 5,
+ "measured_per_sample": 20,
+ "models": {
+  "current_production": {
+   "available": true,
+   "unavailable_reason": null,
+   "load_time_s": 2.703,
+   "gpu": "NOT_AVAILABLE",
+   "overall": {
+    "n_samples": 84,
+    "n_verified": 62,
+    "n_exact": 62,
+    "n_incorrect": 0,
+    "exact_accuracy": 1.0,
+    "char_accuracy": 1.0,
+    "mean_edit_distance": 0.0,
+    "invalid_rate": 0.2024,
+    "failed_rate": 0.0,
+    "n_invalid": 17,
+    "n_failed": 0
+   },
+   "by_video": {
+    "cam1.mp4": {
+     "n_samples": 62,
+     "n_verified": 62,
+     "n_exact": 62,
+     "n_incorrect": 0,
+     "exact_accuracy": 1.0,
+     "char_accuracy": 1.0,
+     "mean_edit_distance": 0.0,
+     "invalid_rate": 0.0,
+     "failed_rate": 0.0,
+     "n_invalid": 0,
+     "n_failed": 0
+    },
+    "cam2.mp4": {
+     "n_samples": 22,
+     "n_verified": 0,
+     "n_exact": 0,
+     "n_incorrect": 0,
+     "exact_accuracy": null,
+     "char_accuracy": null,
+     "mean_edit_distance": null,
+     "invalid_rate": 0.7727,
+     "failed_rate": 0.0,
+     "n_invalid": 17,
+     "n_failed": 0
+    }
+   },
+   "by_width_bucket": {
+    "ge150": {
+     "n_samples": 41,
+     "n_verified": 41,
+     "n_exact": 41,
+     "n_incorrect": 0,
+     "exact_accuracy": 1.0,
+     "char_accuracy": 1.0,
+     "mean_edit_distance": 0.0,
+     "invalid_rate": 0.0,
+     "failed_rate": 0.0,
+     "n_invalid": 0,
+     "n_failed": 0
+    },
+    "100-150": {
+     "n_samples": 24,
+     "n_verified": 21,
+     "n_exact": 21,
+     "n_incorrect": 0,
+     "exact_accuracy": 1.0,
+     "char_accuracy": 1.0,
+     "mean_edit_distance": 0.0,
+     "invalid_rate": 0.0417,
+     "failed_rate": 0.0,
+     "n_invalid": 1,
+     "n_failed": 0
+    },
+    "lt100": {
+     "n_samples": 19,
+     "n_verified": 0,
+     "n_exact": 0,
+     "n_incorrect": 0,
+     "exact_accuracy": null,
+     "char_accuracy": null,
+     "mean_edit_distance": null,
+     "invalid_rate": 0.8421,
+     "failed_rate": 0.0,
+     "n_invalid": 16,
+     "n_failed": 0
+    }
+   },
+   "latency_ms_avg": 11.0,
+   "latency_ms_p50": 10.5,
+   "latency_ms_p95": 12.3,
+   "latency_ms_max": 51.5,
+   "fps_cpu": 95.6,
+   "n_samples": 84,
+   "n_verified": 62,
+   "n_failed_empty": 0
+  },
+  "hezar_crnn_v2": {
+   "available": true,
+   "unavailable_reason": null,
+   "load_time_s": 1.715,
+   "gpu": "NOT_AVAILABLE",
+   "overall": {
+    "n_samples": 84,
+    "n_verified": 62,
+    "n_exact": 41,
+    "n_incorrect": 21,
+    "exact_accuracy": 0.6613,
+    "char_accuracy": 0.9577,
+    "mean_edit_distance": 0.3387,
+    "invalid_rate": 0.381,
+    "failed_rate": 0.0,
+    "n_invalid": 32,
+    "n_failed": 0
+   },
+   "by_video": {
+    "cam1.mp4": {
+     "n_samples": 62,
+     "n_verified": 62,
+     "n_exact": 41,
+     "n_incorrect": 21,
+     "exact_accuracy": 0.6613,
+     "char_accuracy": 0.9577,
+     "mean_edit_distance": 0.3387,
+     "invalid_rate": 0.3387,
+     "failed_rate": 0.0,
+     "n_invalid": 21,
+     "n_failed": 0
+    },
+    "cam2.mp4": {
+     "n_samples": 22,
+     "n_verified": 0,
+     "n_exact": 0,
+     "n_incorrect": 0,
+     "exact_accuracy": null,
+     "char_accuracy": null,
+     "mean_edit_distance": null,
+     "invalid_rate": 0.5,
+     "failed_rate": 0.0,
+     "n_invalid": 11,
+     "n_failed": 0
+    }
+   },
+   "by_width_bucket": {
+    "ge150": {
+     "n_samples": 41,
+     "n_verified": 41,
+     "n_exact": 41,
+     "n_incorrect": 0,
+     "exact_accuracy": 1.0,
+     "char_accuracy": 1.0,
+     "mean_edit_distance": 0.0,
+     "invalid_rate": 0.0,
+     "failed_rate": 0.0,
+     "n_invalid": 0,
+     "n_failed": 0
+    },
+    "100-150": {
+     "n_samples": 24,
+     "n_verified": 21,
+     "n_exact": 0,
+     "n_incorrect": 21,
+     "exact_accuracy": 0.0,
+     "char_accuracy": 0.875,
+     "mean_edit_distance": 1.0,
+     "invalid_rate": 0.9583,
+     "failed_rate": 0.0,
+     "n_invalid": 23,
+     "n_failed": 0
+    },
+    "lt100": {
+     "n_samples": 19,
+     "n_verified": 0,
+     "n_exact": 0,
+     "n_incorrect": 0,
+     "exact_accuracy": null,
+     "char_accuracy": null,
+     "mean_edit_distance": null,
+     "invalid_rate": 0.4737,
+     "failed_rate": 0.0,
+     "n_invalid": 9,
+     "n_failed": 0
+    }
+   },
+   "latency_ms_avg": 14.8,
+   "latency_ms_p50": 14.7,
+   "latency_ms_p95": 15.4,
+   "latency_ms_max": 21.2,
+   "fps_cpu": 67.9,
+   "n_samples": 84,
+   "n_verified": 62,
+   "n_failed_empty": 0
+  },
+  "plr_crnn": {
+   "available": true,
+   "unavailable_reason": null,
+   "load_time_s": 0.038,
+   "gpu": "NOT_AVAILABLE",
+   "overall": {
+    "n_samples": 84,
+    "n_verified": 62,
+    "n_exact": 0,
+    "n_incorrect": 62,
+    "exact_accuracy": 0.0,
+    "char_accuracy": 0.8266,
+    "mean_edit_distance": 1.3871,
+    "invalid_rate": 0.5,
+    "failed_rate": 0.0,
+    "n_invalid": 42,
+    "n_failed": 0
+   },
+   "by_video": {
+    "cam1.mp4": {
+     "n_samples": 62,
+     "n_verified": 62,
+     "n_exact": 0,
+     "n_incorrect": 62,
+     "exact_accuracy": 0.0,
+     "char_accuracy": 0.8266,
+     "mean_edit_distance": 1.3871,
+     "invalid_rate": 0.3871,
+     "failed_rate": 0.0,
+     "n_invalid": 24,
+     "n_failed": 0
+    },
+    "cam2.mp4": {
+     "n_samples": 22,
+     "n_verified": 0,
+     "n_exact": 0,
+     "n_incorrect": 0,
+     "exact_accuracy": null,
+     "char_accuracy": null,
+     "mean_edit_distance": null,
+     "invalid_rate": 0.8182,
+     "failed_rate": 0.0,
+     "n_invalid": 18,
+     "n_failed": 0
+    }
+   },
+   "by_width_bucket": {
+    "ge150": {
+     "n_samples": 41,
+     "n_verified": 41,
+     "n_exact": 0,
+     "n_incorrect": 41,
+     "exact_accuracy": 0.0,
+     "char_accuracy": 0.8659,
+     "mean_edit_distance": 1.0732,
+     "invalid_rate": 0.0732,
+     "failed_rate": 0.0,
+     "n_invalid": 3,
+     "n_failed": 0
+    },
+    "100-150": {
+     "n_samples": 24,
+     "n_verified": 21,
+     "n_exact": 0,
+     "n_incorrect": 21,
+     "exact_accuracy": 0.0,
+     "char_accuracy": 0.75,
+     "mean_edit_distance": 2.0,
+     "invalid_rate": 0.9583,
+     "failed_rate": 0.0,
+     "n_invalid": 23,
+     "n_failed": 0
+    },
+    "lt100": {
+     "n_samples": 19,
+     "n_verified": 0,
+     "n_exact": 0,
+     "n_incorrect": 0,
+     "exact_accuracy": null,
+     "char_accuracy": null,
+     "mean_edit_distance": null,
+     "invalid_rate": 0.8421,
+     "failed_rate": 0.0,
+     "n_invalid": 16,
+     "n_failed": 0
+    }
+   },
+   "latency_ms_avg": 5.4,
+   "latency_ms_p50": 5.4,
+   "latency_ms_p95": 6.1,
+   "latency_ms_max": 7.7,
+   "fps_cpu": 185.8,
+   "n_samples": 84,
+   "n_verified": 62,
+   "n_failed_empty": 0
+  },
+  "persian_lpr_yolo11": {
+   "available": true,
+   "unavailable_reason": null,
+   "load_time_s": 0.029,
+   "gpu": "NOT_AVAILABLE",
+   "overall": {
+    "n_samples": 84,
+    "n_verified": 62,
+    "n_exact": 62,
+    "n_incorrect": 0,
+    "exact_accuracy": 1.0,
+    "char_accuracy": 1.0,
+    "mean_edit_distance": 0.0,
+    "invalid_rate": 0.25,
+    "failed_rate": 0.0476,
+    "n_invalid": 21,
+    "n_failed": 4
+   },
+   "by_video": {
+    "cam1.mp4": {
+     "n_samples": 62,
+     "n_verified": 62,
+     "n_exact": 62,
+     "n_incorrect": 0,
+     "exact_accuracy": 1.0,
+     "char_accuracy": 1.0,
+     "mean_edit_distance": 0.0,
+     "invalid_rate": 0.0,
+     "failed_rate": 0.0,
+     "n_invalid": 0,
+     "n_failed": 0
+    },
+    "cam2.mp4": {
+     "n_samples": 22,
+     "n_verified": 0,
+     "n_exact": 0,
+     "n_incorrect": 0,
+     "exact_accuracy": null,
+     "char_accuracy": null,
+     "mean_edit_distance": null,
+     "invalid_rate": 0.9545,
+     "failed_rate": 0.1818,
+     "n_invalid": 21,
+     "n_failed": 4
+    }
+   },
+   "by_width_bucket": {
+    "ge150": {
+     "n_samples": 41,
+     "n_verified": 41,
+     "n_exact": 41,
+     "n_incorrect": 0,
+     "exact_accuracy": 1.0,
+     "char_accuracy": 1.0,
+     "mean_edit_distance": 0.0,
+     "invalid_rate": 0.0,
+     "failed_rate": 0.0,
+     "n_invalid": 0,
+     "n_failed": 0
+    },
+    "100-150": {
+     "n_samples": 24,
+     "n_verified": 21,
+     "n_exact": 21,
+     "n_incorrect": 0,
+     "exact_accuracy": 1.0,
+     "char_accuracy": 1.0,
+     "mean_edit_distance": 0.0,
+     "invalid_rate": 0.0833,
+     "failed_rate": 0.0,
+     "n_invalid": 2,
+     "n_failed": 0
+    },
+    "lt100": {
+     "n_samples": 19,
+     "n_verified": 0,
+     "n_exact": 0,
+     "n_incorrect": 0,
+     "exact_accuracy": null,
+     "char_accuracy": null,
+     "mean_edit_distance": null,
+     "invalid_rate": 1.0,
+     "failed_rate": 0.2105,
+     "n_invalid": 19,
+     "n_failed": 4
+    }
+   },
+   "latency_ms_avg": 31.9,
+   "latency_ms_p50": 33.1,
+   "latency_ms_p95": 41.8,
+   "latency_ms_max": 67.9,
+   "fps_cpu": 30.2,
+   "n_samples": 84,
+   "n_verified": 62,
+   "n_failed_empty": 4
+  }
+ }
+}

@@ -1,0 +1,13 @@
+{
+ "discordant_all_as_expected": true,
+ "quantization": {
+  "detector_a_current|trunc": "62/62",
+  "detector_a_current|floor": "62/62",
+  "detector_a_current|round": "62/62",
+  "detector_a_current|ceil": "62/62",
+  "detector_b_iranplate|trunc": "56/62",
+  "detector_b_iranplate|floor": "56/62",
+  "detector_b_iranplate|round": "62/62",
+  "detector_b_iranplate|ceil": "62/62"
+ }
+}

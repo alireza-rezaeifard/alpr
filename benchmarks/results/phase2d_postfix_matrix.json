@@ -1,0 +1,405 @@
+{
+ "generated_for": "Phase 2D Step 9 post-fix matrix",
+ "detector_effect_same_extractor_round": {
+  "table": {
+   "both_correct": 62,
+   "a_correct_b_wrong": 0,
+   "a_wrong_b_correct": 0,
+   "both_wrong": 0
+  },
+  "discordant_pairs": 0,
+  "mcnemar_exact_p": null,
+  "discordant_frames": [],
+  "verified_frames": 62
+ },
+ "detector_effect_same_extractor_trunc": {
+  "table": {
+   "both_correct": 56,
+   "a_correct_b_wrong": 6,
+   "a_wrong_b_correct": 0,
+   "both_wrong": 0
+  },
+  "discordant_pairs": 6,
+  "mcnemar_exact_p": 0.03125,
+  "discordant_frames": [
+   180,
+   185,
+   210,
+   215,
+   330,
+   335
+  ],
+  "verified_frames": 62
+ },
+ "detector_effect_same_extractor_floor": {
+  "table": {
+   "both_correct": 56,
+   "a_correct_b_wrong": 6,
+   "a_wrong_b_correct": 0,
+   "both_wrong": 0
+  },
+  "discordant_pairs": 6,
+  "mcnemar_exact_p": 0.03125,
+  "discordant_frames": [
+   180,
+   185,
+   210,
+   215,
+   330,
+   335
+  ],
+  "verified_frames": 62
+ },
+ "detector_effect_same_extractor_ceil": {
+  "table": {
+   "both_correct": 62,
+   "a_correct_b_wrong": 0,
+   "a_wrong_b_correct": 0,
+   "both_wrong": 0
+  },
+  "discordant_pairs": 0,
+  "mcnemar_exact_p": null,
+  "discordant_frames": [],
+  "verified_frames": 62
+ },
+ "crop_effect": {
+  "detector_a_current": {
+   "trunc": {
+    "n": 62,
+    "exact": 62,
+    "exact_rate": 1.0,
+    "char_accuracy": 1.0
+   },
+   "round": {
+    "n": 62,
+    "exact": 62,
+    "exact_rate": 1.0,
+    "char_accuracy": 1.0
+   },
+   "floor": {
+    "n": 62,
+    "exact": 62,
+    "exact_rate": 1.0,
+    "char_accuracy": 1.0
+   },
+   "ceil": {
+    "n": 62,
+    "exact": 62,
+    "exact_rate": 1.0,
+    "char_accuracy": 1.0
+   }
+  },
+  "detector_b_iranplate": {
+   "trunc": {
+    "n": 62,
+    "exact": 56,
+    "exact_rate": 0.9032,
+    "char_accuracy": 0.9892
+   },
+   "round": {
+    "n": 62,
+    "exact": 62,
+    "exact_rate": 1.0,
+    "char_accuracy": 1.0
+   },
+   "floor": {
+    "n": 62,
+    "exact": 56,
+    "exact_rate": 0.9032,
+    "char_accuracy": 0.9892
+   },
+   "ceil": {
+    "n": 62,
+    "exact": 62,
+    "exact_rate": 1.0,
+    "char_accuracy": 1.0
+   }
+  }
+ },
+ "interaction": {
+  "trunc_discordant_frames": [
+   180,
+   185,
+   210,
+   215,
+   330,
+   335
+  ],
+  "round_discordant_frames": [],
+  "resolved_by_round": [
+   180,
+   185,
+   210,
+   215,
+   330,
+   335
+  ],
+  "created_by_round": []
+ },
+ "contamination_proxy_discordant_frames": {
+  "180": {
+   "bbox_float": [
+    1059.54,
+    595.72,
+    1199.64,
+    646.88
+   ],
+   "trunc_rows": [
+    595,
+    646
+   ],
+   "round_rows": [
+    596,
+    647
+   ],
+   "rows_dropped_by_round": [
+    595
+   ],
+   "rows_added_by_round": [
+    646
+   ],
+   "dropped_row_stats": [
+    {
+     "mean_bgr": [
+      17.7,
+      13.6,
+      9.3
+     ],
+     "brightness": 13.5
+    }
+   ],
+   "added_row_stats": [
+    {
+     "mean_bgr": [
+      36.6,
+      28.5,
+      24.1
+     ],
+     "brightness": 29.7
+    }
+   ],
+   "interior_brightness_reference": 126.7,
+   "crop_bytes_identical": false
+  },
+  "185": {
+   "bbox_float": [
+    1059.54,
+    595.72,
+    1199.64,
+    646.88
+   ],
+   "trunc_rows": [
+    595,
+    646
+   ],
+   "round_rows": [
+    596,
+    647
+   ],
+   "rows_dropped_by_round": [
+    595
+   ],
+   "rows_added_by_round": [
+    646
+   ],
+   "dropped_row_stats": [
+    {
+     "mean_bgr": [
+      17.7,
+      13.6,
+      9.3
+     ],
+     "brightness": 13.5
+    }
+   ],
+   "added_row_stats": [
+    {
+     "mean_bgr": [
+      36.6,
+      28.5,
+      24.1
+     ],
+     "brightness": 29.7
+    }
+   ],
+   "interior_brightness_reference": 126.7,
+   "crop_bytes_identical": false
+  },
+  "210": {
+   "bbox_float": [
+    1059.54,
+    595.71,
+    1199.65,
+    646.89
+   ],
+   "trunc_rows": [
+    595,
+    646
+   ],
+   "round_rows": [
+    596,
+    647
+   ],
+   "rows_dropped_by_round": [
+    595
+   ],
+   "rows_added_by_round": [
+    646
+   ],
+   "dropped_row_stats": [
+    {
+     "mean_bgr": [
+      17.7,
+      13.6,
+      9.3
+     ],
+     "brightness": 13.5
+    }
+   ],
+   "added_row_stats": [
+    {
+     "mean_bgr": [
+      36.6,
+      28.5,
+      24.1
+     ],
+     "brightness": 29.7
+    }
+   ],
+   "interior_brightness_reference": 126.7,
+   "crop_bytes_identical": false
+  },
+  "215": {
+   "bbox_float": [
+    1059.54,
+    595.71,
+    1199.65,
+    646.89
+   ],
+   "trunc_rows": [
+    595,
+    646
+   ],
+   "round_rows": [
+    596,
+    647
+   ],
+   "rows_dropped_by_round": [
+    595
+   ],
+   "rows_added_by_round": [
+    646
+   ],
+   "dropped_row_stats": [
+    {
+     "mean_bgr": [
+      17.7,
+      13.6,
+      9.3
+     ],
+     "brightness": 13.5
+    }
+   ],
+   "added_row_stats": [
+    {
+     "mean_bgr": [
+      36.6,
+      28.5,
+      24.1
+     ],
+     "brightness": 29.7
+    }
+   ],
+   "interior_brightness_reference": 126.7,
+   "crop_bytes_identical": false
+  },
+  "330": {
+   "bbox_float": [
+    1059.54,
+    595.72,
+    1199.63,
+    646.88
+   ],
+   "trunc_rows": [
+    595,
+    646
+   ],
+   "round_rows": [
+    596,
+    647
+   ],
+   "rows_dropped_by_round": [
+    595
+   ],
+   "rows_added_by_round": [
+    646
+   ],
+   "dropped_row_stats": [
+    {
+     "mean_bgr": [
+      17.7,
+      13.6,
+      9.3
+     ],
+     "brightness": 13.5
+    }
+   ],
+   "added_row_stats": [
+    {
+     "mean_bgr": [
+      36.6,
+      28.5,
+      24.1
+     ],
+     "brightness": 29.7
+    }
+   ],
+   "interior_brightness_reference": 126.7,
+   "crop_bytes_identical": false
+  },
+  "335": {
+   "bbox_float": [
+    1059.54,
+    595.72,
+    1199.64,
+    646.88
+   ],
+   "trunc_rows": [
+    595,
+    646
+   ],
+   "round_rows": [
+    596,
+    647
+   ],
+   "rows_dropped_by_round": [
+    595
+   ],
+   "rows_added_by_round": [
+    646
+   ],
+   "dropped_row_stats": [
+    {
+     "mean_bgr": [
+      17.7,
+      13.6,
+      9.3
+     ],
+     "brightness": 13.5
+    }
+   ],
+   "added_row_stats": [
+    {
+     "mean_bgr": [
+      36.6,
+      28.5,
+      24.1
+     ],
+     "brightness": 29.7
+    }
+   ],
+   "interior_brightness_reference": 126.7,
+   "crop_bytes_identical": false
+  }
+ }
+}

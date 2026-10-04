@@ -1,0 +1,11 @@
+{
+ "camera_id": "cam1",
+ "source": "cam1.mp4",
+ "width": 1920,
+ "height": 1032,
+ "fps": 30.987,
+ "frame_count": 360,
+ "role": "production-camera",
+ "diversity_notes": "fixed roadside camera, daylight, two vehicles sequentially visible",
+ "sha256": "E3FD570F7CD14AE6CB7930C95DA82D3F4A7DB598B2DD6B227A4F31F5C4FEF088"
+}

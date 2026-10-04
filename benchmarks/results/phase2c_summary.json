@@ -1,0 +1,1134 @@
+{
+ "generated_at": "2026-10-03 16:19:17",
+ "protocol": {
+  "conf": 0.5,
+  "iou": 0.45,
+  "max_det": 12,
+  "imgsz": 640,
+  "agnostic_nms": false,
+  "half": false,
+  "crop_convention": "trunc",
+  "clip": true,
+  "pad_x": 0,
+  "pad_y": 0,
+  "ocr": "CURRENT_PRODUCTION"
+ },
+ "environment": {
+  "python": "3.11.4",
+  "torch": "2.12.0+cpu",
+  "ultralytics": "8.4.56",
+  "opencv": "4.13.0",
+  "cuda_available": false,
+  "platform": "Windows-10-10.0.26200-SP0",
+  "processor": "AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD",
+  "cpu_count": 12
+ },
+ "canonical_convention": "trunc",
+ "canonical_selection_reasons": [
+  "production-equivalent: trunc matches alpr_engine.astype(int)"
+ ],
+ "convention_scores_non_accuracy": {
+  "round": {
+   "production_equivalent": false,
+   "degenerate_count": 0,
+   "shrinks_box_count": 228,
+   "n_crops": 185
+  },
+  "floor": {
+   "production_equivalent": false,
+   "degenerate_count": 0,
+   "shrinks_box_count": 740,
+   "n_crops": 185
+  },
+  "ceil": {
+   "production_equivalent": false,
+   "degenerate_count": 0,
+   "shrinks_box_count": 0,
+   "n_crops": 185
+  },
+  "trunc": {
+   "production_equivalent": true,
+   "degenerate_count": 0,
+   "shrinks_box_count": 740,
+   "n_crops": 185
+  },
+  "floor_dy-1": {
+   "production_equivalent": false,
+   "degenerate_count": 0,
+   "shrinks_box_count": 1110,
+   "n_crops": 185
+  }
+ },
+ "repeatability": {
+  "runs": 2,
+  "detector_a_current": [
+   {
+    "n_boxes": 101,
+    "n_detected": 101,
+    "n_exact": 62,
+    "n_labeled": 62,
+    "n_invalid": 33
+   },
+   {
+    "n_boxes": 101,
+    "n_detected": 101,
+    "n_exact": 62,
+    "n_labeled": 62,
+    "n_invalid": 33
+   }
+  ],
+  "detector_b_iranplate": [
+   {
+    "n_boxes": 84,
+    "n_detected": 84,
+    "n_exact": 56,
+    "n_labeled": 62,
+    "n_invalid": 15
+   },
+   {
+    "n_boxes": 84,
+    "n_detected": 84,
+    "n_exact": 56,
+    "n_labeled": 62,
+    "n_invalid": 15
+   }
+  ],
+  "identical": true
+ },
+ "per_run_summary": {
+  "run0": {
+   "detector_a_current|overall": {
+    "frames_total": 192,
+    "frames_with_detection": 101,
+    "frames_without_detection": 91,
+    "n_boxes": 101,
+    "multi_box_frames": 0,
+    "detected_crops": 101,
+    "labeled_crops": 62,
+    "unlabeled_crops": 130,
+    "ocr_attempts": 101,
+    "exact": {
+     "numerator": 62,
+     "denominator": 62,
+     "value": 1.0
+    },
+    "char_accuracy": {
+     "numerator": 62.0,
+     "denominator": 62,
+     "value": 1.0
+    },
+    "mean_edit_distance": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "invalid_rate_all_crops": {
+     "numerator": 33,
+     "denominator": 101,
+     "value": 0.3267
+    },
+    "failed_rate_all_crops": {
+     "numerator": 13,
+     "denominator": 101,
+     "value": 0.1287
+    },
+    "median_crop_width": 138.0,
+    "median_crop_height": 58.0,
+    "mean_crop_width": 158.0495,
+    "mean_crop_height": 55.5842,
+    "width_percentiles": {
+     "10": 82.0,
+     "25": 99.0,
+     "50": 138.0,
+     "75": 227.0,
+     "90": 229.0
+    },
+    "clipping_rate": {
+     "numerator": 0,
+     "denominator": 101,
+     "value": 0.0
+    },
+    "confidence_mean": 0.7418
+   },
+   "detector_a_current|cam1.mp4": {
+    "frames_total": 72,
+    "frames_with_detection": 62,
+    "frames_without_detection": 10,
+    "n_boxes": 62,
+    "multi_box_frames": 0,
+    "detected_crops": 62,
+    "labeled_crops": 62,
+    "unlabeled_crops": 10,
+    "ocr_attempts": 62,
+    "exact": {
+     "numerator": 62,
+     "denominator": 62,
+     "value": 1.0
+    },
+    "char_accuracy": {
+     "numerator": 62.0,
+     "denominator": 62,
+     "value": 1.0
+    },
+    "mean_edit_distance": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "invalid_rate_all_crops": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "failed_rate_all_crops": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "median_crop_width": 227.0,
+    "median_crop_height": 66.0,
+    "mean_crop_width": 197.5968,
+    "mean_crop_height": 63.2903,
+    "width_percentiles": {
+     "10": 138.0,
+     "25": 138.0,
+     "50": 227.0,
+     "75": 228.0,
+     "90": 229.0
+    },
+    "clipping_rate": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "confidence_mean": 0.7621
+   },
+   "detector_a_current|cam2.mp4": {
+    "frames_total": 120,
+    "frames_with_detection": 39,
+    "frames_without_detection": 81,
+    "n_boxes": 39,
+    "multi_box_frames": 0,
+    "detected_crops": 39,
+    "labeled_crops": 0,
+    "unlabeled_crops": 120,
+    "ocr_attempts": 39,
+    "exact": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "char_accuracy": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "mean_edit_distance": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "invalid_rate_all_crops": {
+     "numerator": 33,
+     "denominator": 39,
+     "value": 0.8462
+    },
+    "failed_rate_all_crops": {
+     "numerator": 13,
+     "denominator": 39,
+     "value": 0.3333
+    },
+    "median_crop_width": 83.0,
+    "median_crop_height": 41.0,
+    "mean_crop_width": 95.1795,
+    "mean_crop_height": 43.3333,
+    "width_percentiles": {
+     "10": 70.0,
+     "25": 82.0,
+     "50": 83.0,
+     "75": 110.0,
+     "90": 114.0
+    },
+    "clipping_rate": {
+     "numerator": 0,
+     "denominator": 39,
+     "value": 0.0
+    },
+    "confidence_mean": 0.7096
+   },
+   "detector_b_iranplate|overall": {
+    "frames_total": 192,
+    "frames_with_detection": 84,
+    "frames_without_detection": 108,
+    "n_boxes": 84,
+    "multi_box_frames": 0,
+    "detected_crops": 84,
+    "labeled_crops": 62,
+    "unlabeled_crops": 130,
+    "ocr_attempts": 84,
+    "exact": {
+     "numerator": 56,
+     "denominator": 62,
+     "value": 0.9032
+    },
+    "char_accuracy": {
+     "numerator": 61.3334,
+     "denominator": 62,
+     "value": 0.9892
+    },
+    "mean_edit_distance": {
+     "numerator": 6,
+     "denominator": 62,
+     "value": 0.0968
+    },
+    "invalid_rate_all_crops": {
+     "numerator": 15,
+     "denominator": 84,
+     "value": 0.1786
+    },
+    "failed_rate_all_crops": {
+     "numerator": 0,
+     "denominator": 84,
+     "value": 0.0
+    },
+    "median_crop_width": 168.0,
+    "median_crop_height": 53.0,
+    "mean_crop_width": 166.5357,
+    "mean_crop_height": 49.1667,
+    "width_percentiles": {
+     "10": 109.0,
+     "25": 140.0,
+     "50": 168.0,
+     "75": 202.0,
+     "90": 202.0
+    },
+    "clipping_rate": {
+     "numerator": 0,
+     "denominator": 84,
+     "value": 0.0
+    },
+    "confidence_mean": 0.7909
+   },
+   "detector_b_iranplate|cam1.mp4": {
+    "frames_total": 72,
+    "frames_with_detection": 72,
+    "frames_without_detection": 0,
+    "n_boxes": 72,
+    "multi_box_frames": 0,
+    "detected_crops": 72,
+    "labeled_crops": 62,
+    "unlabeled_crops": 10,
+    "ocr_attempts": 72,
+    "exact": {
+     "numerator": 56,
+     "denominator": 62,
+     "value": 0.9032
+    },
+    "char_accuracy": {
+     "numerator": 61.3334,
+     "denominator": 62,
+     "value": 0.9892
+    },
+    "mean_edit_distance": {
+     "numerator": 6,
+     "denominator": 62,
+     "value": 0.0968
+    },
+    "invalid_rate_all_crops": {
+     "numerator": 6,
+     "denominator": 72,
+     "value": 0.0833
+    },
+    "failed_rate_all_crops": {
+     "numerator": 0,
+     "denominator": 72,
+     "value": 0.0
+    },
+    "median_crop_width": 202.0,
+    "median_crop_height": 53.0,
+    "mean_crop_width": 178.3333,
+    "mean_crop_height": 51.8194,
+    "width_percentiles": {
+     "10": 140.0,
+     "25": 140.0,
+     "50": 202.0,
+     "75": 202.0,
+     "90": 202.0
+    },
+    "clipping_rate": {
+     "numerator": 0,
+     "denominator": 72,
+     "value": 0.0
+    },
+    "confidence_mean": 0.8101
+   },
+   "detector_b_iranplate|cam2.mp4": {
+    "frames_total": 120,
+    "frames_with_detection": 12,
+    "frames_without_detection": 108,
+    "n_boxes": 12,
+    "multi_box_frames": 0,
+    "detected_crops": 12,
+    "labeled_crops": 0,
+    "unlabeled_crops": 120,
+    "ocr_attempts": 12,
+    "exact": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "char_accuracy": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "mean_edit_distance": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "invalid_rate_all_crops": {
+     "numerator": 9,
+     "denominator": 12,
+     "value": 0.75
+    },
+    "failed_rate_all_crops": {
+     "numerator": 0,
+     "denominator": 12,
+     "value": 0.0
+    },
+    "median_crop_width": 97.0,
+    "median_crop_height": 31.0,
+    "mean_crop_width": 95.75,
+    "mean_crop_height": 33.25,
+    "width_percentiles": {
+     "10": 76.0,
+     "25": 80.0,
+     "50": 97.0,
+     "75": 109.0,
+     "90": 120.0
+    },
+    "clipping_rate": {
+     "numerator": 0,
+     "denominator": 12,
+     "value": 0.0
+    },
+    "confidence_mean": 0.6753
+   }
+  },
+  "run1": {
+   "detector_a_current|overall": {
+    "frames_total": 192,
+    "frames_with_detection": 101,
+    "frames_without_detection": 91,
+    "n_boxes": 101,
+    "multi_box_frames": 0,
+    "detected_crops": 101,
+    "labeled_crops": 62,
+    "unlabeled_crops": 130,
+    "ocr_attempts": 101,
+    "exact": {
+     "numerator": 62,
+     "denominator": 62,
+     "value": 1.0
+    },
+    "char_accuracy": {
+     "numerator": 62.0,
+     "denominator": 62,
+     "value": 1.0
+    },
+    "mean_edit_distance": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "invalid_rate_all_crops": {
+     "numerator": 33,
+     "denominator": 101,
+     "value": 0.3267
+    },
+    "failed_rate_all_crops": {
+     "numerator": 13,
+     "denominator": 101,
+     "value": 0.1287
+    },
+    "median_crop_width": 138.0,
+    "median_crop_height": 58.0,
+    "mean_crop_width": 158.0495,
+    "mean_crop_height": 55.5842,
+    "width_percentiles": {
+     "10": 82.0,
+     "25": 99.0,
+     "50": 138.0,
+     "75": 227.0,
+     "90": 229.0
+    },
+    "clipping_rate": {
+     "numerator": 0,
+     "denominator": 101,
+     "value": 0.0
+    },
+    "confidence_mean": 0.7418
+   },
+   "detector_a_current|cam1.mp4": {
+    "frames_total": 72,
+    "frames_with_detection": 62,
+    "frames_without_detection": 10,
+    "n_boxes": 62,
+    "multi_box_frames": 0,
+    "detected_crops": 62,
+    "labeled_crops": 62,
+    "unlabeled_crops": 10,
+    "ocr_attempts": 62,
+    "exact": {
+     "numerator": 62,
+     "denominator": 62,
+     "value": 1.0
+    },
+    "char_accuracy": {
+     "numerator": 62.0,
+     "denominator": 62,
+     "value": 1.0
+    },
+    "mean_edit_distance": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "invalid_rate_all_crops": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "failed_rate_all_crops": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "median_crop_width": 227.0,
+    "median_crop_height": 66.0,
+    "mean_crop_width": 197.5968,
+    "mean_crop_height": 63.2903,
+    "width_percentiles": {
+     "10": 138.0,
+     "25": 138.0,
+     "50": 227.0,
+     "75": 228.0,
+     "90": 229.0
+    },
+    "clipping_rate": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "confidence_mean": 0.7621
+   },
+   "detector_a_current|cam2.mp4": {
+    "frames_total": 120,
+    "frames_with_detection": 39,
+    "frames_without_detection": 81,
+    "n_boxes": 39,
+    "multi_box_frames": 0,
+    "detected_crops": 39,
+    "labeled_crops": 0,
+    "unlabeled_crops": 120,
+    "ocr_attempts": 39,
+    "exact": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "char_accuracy": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "mean_edit_distance": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "invalid_rate_all_crops": {
+     "numerator": 33,
+     "denominator": 39,
+     "value": 0.8462
+    },
+    "failed_rate_all_crops": {
+     "numerator": 13,
+     "denominator": 39,
+     "value": 0.3333
+    },
+    "median_crop_width": 83.0,
+    "median_crop_height": 41.0,
+    "mean_crop_width": 95.1795,
+    "mean_crop_height": 43.3333,
+    "width_percentiles": {
+     "10": 70.0,
+     "25": 82.0,
+     "50": 83.0,
+     "75": 110.0,
+     "90": 114.0
+    },
+    "clipping_rate": {
+     "numerator": 0,
+     "denominator": 39,
+     "value": 0.0
+    },
+    "confidence_mean": 0.7096
+   },
+   "detector_b_iranplate|overall": {
+    "frames_total": 192,
+    "frames_with_detection": 84,
+    "frames_without_detection": 108,
+    "n_boxes": 84,
+    "multi_box_frames": 0,
+    "detected_crops": 84,
+    "labeled_crops": 62,
+    "unlabeled_crops": 130,
+    "ocr_attempts": 84,
+    "exact": {
+     "numerator": 56,
+     "denominator": 62,
+     "value": 0.9032
+    },
+    "char_accuracy": {
+     "numerator": 61.3334,
+     "denominator": 62,
+     "value": 0.9892
+    },
+    "mean_edit_distance": {
+     "numerator": 6,
+     "denominator": 62,
+     "value": 0.0968
+    },
+    "invalid_rate_all_crops": {
+     "numerator": 15,
+     "denominator": 84,
+     "value": 0.1786
+    },
+    "failed_rate_all_crops": {
+     "numerator": 0,
+     "denominator": 84,
+     "value": 0.0
+    },
+    "median_crop_width": 168.0,
+    "median_crop_height": 53.0,
+    "mean_crop_width": 166.5357,
+    "mean_crop_height": 49.1667,
+    "width_percentiles": {
+     "10": 109.0,
+     "25": 140.0,
+     "50": 168.0,
+     "75": 202.0,
+     "90": 202.0
+    },
+    "clipping_rate": {
+     "numerator": 0,
+     "denominator": 84,
+     "value": 0.0
+    },
+    "confidence_mean": 0.7909
+   },
+   "detector_b_iranplate|cam1.mp4": {
+    "frames_total": 72,
+    "frames_with_detection": 72,
+    "frames_without_detection": 0,
+    "n_boxes": 72,
+    "multi_box_frames": 0,
+    "detected_crops": 72,
+    "labeled_crops": 62,
+    "unlabeled_crops": 10,
+    "ocr_attempts": 72,
+    "exact": {
+     "numerator": 56,
+     "denominator": 62,
+     "value": 0.9032
+    },
+    "char_accuracy": {
+     "numerator": 61.3334,
+     "denominator": 62,
+     "value": 0.9892
+    },
+    "mean_edit_distance": {
+     "numerator": 6,
+     "denominator": 62,
+     "value": 0.0968
+    },
+    "invalid_rate_all_crops": {
+     "numerator": 6,
+     "denominator": 72,
+     "value": 0.0833
+    },
+    "failed_rate_all_crops": {
+     "numerator": 0,
+     "denominator": 72,
+     "value": 0.0
+    },
+    "median_crop_width": 202.0,
+    "median_crop_height": 53.0,
+    "mean_crop_width": 178.3333,
+    "mean_crop_height": 51.8194,
+    "width_percentiles": {
+     "10": 140.0,
+     "25": 140.0,
+     "50": 202.0,
+     "75": 202.0,
+     "90": 202.0
+    },
+    "clipping_rate": {
+     "numerator": 0,
+     "denominator": 72,
+     "value": 0.0
+    },
+    "confidence_mean": 0.8101
+   },
+   "detector_b_iranplate|cam2.mp4": {
+    "frames_total": 120,
+    "frames_with_detection": 12,
+    "frames_without_detection": 108,
+    "n_boxes": 12,
+    "multi_box_frames": 0,
+    "detected_crops": 12,
+    "labeled_crops": 0,
+    "unlabeled_crops": 120,
+    "ocr_attempts": 12,
+    "exact": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "char_accuracy": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "mean_edit_distance": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "invalid_rate_all_crops": {
+     "numerator": 9,
+     "denominator": 12,
+     "value": 0.75
+    },
+    "failed_rate_all_crops": {
+     "numerator": 0,
+     "denominator": 12,
+     "value": 0.0
+    },
+    "median_crop_width": 97.0,
+    "median_crop_height": 31.0,
+    "mean_crop_width": 95.75,
+    "mean_crop_height": 33.25,
+    "width_percentiles": {
+     "10": 76.0,
+     "25": 80.0,
+     "50": 97.0,
+     "75": 109.0,
+     "90": 120.0
+    },
+    "clipping_rate": {
+     "numerator": 0,
+     "denominator": 12,
+     "value": 0.0
+    },
+    "confidence_mean": 0.6753
+   }
+  }
+ },
+ "paired_statistics": {
+  "all": {
+   "camera": "all",
+   "table": {
+    "both_correct": 56,
+    "a_correct_b_wrong": 6,
+    "a_wrong_b_correct": 0,
+    "both_wrong": 0
+   },
+   "discordant_pairs": 6,
+   "mcnemar_exact_p": 0.03125,
+   "discordant_ids": {
+    "a_correct_b_wrong": [
+     "cam1.mp4@180",
+     "cam1.mp4@185",
+     "cam1.mp4@210",
+     "cam1.mp4@215",
+     "cam1.mp4@330",
+     "cam1.mp4@335"
+    ],
+    "a_wrong_b_correct": [],
+    "both_wrong": []
+   },
+   "verified_frames": 62
+  },
+  "cam1": {
+   "camera": "cam1.mp4",
+   "table": {
+    "both_correct": 56,
+    "a_correct_b_wrong": 6,
+    "a_wrong_b_correct": 0,
+    "both_wrong": 0
+   },
+   "discordant_pairs": 6,
+   "mcnemar_exact_p": 0.03125,
+   "discordant_ids": {
+    "a_correct_b_wrong": [
+     "cam1.mp4@180",
+     "cam1.mp4@185",
+     "cam1.mp4@210",
+     "cam1.mp4@215",
+     "cam1.mp4@330",
+     "cam1.mp4@335"
+    ],
+    "a_wrong_b_correct": [],
+    "both_wrong": []
+   },
+   "verified_frames": 62
+  }
+ },
+ "buckets": {
+  "detector_a_current": {
+   "lt80": {
+    "N": 7,
+    "labeled": 0,
+    "exact": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "char_accuracy": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "invalid": {
+     "numerator": 6,
+     "denominator": 7,
+     "value": 0.8571
+    },
+    "failed": {
+     "numerator": 0,
+     "denominator": 7,
+     "value": 0.0
+    },
+    "median_width": 70.0,
+    "median_height": 34.0,
+    "median_ocr_latency_ms": 11.228,
+    "median_detector_latency_ms": 19.1147,
+    "clipping_rate": {
+     "numerator": 0,
+     "denominator": 7,
+     "value": 0.0
+    }
+   },
+   "80-99": {
+    "N": 20,
+    "labeled": 0,
+    "exact": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "char_accuracy": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "invalid": {
+     "numerator": 17,
+     "denominator": 20,
+     "value": 0.85
+    },
+    "failed": {
+     "numerator": 5,
+     "denominator": 20,
+     "value": 0.25
+    },
+    "median_width": 82.0,
+    "median_height": 40.0,
+    "median_ocr_latency_ms": 11.5399,
+    "median_detector_latency_ms": 20.302,
+    "clipping_rate": {
+     "numerator": 0,
+     "denominator": 20,
+     "value": 0.0
+    }
+   },
+   "100-149": {
+    "N": 31,
+    "labeled": 21,
+    "exact": {
+     "numerator": 21,
+     "denominator": 21,
+     "value": 1.0
+    },
+    "char_accuracy": {
+     "numerator": 21.0,
+     "denominator": 21,
+     "value": 1.0
+    },
+    "invalid": {
+     "numerator": 8,
+     "denominator": 31,
+     "value": 0.2581
+    },
+    "failed": {
+     "numerator": 6,
+     "denominator": 31,
+     "value": 0.1935
+    },
+    "median_width": 138.0,
+    "median_height": 58.0,
+    "median_ocr_latency_ms": 10.577,
+    "median_detector_latency_ms": 19.7575,
+    "clipping_rate": {
+     "numerator": 0,
+     "denominator": 31,
+     "value": 0.0
+    }
+   },
+   "150-199": {
+    "N": 2,
+    "labeled": 0,
+    "exact": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "char_accuracy": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "invalid": {
+     "numerator": 2,
+     "denominator": 2,
+     "value": 1.0
+    },
+    "failed": {
+     "numerator": 2,
+     "denominator": 2,
+     "value": 1.0
+    },
+    "median_width": 180.0,
+    "median_height": 61.0,
+    "median_ocr_latency_ms": 9.6077,
+    "median_detector_latency_ms": 19.3102,
+    "clipping_rate": {
+     "numerator": 0,
+     "denominator": 2,
+     "value": 0.0
+    }
+   },
+   "ge200": {
+    "N": 41,
+    "labeled": 41,
+    "exact": {
+     "numerator": 41,
+     "denominator": 41,
+     "value": 1.0
+    },
+    "char_accuracy": {
+     "numerator": 41.0,
+     "denominator": 41,
+     "value": 1.0
+    },
+    "invalid": {
+     "numerator": 0,
+     "denominator": 41,
+     "value": 0.0
+    },
+    "failed": {
+     "numerator": 0,
+     "denominator": 41,
+     "value": 0.0
+    },
+    "median_width": 228.0,
+    "median_height": 66.0,
+    "median_ocr_latency_ms": 9.0713,
+    "median_detector_latency_ms": 20.0899,
+    "clipping_rate": {
+     "numerator": 0,
+     "denominator": 41,
+     "value": 0.0
+    }
+   }
+  },
+  "detector_b_iranplate": {
+   "lt80": {
+    "N": 2,
+    "labeled": 0,
+    "exact": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "char_accuracy": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "invalid": {
+     "numerator": 2,
+     "denominator": 2,
+     "value": 1.0
+    },
+    "failed": {
+     "numerator": 0,
+     "denominator": 2,
+     "value": 0.0
+    },
+    "median_width": 69.0,
+    "median_height": 24.0,
+    "median_ocr_latency_ms": 9.0699,
+    "median_detector_latency_ms": 19.7658,
+    "clipping_rate": {
+     "numerator": 0,
+     "denominator": 2,
+     "value": 0.0
+    }
+   },
+   "80-99": {
+    "N": 5,
+    "labeled": 0,
+    "exact": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "char_accuracy": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "invalid": {
+     "numerator": 4,
+     "denominator": 5,
+     "value": 0.8
+    },
+    "failed": {
+     "numerator": 0,
+     "denominator": 5,
+     "value": 0.0
+    },
+    "median_width": 83.0,
+    "median_height": 29.0,
+    "median_ocr_latency_ms": 9.7603,
+    "median_detector_latency_ms": 20.864,
+    "clipping_rate": {
+     "numerator": 0,
+     "denominator": 5,
+     "value": 0.0
+    }
+   },
+   "100-149": {
+    "N": 26,
+    "labeled": 21,
+    "exact": {
+     "numerator": 15,
+     "denominator": 21,
+     "value": 0.7143
+    },
+    "char_accuracy": {
+     "numerator": 20.3334,
+     "denominator": 21,
+     "value": 0.9683
+    },
+    "invalid": {
+     "numerator": 9,
+     "denominator": 26,
+     "value": 0.3462
+    },
+    "failed": {
+     "numerator": 0,
+     "denominator": 26,
+     "value": 0.0
+    },
+    "median_width": 140.0,
+    "median_height": 51.0,
+    "median_ocr_latency_ms": 9.7551,
+    "median_detector_latency_ms": 19.8213,
+    "clipping_rate": {
+     "numerator": 0,
+     "denominator": 26,
+     "value": 0.0
+    }
+   },
+   "150-199": {
+    "N": 10,
+    "labeled": 0,
+    "exact": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "char_accuracy": {
+     "numerator": 0,
+     "denominator": 0,
+     "value": null
+    },
+    "invalid": {
+     "numerator": 0,
+     "denominator": 10,
+     "value": 0.0
+    },
+    "failed": {
+     "numerator": 0,
+     "denominator": 10,
+     "value": 0.0
+    },
+    "median_width": 157.0,
+    "median_height": 37.0,
+    "median_ocr_latency_ms": 9.2882,
+    "median_detector_latency_ms": 19.6862,
+    "clipping_rate": {
+     "numerator": 0,
+     "denominator": 10,
+     "value": 0.0
+    }
+   },
+   "ge200": {
+    "N": 41,
+    "labeled": 41,
+    "exact": {
+     "numerator": 41,
+     "denominator": 41,
+     "value": 1.0
+    },
+    "char_accuracy": {
+     "numerator": 41.0,
+     "denominator": 41,
+     "value": 1.0
+    },
+    "invalid": {
+     "numerator": 0,
+     "denominator": 41,
+     "value": 0.0
+    },
+    "failed": {
+     "numerator": 0,
+     "denominator": 41,
+     "value": 0.0
+    },
+    "median_width": 202.0,
+    "median_height": 53.0,
+    "median_ocr_latency_ms": 9.1731,
+    "median_detector_latency_ms": 20.2062,
+    "clipping_rate": {
+     "numerator": 0,
+     "denominator": 41,
+     "value": 0.0
+    }
+   }
+  }
+ },
+ "ground_truth": {
+  "policy": "verified_only",
+  "verified_plate_instances": 2,
+  "cam1_frames_in_verified_ranges": 315,
+  "cam2_frames_in_verified_ranges": 0,
+  "cam2_status": "UNLABELED",
+  "box_ground_truth": "NO_BOX_GROUND_TRUTH"
+ }
+}

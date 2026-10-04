@@ -1,0 +1,59 @@
+{
+ "generated_at": "2026-10-03 14:37:52",
+ "environment": {
+  "python": "3.11.4",
+  "torch": "2.12.0+cpu",
+  "ultralytics": "8.4.56",
+  "opencv": "4.13.0",
+  "cuda_available": false,
+  "platform": "Windows-10-10.0.26200-SP0",
+  "processor": "AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD",
+  "cpu_count": 12
+ },
+ "latency": {
+  "detector": {
+   "detector_a_current": {
+    "p50": 20.8348,
+    "p95": 25.5195,
+    "p99": 33.2076,
+    "mean": 21.9065,
+    "max": 93.619,
+    "n": 100
+   },
+   "detector_b_iranplate": {
+    "p50": 20.7287,
+    "p95": 25.1776,
+    "p99": 44.9055,
+    "mean": 27.298,
+    "max": 625.5737,
+    "n": 100
+   }
+  },
+  "crop_extraction": {
+   "p50": 0.0166,
+   "p95": 0.0188,
+   "p99": 0.02,
+   "mean": 0.0164,
+   "max": 0.0207,
+   "n": 100
+  },
+  "ocr": {
+   "p50": 9.6529,
+   "p95": 10.7331,
+   "p99": 12.3681,
+   "mean": 9.6462,
+   "max": 12.5906,
+   "n": 100
+  },
+  "total": {
+   "p50": 9.67,
+   "p95": 10.7526,
+   "p99": 12.3879,
+   "mean": 9.6626,
+   "max": 12.6091,
+   "n": 100
+  },
+  "warmup_calls": 20,
+  "measured_calls": 100
+ }
+}

@@ -1,0 +1,24 @@
+# verify_results.py output
+
+records=185 issues=11
+
+NOTE  cam2 records inspected: 51 (exact/char_accuracy all null)
+NOTE  pairwise n=73 counts={'BOTH_CORRECT': 62, 'NEITHER_VALID': 7, 'INCOMPARABLE': 3, 'CURRENT_ONLY_VALID': 1}
+NOTE  unmatched INCOMPARABLE stubs: [('cam2.mp4', 525, 'INCOMPARABLE'), ('cam2.mp4', 525, 'INCOMPARABLE')]
+NOTE  detections never entering the pairwise set: 43 of 185
+NOTE  dropped detections by camera: {'cam1.mp4': 10, 'cam2.mp4': 33}
+NOTE  dropped detections by detector: {'iranplate_vision': 13, 'current_detector': 30}
+
+## ISSUES
+
+- [BUCKET] current_detector/cam2.mp4@585 w=100.0 stored='80-99' recomputed='100-149'
+- [PAIRWISE] stub record @525 omits gt_status (schema inconsistency)
+- [PAIRWISE] stub record @525 omits gt_status (schema inconsistency)
+- [EXPAND] phase2b_cam2_expansion.json factors=['1.00', '1.10', '1.20', '1.30', '1.40'] != required ['1.00', '1.05', '1.10', '1.15', '1.20']
+- [EXPAND] cam2_expansion current_detector factors=['1.00', '1.10', '1.20', '1.30', '1.40'] != ['1.00', '1.05', '1.10', '1.15', '1.20']
+- [EXPAND] cam2_expansion iranplate_vision factors=['1.00', '1.10', '1.20', '1.30', '1.40'] != ['1.00', '1.05', '1.10', '1.15', '1.20']
+- [REPORT] detector p95 current: report says 25.8, stored value is 22.65
+- [REPORT] detector p95 iranplate: report says 25.4, stored value is 22.54
+- [REPORT] ocr p95 current: report says 13.2, stored value is 13.6
+- [REPORT] ocr p95 iranplate: report says 12.6, stored value is 11.25
+- [PAIRWISE-COVERAGE] 43 detections are excluded from the pairwise analysis because their frame has no detection from the other detector; they are NOT reported as INCOMPARABLE (per camera: {'cam1.mp4': 10, 'cam2.mp4': 33}). Pairwise outcomes are therefore not exhaustive over the detection set.

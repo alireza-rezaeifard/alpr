@@ -1,0 +1,87 @@
+{
+ "warmup_calls": 20,
+ "measured_calls": 100,
+ "note": "steady-state only; model load excluded; YOLO not reloaded between measurements",
+ "detector": {
+  "detector_a_current": {
+   "p50": 19.6674,
+   "p95": 20.586,
+   "max": 21.5521,
+   "mean": 19.4958,
+   "n": 100
+  },
+  "detector_b_iranplate": {
+   "p50": 19.7606,
+   "p95": 20.7847,
+   "max": 22.2146,
+   "mean": 19.6172,
+   "n": 100
+  }
+ },
+ "crop_extraction": {
+  "trunc": {
+   "p50": 0.0121,
+   "p95": 0.0141,
+   "max": 0.0147,
+   "mean": 0.0121,
+   "n": 100
+  },
+  "round": {
+   "p50": 0.0119,
+   "p95": 0.014,
+   "max": 0.0181,
+   "mean": 0.0121,
+   "n": 100
+  }
+ },
+ "ocr": {
+  "trunc": {
+   "p50": 10.3468,
+   "p95": 10.9992,
+   "max": 11.4031,
+   "mean": 10.2286,
+   "n": 100
+  },
+  "round": {
+   "p50": 10.2392,
+   "p95": 10.7963,
+   "max": 10.9722,
+   "mean": 10.0089,
+   "n": 100
+  }
+ },
+ "total_crop_plus_ocr": {
+  "trunc": {
+   "p50": 10.3592,
+   "p95": 11.0125,
+   "max": 11.4168,
+   "mean": 10.2406,
+   "n": 100
+  },
+  "round": {
+   "p50": 10.2534,
+   "p95": 10.8085,
+   "max": 10.9859,
+   "mean": 10.021,
+   "n": 100
+  }
+ },
+ "measurement_box": {
+  "detector": "detector_a_current",
+  "bbox_float": [
+   1061.3577,
+   587.2319,
+   1199.2072,
+   645.7987
+  ],
+  "detector_b_bbox_float": [
+   1059.5409,
+   595.7163,
+   1199.636,
+   646.8822
+  ]
+ },
+ "convention_delta_crop_extraction": {
+  "round_p50_minus_trunc_p50_ms": -0.0002
+ }
+}

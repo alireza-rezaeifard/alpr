@@ -1,0 +1,46 @@
+{
+ "generated_at": "2026-10-04 11:31:19",
+ "protocol": {
+  "conf": 0.5,
+  "iou": 0.45,
+  "max_det": 12,
+  "imgsz": 640,
+  "agnostic_nms": false,
+  "half": false
+ },
+ "configs": [
+  {
+   "convention": "trunc",
+   "expansion": 1.0
+  },
+  {
+   "convention": "floor",
+   "expansion": 1.0
+  },
+  {
+   "convention": "round",
+   "expansion": 1.0
+  },
+  {
+   "convention": "ceil",
+   "expansion": 1.0
+  },
+  {
+   "convention": "trunc",
+   "expansion": 1.03
+  },
+  {
+   "convention": "trunc",
+   "expansion": 1.05
+  },
+  {
+   "convention": "trunc",
+   "expansion": 1.07
+  },
+  {
+   "convention": "trunc",
+   "expansion": 1.1
+  }
+ ],
+ "note": "per-cell exact/invalid/failed are in ocr_evaluation; this file carries the cell inventory and clipping"
+}

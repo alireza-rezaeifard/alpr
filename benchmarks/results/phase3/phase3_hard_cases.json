@@ -1,0 +1,1582 @@
+{
+ "n_hard_cases": 83,
+ "cases": [
+  {
+   "kind": "tiny_plate",
+   "reason": "plate width < 96px (small-object regime)",
+   "camera": "cam2",
+   "frame": 200,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    1012,
+    675,
+    1092,
+    721
+   ],
+   "crop_width": 80,
+   "ocr_text": "999gh9926",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "tiny_plate",
+   "reason": "plate width < 96px (small-object regime)",
+   "camera": "cam2",
+   "frame": 205,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    1056,
+    742,
+    1144,
+    778
+   ],
+   "crop_width": 88,
+   "ocr_text": "99919959",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "tiny_plate",
+   "reason": "plate width < 96px (small-object regime)",
+   "camera": "cam2",
+   "frame": 300,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    702,
+    599,
+    779,
+    641
+   ],
+   "crop_width": 77,
+   "ocr_text": "25h389999",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "tiny_plate",
+   "reason": "plate width < 96px (small-object regime)",
+   "camera": "cam2",
+   "frame": 305,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    704,
+    599,
+    778,
+    635
+   ],
+   "crop_width": 74,
+   "ocr_text": "h9h",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "tiny_plate",
+   "reason": "plate width < 96px (small-object regime)",
+   "camera": "cam2",
+   "frame": 315,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    713,
+    611,
+    779,
+    642
+   ],
+   "crop_width": 66,
+   "ocr_text": "gh5",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "tiny_plate",
+   "reason": "plate width < 96px (small-object regime)",
+   "camera": "cam2",
+   "frame": 320,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    713,
+    608,
+    780,
+    642
+   ],
+   "crop_width": 67,
+   "ocr_text": "h285299",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "tiny_plate",
+   "reason": "plate width < 96px (small-object regime)",
+   "camera": "cam2",
+   "frame": 325,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    713,
+    612,
+    779,
+    643
+   ],
+   "crop_width": 66,
+   "ocr_text": "hh9",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "tiny_plate",
+   "reason": "plate width < 96px (small-object regime)",
+   "camera": "cam2",
+   "frame": 330,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    705,
+    616,
+    788,
+    657
+   ],
+   "crop_width": 83,
+   "ocr_text": "35h2894399",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "tiny_plate",
+   "reason": "plate width < 96px (small-object regime)",
+   "camera": "cam2",
+   "frame": 335,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    705,
+    617,
+    788,
+    657
+   ],
+   "crop_width": 83,
+   "ocr_text": "35h2823999",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "tiny_plate",
+   "reason": "plate width < 96px (small-object regime)",
+   "camera": "cam2",
+   "frame": 340,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    705,
+    617,
+    787,
+    657
+   ],
+   "crop_width": 82,
+   "ocr_text": "235h284999",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "tiny_plate",
+   "reason": "plate width < 96px (small-object regime)",
+   "camera": "cam2",
+   "frame": 345,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    705,
+    617,
+    787,
+    657
+   ],
+   "crop_width": 82,
+   "ocr_text": "235h284999",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "tiny_plate",
+   "reason": "plate width < 96px (small-object regime)",
+   "camera": "cam2",
+   "frame": 350,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    705,
+    617,
+    787,
+    657
+   ],
+   "crop_width": 82,
+   "ocr_text": "235h284999",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "tiny_plate",
+   "reason": "plate width < 96px (small-object regime)",
+   "camera": "cam2",
+   "frame": 355,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    705,
+    617,
+    787,
+    657
+   ],
+   "crop_width": 82,
+   "ocr_text": "235h284999",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "tiny_plate",
+   "reason": "plate width < 96px (small-object regime)",
+   "camera": "cam2",
+   "frame": 430,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    705,
+    620,
+    786,
+    656
+   ],
+   "crop_width": 81,
+   "ocr_text": "35h28999",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "tiny_plate",
+   "reason": "plate width < 96px (small-object regime)",
+   "camera": "cam2",
+   "frame": 480,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    704,
+    621,
+    786,
+    656
+   ],
+   "crop_width": 82,
+   "ocr_text": "325h28499",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "tiny_plate",
+   "reason": "plate width < 96px (small-object regime)",
+   "camera": "cam2",
+   "frame": 485,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    706,
+    616,
+    788,
+    656
+   ],
+   "crop_width": 82,
+   "ocr_text": "5h328499",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "tiny_plate",
+   "reason": "plate width < 96px (small-object regime)",
+   "camera": "cam2",
+   "frame": 490,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    706,
+    616,
+    787,
+    657
+   ],
+   "crop_width": 81,
+   "ocr_text": "25h28499",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "tiny_plate",
+   "reason": "plate width < 96px (small-object regime)",
+   "camera": "cam2",
+   "frame": 495,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    706,
+    615,
+    787,
+    657
+   ],
+   "crop_width": 81,
+   "ocr_text": "25h28499",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "tiny_plate",
+   "reason": "plate width < 96px (small-object regime)",
+   "camera": "cam2",
+   "frame": 500,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    705,
+    614,
+    787,
+    655
+   ],
+   "crop_width": 82,
+   "ocr_text": "25hh28419",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "tiny_plate",
+   "reason": "plate width < 96px (small-object regime)",
+   "camera": "cam2",
+   "frame": 505,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    706,
+    616,
+    788,
+    655
+   ],
+   "crop_width": 82,
+   "ocr_text": "95h9899",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "tiny_plate",
+   "reason": "plate width < 96px (small-object regime)",
+   "camera": "cam2",
+   "frame": 510,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    715,
+    620,
+    794,
+    658
+   ],
+   "crop_width": 79,
+   "ocr_text": "25h2849",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "tiny_plate",
+   "reason": "plate width < 96px (small-object regime)",
+   "camera": "cam2",
+   "frame": 515,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    712,
+    622,
+    794,
+    656
+   ],
+   "crop_width": 82,
+   "ocr_text": "",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "tiny_plate",
+   "reason": "plate width < 96px (small-object regime)",
+   "camera": "cam2",
+   "frame": 530,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    793,
+    678,
+    863,
+    706
+   ],
+   "crop_width": 70,
+   "ocr_text": "2hh38999",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "tiny_plate",
+   "reason": "plate width < 96px (small-object regime)",
+   "camera": "cam2",
+   "frame": 545,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    904,
+    779,
+    993,
+    823
+   ],
+   "crop_width": 89,
+   "ocr_text": "25h98999",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "tiny_plate",
+   "reason": "plate width < 96px (small-object regime)",
+   "camera": "cam2",
+   "frame": 550,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    968,
+    839,
+    1060,
+    877
+   ],
+   "crop_width": 92,
+   "ocr_text": "2h5h298999",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "verified_wrong_read",
+   "reason": "OCR disagrees with verified GT",
+   "camera": "cam1",
+   "frame": 180,
+   "detector": "detector_b_iranplate",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    1059,
+    595,
+    1199,
+    646
+   ],
+   "crop_width": 140,
+   "ocr_text": "12d674913",
+   "ground_truth": "12D67413",
+   "verified": true
+  },
+  {
+   "kind": "verified_wrong_read",
+   "reason": "OCR disagrees with verified GT",
+   "camera": "cam1",
+   "frame": 185,
+   "detector": "detector_b_iranplate",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    1059,
+    595,
+    1199,
+    646
+   ],
+   "crop_width": 140,
+   "ocr_text": "12d674913",
+   "ground_truth": "12D67413",
+   "verified": true
+  },
+  {
+   "kind": "verified_wrong_read",
+   "reason": "OCR disagrees with verified GT",
+   "camera": "cam1",
+   "frame": 210,
+   "detector": "detector_b_iranplate",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    1059,
+    595,
+    1199,
+    646
+   ],
+   "crop_width": 140,
+   "ocr_text": "12d674913",
+   "ground_truth": "12D67413",
+   "verified": true
+  },
+  {
+   "kind": "verified_wrong_read",
+   "reason": "OCR disagrees with verified GT",
+   "camera": "cam1",
+   "frame": 215,
+   "detector": "detector_b_iranplate",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    1059,
+    595,
+    1199,
+    646
+   ],
+   "crop_width": 140,
+   "ocr_text": "12d674913",
+   "ground_truth": "12D67413",
+   "verified": true
+  },
+  {
+   "kind": "verified_wrong_read",
+   "reason": "OCR disagrees with verified GT",
+   "camera": "cam1",
+   "frame": 330,
+   "detector": "detector_b_iranplate",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    1059,
+    595,
+    1199,
+    646
+   ],
+   "crop_width": 140,
+   "ocr_text": "12d674913",
+   "ground_truth": "12D67413",
+   "verified": true
+  },
+  {
+   "kind": "verified_wrong_read",
+   "reason": "OCR disagrees with verified GT",
+   "camera": "cam1",
+   "frame": 335,
+   "detector": "detector_b_iranplate",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    1059,
+    595,
+    1199,
+    646
+   ],
+   "crop_width": 140,
+   "ocr_text": "12d674913",
+   "ground_truth": "12D67413",
+   "verified": true
+  },
+  {
+   "kind": "invalid_output",
+   "reason": "output violates Iranian plate grammar",
+   "camera": "cam1",
+   "frame": 180,
+   "detector": "detector_b_iranplate",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    1059,
+    595,
+    1199,
+    646
+   ],
+   "crop_width": 140,
+   "ocr_text": "12d674913",
+   "ground_truth": "12D67413",
+   "verified": true
+  },
+  {
+   "kind": "invalid_output",
+   "reason": "output violates Iranian plate grammar",
+   "camera": "cam1",
+   "frame": 185,
+   "detector": "detector_b_iranplate",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    1059,
+    595,
+    1199,
+    646
+   ],
+   "crop_width": 140,
+   "ocr_text": "12d674913",
+   "ground_truth": "12D67413",
+   "verified": true
+  },
+  {
+   "kind": "invalid_output",
+   "reason": "output violates Iranian plate grammar",
+   "camera": "cam1",
+   "frame": 210,
+   "detector": "detector_b_iranplate",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    1059,
+    595,
+    1199,
+    646
+   ],
+   "crop_width": 140,
+   "ocr_text": "12d674913",
+   "ground_truth": "12D67413",
+   "verified": true
+  },
+  {
+   "kind": "invalid_output",
+   "reason": "output violates Iranian plate grammar",
+   "camera": "cam1",
+   "frame": 215,
+   "detector": "detector_b_iranplate",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    1059,
+    595,
+    1199,
+    646
+   ],
+   "crop_width": 140,
+   "ocr_text": "12d674913",
+   "ground_truth": "12D67413",
+   "verified": true
+  },
+  {
+   "kind": "invalid_output",
+   "reason": "output violates Iranian plate grammar",
+   "camera": "cam1",
+   "frame": 330,
+   "detector": "detector_b_iranplate",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    1059,
+    595,
+    1199,
+    646
+   ],
+   "crop_width": 140,
+   "ocr_text": "12d674913",
+   "ground_truth": "12D67413",
+   "verified": true
+  },
+  {
+   "kind": "invalid_output",
+   "reason": "output violates Iranian plate grammar",
+   "camera": "cam1",
+   "frame": 335,
+   "detector": "detector_b_iranplate",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    1059,
+    595,
+    1199,
+    646
+   ],
+   "crop_width": 140,
+   "ocr_text": "12d674913",
+   "ground_truth": "12D67413",
+   "verified": true
+  },
+  {
+   "kind": "invalid_output",
+   "reason": "output violates Iranian plate grammar",
+   "camera": "cam2",
+   "frame": 200,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    1012,
+    675,
+    1092,
+    721
+   ],
+   "crop_width": 80,
+   "ocr_text": "999gh9926",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "invalid_output",
+   "reason": "output violates Iranian plate grammar",
+   "camera": "cam2",
+   "frame": 205,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    1056,
+    742,
+    1144,
+    778
+   ],
+   "crop_width": 88,
+   "ocr_text": "99919959",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "invalid_output",
+   "reason": "output violates Iranian plate grammar",
+   "camera": "cam2",
+   "frame": 205,
+   "detector": "detector_b_iranplate",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    1061,
+    755,
+    1143,
+    781
+   ],
+   "crop_width": 82,
+   "ocr_text": "919gh169256",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "invalid_output",
+   "reason": "output violates Iranian plate grammar",
+   "camera": "cam2",
+   "frame": 210,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    1106,
+    830,
+    1219,
+    876
+   ],
+   "crop_width": 113,
+   "ocr_text": "99gh199696",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "invalid_output",
+   "reason": "output violates Iranian plate grammar",
+   "camera": "cam2",
+   "frame": 210,
+   "detector": "detector_b_iranplate",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    1108,
+    836,
+    1217,
+    872
+   ],
+   "crop_width": 109,
+   "ocr_text": "199gh1696",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "invalid_output",
+   "reason": "output violates Iranian plate grammar",
+   "camera": "cam2",
+   "frame": 215,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    1200,
+    955,
+    1310,
+    993
+   ],
+   "crop_width": 110,
+   "ocr_text": "99999996",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "invalid_output",
+   "reason": "output violates Iranian plate grammar",
+   "camera": "cam2",
+   "frame": 215,
+   "detector": "detector_b_iranplate",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    1194,
+    958,
+    1314,
+    994
+   ],
+   "crop_width": 120,
+   "ocr_text": "99999996",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "invalid_output",
+   "reason": "output violates Iranian plate grammar",
+   "camera": "cam2",
+   "frame": 300,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    702,
+    599,
+    779,
+    641
+   ],
+   "crop_width": 77,
+   "ocr_text": "25h389999",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "invalid_output",
+   "reason": "output violates Iranian plate grammar",
+   "camera": "cam2",
+   "frame": 305,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    704,
+    599,
+    778,
+    635
+   ],
+   "crop_width": 74,
+   "ocr_text": "h9h",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "invalid_output",
+   "reason": "output violates Iranian plate grammar",
+   "camera": "cam2",
+   "frame": 315,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    713,
+    611,
+    779,
+    642
+   ],
+   "crop_width": 66,
+   "ocr_text": "gh5",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "invalid_output",
+   "reason": "output violates Iranian plate grammar",
+   "camera": "cam2",
+   "frame": 320,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    713,
+    608,
+    780,
+    642
+   ],
+   "crop_width": 67,
+   "ocr_text": "h285299",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "invalid_output",
+   "reason": "output violates Iranian plate grammar",
+   "camera": "cam2",
+   "frame": 325,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    713,
+    612,
+    779,
+    643
+   ],
+   "crop_width": 66,
+   "ocr_text": "hh9",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "invalid_output",
+   "reason": "output violates Iranian plate grammar",
+   "camera": "cam2",
+   "frame": 330,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    705,
+    616,
+    788,
+    657
+   ],
+   "crop_width": 83,
+   "ocr_text": "35h2894399",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "invalid_output",
+   "reason": "output violates Iranian plate grammar",
+   "camera": "cam2",
+   "frame": 335,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    705,
+    617,
+    788,
+    657
+   ],
+   "crop_width": 83,
+   "ocr_text": "35h2823999",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "invalid_output",
+   "reason": "output violates Iranian plate grammar",
+   "camera": "cam2",
+   "frame": 340,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    705,
+    617,
+    787,
+    657
+   ],
+   "crop_width": 82,
+   "ocr_text": "235h284999",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "invalid_output",
+   "reason": "output violates Iranian plate grammar",
+   "camera": "cam2",
+   "frame": 345,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    705,
+    617,
+    787,
+    657
+   ],
+   "crop_width": 82,
+   "ocr_text": "235h284999",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "invalid_output",
+   "reason": "output violates Iranian plate grammar",
+   "camera": "cam2",
+   "frame": 350,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    705,
+    617,
+    787,
+    657
+   ],
+   "crop_width": 82,
+   "ocr_text": "235h284999",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "invalid_output",
+   "reason": "output violates Iranian plate grammar",
+   "camera": "cam2",
+   "frame": 355,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    705,
+    617,
+    787,
+    657
+   ],
+   "crop_width": 82,
+   "ocr_text": "235h284999",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "invalid_output",
+   "reason": "output violates Iranian plate grammar",
+   "camera": "cam2",
+   "frame": 480,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    704,
+    621,
+    786,
+    656
+   ],
+   "crop_width": 82,
+   "ocr_text": "325h28499",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "confusing_characters",
+   "reason": "instance carries a documented ی/ع glyph ambiguity",
+   "camera": "cam1",
+   "frame": 0,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    818,
+    423,
+    1048,
+    489
+   ],
+   "crop_width": 230,
+   "ocr_text": "28y68923",
+   "ground_truth": "28Y68923",
+   "verified": true
+  },
+  {
+   "kind": "confusing_characters",
+   "reason": "instance carries a documented ی/ع glyph ambiguity",
+   "camera": "cam1",
+   "frame": 0,
+   "detector": "detector_b_iranplate",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    838,
+    427,
+    1040,
+    481
+   ],
+   "crop_width": 202,
+   "ocr_text": "28y68923",
+   "ground_truth": "28Y68923",
+   "verified": true
+  },
+  {
+   "kind": "confusing_characters",
+   "reason": "instance carries a documented ی/ع glyph ambiguity",
+   "camera": "cam1",
+   "frame": 5,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    819,
+    423,
+    1048,
+    489
+   ],
+   "crop_width": 229,
+   "ocr_text": "28y68923",
+   "ground_truth": "28Y68923",
+   "verified": true
+  },
+  {
+   "kind": "confusing_characters",
+   "reason": "instance carries a documented ی/ع glyph ambiguity",
+   "camera": "cam1",
+   "frame": 5,
+   "detector": "detector_b_iranplate",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    838,
+    427,
+    1040,
+    480
+   ],
+   "crop_width": 202,
+   "ocr_text": "28y68923",
+   "ground_truth": "28Y68923",
+   "verified": true
+  },
+  {
+   "kind": "confusing_characters",
+   "reason": "instance carries a documented ی/ع glyph ambiguity",
+   "camera": "cam1",
+   "frame": 10,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    820,
+    423,
+    1048,
+    489
+   ],
+   "crop_width": 228,
+   "ocr_text": "28y68923",
+   "ground_truth": "28Y68923",
+   "verified": true
+  },
+  {
+   "kind": "unverified_cam2_sample",
+   "reason": "cam2 crop pending human verification",
+   "camera": "cam2",
+   "frame": 200,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    1012,
+    675,
+    1092,
+    721
+   ],
+   "crop_width": 80,
+   "ocr_text": "999gh9926",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "unverified_cam2_sample",
+   "reason": "cam2 crop pending human verification",
+   "camera": "cam2",
+   "frame": 205,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    1056,
+    742,
+    1144,
+    778
+   ],
+   "crop_width": 88,
+   "ocr_text": "99919959",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "unverified_cam2_sample",
+   "reason": "cam2 crop pending human verification",
+   "camera": "cam2",
+   "frame": 210,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    1106,
+    830,
+    1219,
+    876
+   ],
+   "crop_width": 113,
+   "ocr_text": "99gh199696",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "unverified_cam2_sample",
+   "reason": "cam2 crop pending human verification",
+   "camera": "cam2",
+   "frame": 215,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    1200,
+    955,
+    1310,
+    993
+   ],
+   "crop_width": 110,
+   "ocr_text": "99999996",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "unverified_cam2_sample",
+   "reason": "cam2 crop pending human verification",
+   "camera": "cam2",
+   "frame": 220,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    1102,
+    758,
+    1295,
+    827
+   ],
+   "crop_width": 193,
+   "ocr_text": "",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "unverified_cam2_sample",
+   "reason": "cam2 crop pending human verification",
+   "camera": "cam2",
+   "frame": 250,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    1110,
+    824,
+    1223,
+    874
+   ],
+   "crop_width": 113,
+   "ocr_text": "",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "unverified_cam2_sample",
+   "reason": "cam2 crop pending human verification",
+   "camera": "cam2",
+   "frame": 255,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    1110,
+    823,
+    1223,
+    874
+   ],
+   "crop_width": 113,
+   "ocr_text": "",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "unverified_cam2_sample",
+   "reason": "cam2 crop pending human verification",
+   "camera": "cam2",
+   "frame": 265,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    1111,
+    825,
+    1224,
+    875
+   ],
+   "crop_width": 113,
+   "ocr_text": "",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "unverified_cam2_sample",
+   "reason": "cam2 crop pending human verification",
+   "camera": "cam2",
+   "frame": 285,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    1110,
+    824,
+    1222,
+    873
+   ],
+   "crop_width": 112,
+   "ocr_text": "",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "unverified_cam2_sample",
+   "reason": "cam2 crop pending human verification",
+   "camera": "cam2",
+   "frame": 290,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    1109,
+    826,
+    1223,
+    875
+   ],
+   "crop_width": 114,
+   "ocr_text": "",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "unverified_cam2_sample",
+   "reason": "cam2 crop pending human verification",
+   "camera": "cam2",
+   "frame": 295,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    1109,
+    825,
+    1223,
+    875
+   ],
+   "crop_width": 114,
+   "ocr_text": "",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "unverified_cam2_sample",
+   "reason": "cam2 crop pending human verification",
+   "camera": "cam2",
+   "frame": 300,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    702,
+    599,
+    779,
+    641
+   ],
+   "crop_width": 77,
+   "ocr_text": "25h389999",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "unverified_cam2_sample",
+   "reason": "cam2 crop pending human verification",
+   "camera": "cam2",
+   "frame": 305,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    704,
+    599,
+    778,
+    635
+   ],
+   "crop_width": 74,
+   "ocr_text": "h9h",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "unverified_cam2_sample",
+   "reason": "cam2 crop pending human verification",
+   "camera": "cam2",
+   "frame": 315,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    713,
+    611,
+    779,
+    642
+   ],
+   "crop_width": 66,
+   "ocr_text": "gh5",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "unverified_cam2_sample",
+   "reason": "cam2 crop pending human verification",
+   "camera": "cam2",
+   "frame": 320,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    713,
+    608,
+    780,
+    642
+   ],
+   "crop_width": 67,
+   "ocr_text": "h285299",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "unverified_cam2_sample",
+   "reason": "cam2 crop pending human verification",
+   "camera": "cam2",
+   "frame": 325,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    713,
+    612,
+    779,
+    643
+   ],
+   "crop_width": 66,
+   "ocr_text": "hh9",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "unverified_cam2_sample",
+   "reason": "cam2 crop pending human verification",
+   "camera": "cam2",
+   "frame": 330,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    705,
+    616,
+    788,
+    657
+   ],
+   "crop_width": 83,
+   "ocr_text": "35h2894399",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "unverified_cam2_sample",
+   "reason": "cam2 crop pending human verification",
+   "camera": "cam2",
+   "frame": 335,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    705,
+    617,
+    788,
+    657
+   ],
+   "crop_width": 83,
+   "ocr_text": "35h2823999",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "unverified_cam2_sample",
+   "reason": "cam2 crop pending human verification",
+   "camera": "cam2",
+   "frame": 340,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    705,
+    617,
+    787,
+    657
+   ],
+   "crop_width": 82,
+   "ocr_text": "235h284999",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "unverified_cam2_sample",
+   "reason": "cam2 crop pending human verification",
+   "camera": "cam2",
+   "frame": 345,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    705,
+    617,
+    787,
+    657
+   ],
+   "crop_width": 82,
+   "ocr_text": "235h284999",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "unverified_cam2_sample",
+   "reason": "cam2 crop pending human verification",
+   "camera": "cam2",
+   "frame": 350,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    705,
+    617,
+    787,
+    657
+   ],
+   "crop_width": 82,
+   "ocr_text": "235h284999",
+   "ground_truth": null,
+   "verified": false
+  },
+  {
+   "kind": "unverified_cam2_sample",
+   "reason": "cam2 crop pending human verification",
+   "camera": "cam2",
+   "frame": 355,
+   "detector": "detector_a_current",
+   "convention": "trunc",
+   "expansion": 1.0,
+   "integer_bbox": [
+    705,
+    617,
+    787,
+    657
+   ],
+   "crop_width": 82,
+   "ocr_text": "235h284999",
+   "ground_truth": null,
+   "verified": false
+  }
+ ]
+}

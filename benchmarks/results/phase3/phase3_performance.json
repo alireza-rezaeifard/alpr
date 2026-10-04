@@ -1,0 +1,56 @@
+{
+ "generated_at": "2026-10-04 11:31:19",
+ "environment": {
+  "python": "3.11.4",
+  "torch": "2.12.0+cpu",
+  "ultralytics": "8.4.56",
+  "opencv": "4.13.0",
+  "cuda_available": false,
+  "platform": "Windows-10-10.0.26200-SP0",
+  "cpu_count": 12,
+  "ram_gb": 31.14
+ },
+ "cold_start": {
+  "subprocess_ok": true,
+  "subprocess_wall_s": 3.188,
+  "note": "fresh process; singleton cache cannot leak in",
+  "import_api_s": 0.423,
+  "model_load_s": 2.251,
+  "process_total_s": 2.675
+ },
+ "warmup_calls": 20,
+ "measured_calls": 100,
+ "detector": {
+  "detector_a_current": {
+   "p50": 19.4453,
+   "p95": 20.5018,
+   "max": 21.6985,
+   "n": 100
+  },
+  "detector_b_iranplate": {
+   "p50": 19.2689,
+   "p95": 20.5899,
+   "max": 24.0511,
+   "n": 100
+  }
+ },
+ "crop_extraction_trunc": {
+  "p50": 0.0128,
+  "p95": 0.0153,
+  "max": 0.0237,
+  "n": 100
+ },
+ "ocr": {
+  "p50": 8.697,
+  "p95": 9.2871,
+  "max": 9.8094,
+  "n": 100
+ },
+ "total_crop_plus_ocr": {
+  "p50": 8.7108,
+  "p95": 9.2993,
+  "max": 9.8227,
+  "n": 100
+ },
+ "note": "steady-state only; model load reported separately as cold_model_load_s; warm-up excluded (20 calls)"
+}

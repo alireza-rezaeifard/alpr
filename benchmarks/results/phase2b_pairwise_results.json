@@ -1,0 +1,2652 @@
+{
+ "generated_at": "2026-09-30 12:55:15",
+ "outcome_counts": {
+  "BOTH_CORRECT": 62,
+  "NEITHER_VALID": 7,
+  "INCOMPARABLE": 3,
+  "CURRENT_ONLY_VALID": 1
+ },
+ "pairs": [
+  {
+   "camera": "cam1.mp4",
+   "frame": 0,
+   "iou": 0.722,
+   "current_crop": [
+    230.9,
+    65.8
+   ],
+   "iranplate_crop": [
+    202.0,
+    54.3
+   ],
+   "width_delta": -28.9,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.804,
+   "iranplate_conf": 0.8318,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 5,
+   "iou": 0.711,
+   "current_crop": [
+    228.9,
+    66.3
+   ],
+   "iranplate_crop": [
+    201.9,
+    53.4
+   ],
+   "width_delta": -27.0,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.7974,
+   "iranplate_conf": 0.8281,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 10,
+   "iou": 0.708,
+   "current_crop": [
+    229.0,
+    66.0
+   ],
+   "iranplate_crop": [
+    201.9,
+    53.1
+   ],
+   "width_delta": -27.1,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.7966,
+   "iranplate_conf": 0.828,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 15,
+   "iou": 0.714,
+   "current_crop": [
+    228.5,
+    65.9
+   ],
+   "iranplate_crop": [
+    202.1,
+    53.3
+   ],
+   "width_delta": -26.4,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.796,
+   "iranplate_conf": 0.8274,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 20,
+   "iou": 0.715,
+   "current_crop": [
+    228.4,
+    66.1
+   ],
+   "iranplate_crop": [
+    202.1,
+    53.3
+   ],
+   "width_delta": -26.3,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.798,
+   "iranplate_conf": 0.8274,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 25,
+   "iou": 0.714,
+   "current_crop": [
+    228.7,
+    66.1
+   ],
+   "iranplate_crop": [
+    202.0,
+    53.4
+   ],
+   "width_delta": -26.7,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.7988,
+   "iranplate_conf": 0.828,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 30,
+   "iou": 0.72,
+   "current_crop": [
+    227.1,
+    65.9
+   ],
+   "iranplate_crop": [
+    201.8,
+    53.3
+   ],
+   "width_delta": -25.3,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.8031,
+   "iranplate_conf": 0.8269,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 35,
+   "iou": 0.72,
+   "current_crop": [
+    227.1,
+    65.9
+   ],
+   "iranplate_crop": [
+    201.8,
+    53.3
+   ],
+   "width_delta": -25.3,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.8031,
+   "iranplate_conf": 0.8269,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 40,
+   "iou": 0.718,
+   "current_crop": [
+    227.2,
+    65.9
+   ],
+   "iranplate_crop": [
+    201.8,
+    53.3
+   ],
+   "width_delta": -25.4,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.8031,
+   "iranplate_conf": 0.8269,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 45,
+   "iou": 0.716,
+   "current_crop": [
+    227.9,
+    65.9
+   ],
+   "iranplate_crop": [
+    201.8,
+    53.3
+   ],
+   "width_delta": -26.1,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.8029,
+   "iranplate_conf": 0.8272,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 50,
+   "iou": 0.716,
+   "current_crop": [
+    227.8,
+    65.9
+   ],
+   "iranplate_crop": [
+    201.8,
+    53.3
+   ],
+   "width_delta": -26.0,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.803,
+   "iranplate_conf": 0.8275,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 55,
+   "iou": 0.716,
+   "current_crop": [
+    227.8,
+    66.0
+   ],
+   "iranplate_crop": [
+    201.8,
+    53.3
+   ],
+   "width_delta": -26.0,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.8033,
+   "iranplate_conf": 0.8274,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 60,
+   "iou": 0.712,
+   "current_crop": [
+    229.6,
+    66.1
+   ],
+   "iranplate_crop": [
+    201.9,
+    53.4
+   ],
+   "width_delta": -27.7,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.7992,
+   "iranplate_conf": 0.8272,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 65,
+   "iou": 0.712,
+   "current_crop": [
+    229.5,
+    66.2
+   ],
+   "iranplate_crop": [
+    201.9,
+    53.4
+   ],
+   "width_delta": -27.6,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.7987,
+   "iranplate_conf": 0.8272,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 70,
+   "iou": 0.712,
+   "current_crop": [
+    229.3,
+    66.2
+   ],
+   "iranplate_crop": [
+    201.9,
+    53.5
+   ],
+   "width_delta": -27.4,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.7988,
+   "iranplate_conf": 0.8275,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 75,
+   "iou": 0.715,
+   "current_crop": [
+    228.9,
+    66.1
+   ],
+   "iranplate_crop": [
+    201.9,
+    53.5
+   ],
+   "width_delta": -27.0,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.8027,
+   "iranplate_conf": 0.8268,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 80,
+   "iou": 0.712,
+   "current_crop": [
+    229.5,
+    66.1
+   ],
+   "iranplate_crop": [
+    201.9,
+    53.5
+   ],
+   "width_delta": -27.6,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.8021,
+   "iranplate_conf": 0.8277,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 85,
+   "iou": 0.71,
+   "current_crop": [
+    229.9,
+    66.1
+   ],
+   "iranplate_crop": [
+    201.9,
+    53.5
+   ],
+   "width_delta": -28.0,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.8016,
+   "iranplate_conf": 0.8282,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 90,
+   "iou": 0.719,
+   "current_crop": [
+    227.2,
+    65.9
+   ],
+   "iranplate_crop": [
+    201.7,
+    53.3
+   ],
+   "width_delta": -25.5,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.8036,
+   "iranplate_conf": 0.8278,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 95,
+   "iou": 0.719,
+   "current_crop": [
+    227.3,
+    66.0
+   ],
+   "iranplate_crop": [
+    201.7,
+    53.3
+   ],
+   "width_delta": -25.6,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.8035,
+   "iranplate_conf": 0.8279,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 100,
+   "iou": 0.718,
+   "current_crop": [
+    227.5,
+    66.0
+   ],
+   "iranplate_crop": [
+    201.7,
+    53.3
+   ],
+   "width_delta": -25.8,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.8029,
+   "iranplate_conf": 0.828,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 105,
+   "iou": 0.717,
+   "current_crop": [
+    227.5,
+    66.0
+   ],
+   "iranplate_crop": [
+    201.8,
+    53.4
+   ],
+   "width_delta": -25.7,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.8027,
+   "iranplate_conf": 0.8284,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 110,
+   "iou": 0.717,
+   "current_crop": [
+    227.5,
+    66.0
+   ],
+   "iranplate_crop": [
+    201.8,
+    53.4
+   ],
+   "width_delta": -25.7,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.8025,
+   "iranplate_conf": 0.8283,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 115,
+   "iou": 0.716,
+   "current_crop": [
+    228.0,
+    66.0
+   ],
+   "iranplate_crop": [
+    201.8,
+    53.4
+   ],
+   "width_delta": -26.2,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.8011,
+   "iranplate_conf": 0.8275,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 120,
+   "iou": 0.72,
+   "current_crop": [
+    227.1,
+    65.9
+   ],
+   "iranplate_crop": [
+    201.8,
+    53.3
+   ],
+   "width_delta": -25.3,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.803,
+   "iranplate_conf": 0.827,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 125,
+   "iou": 0.72,
+   "current_crop": [
+    227.1,
+    65.9
+   ],
+   "iranplate_crop": [
+    201.8,
+    53.3
+   ],
+   "width_delta": -25.3,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.8029,
+   "iranplate_conf": 0.827,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 130,
+   "iou": 0.718,
+   "current_crop": [
+    227.2,
+    65.9
+   ],
+   "iranplate_crop": [
+    201.8,
+    53.3
+   ],
+   "width_delta": -25.4,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.8028,
+   "iranplate_conf": 0.8269,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 135,
+   "iou": 0.716,
+   "current_crop": [
+    227.9,
+    66.0
+   ],
+   "iranplate_crop": [
+    201.8,
+    53.4
+   ],
+   "width_delta": -26.1,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.8026,
+   "iranplate_conf": 0.8273,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 140,
+   "iou": 0.716,
+   "current_crop": [
+    227.8,
+    66.0
+   ],
+   "iranplate_crop": [
+    201.8,
+    53.4
+   ],
+   "width_delta": -26.0,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.8028,
+   "iranplate_conf": 0.8276,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 165,
+   "iou": 0.836,
+   "current_crop": [
+    138.7,
+    58.4
+   ],
+   "iranplate_crop": [
+    139.8,
+    50.9
+   ],
+   "width_delta": 1.1,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "12d67413",
+   "iranplate_ocr": "12d67413",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.7105,
+   "iranplate_conf": 0.7857,
+   "ground_truth": "۱۲د۶۷۴۱۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 170,
+   "iou": 0.842,
+   "current_crop": [
+    138.1,
+    58.0
+   ],
+   "iranplate_crop": [
+    139.6,
+    50.7
+   ],
+   "width_delta": 1.5,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "12d67413",
+   "iranplate_ocr": "12d67413",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.7009,
+   "iranplate_conf": 0.7804,
+   "ground_truth": "۱۲د۶۷۴۱۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 175,
+   "iou": 0.841,
+   "current_crop": [
+    138.2,
+    58.1
+   ],
+   "iranplate_crop": [
+    139.6,
+    50.7
+   ],
+   "width_delta": 1.4,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "12d67413",
+   "iranplate_ocr": "12d67413",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.7091,
+   "iranplate_conf": 0.7823,
+   "ground_truth": "۱۲د۶۷۴۱۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 180,
+   "iou": 0.827,
+   "current_crop": [
+    137.8,
+    58.6
+   ],
+   "iranplate_crop": [
+    140.1,
+    51.2
+   ],
+   "width_delta": 2.3,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "12d67413",
+   "iranplate_ocr": "12d67413",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.6744,
+   "iranplate_conf": 0.7759,
+   "ground_truth": "۱۲د۶۷۴۱۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 185,
+   "iou": 0.827,
+   "current_crop": [
+    137.8,
+    58.6
+   ],
+   "iranplate_crop": [
+    140.1,
+    51.2
+   ],
+   "width_delta": 2.3,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "12d67413",
+   "iranplate_ocr": "12d67413",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.675,
+   "iranplate_conf": 0.7759,
+   "ground_truth": "۱۲د۶۷۴۱۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 190,
+   "iou": 0.832,
+   "current_crop": [
+    138.3,
+    58.3
+   ],
+   "iranplate_crop": [
+    139.9,
+    51.2
+   ],
+   "width_delta": 1.6,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "12d67413",
+   "iranplate_ocr": "12d67413",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.6803,
+   "iranplate_conf": 0.7746,
+   "ground_truth": "۱۲د۶۷۴۱۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 195,
+   "iou": 0.831,
+   "current_crop": [
+    138.0,
+    58.3
+   ],
+   "iranplate_crop": [
+    140.1,
+    51.2
+   ],
+   "width_delta": 2.1,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "12d67413",
+   "iranplate_ocr": "12d67413",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.6825,
+   "iranplate_conf": 0.7749,
+   "ground_truth": "۱۲د۶۷۴۱۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 200,
+   "iou": 0.829,
+   "current_crop": [
+    138.3,
+    58.3
+   ],
+   "iranplate_crop": [
+    140.1,
+    51.1
+   ],
+   "width_delta": 1.8,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "12d67413",
+   "iranplate_ocr": "12d67413",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.6833,
+   "iranplate_conf": 0.7754,
+   "ground_truth": "۱۲د۶۷۴۱۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 205,
+   "iou": 0.831,
+   "current_crop": [
+    138.2,
+    58.3
+   ],
+   "iranplate_crop": [
+    140.0,
+    51.1
+   ],
+   "width_delta": 1.8,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "12d67413",
+   "iranplate_ocr": "12d67413",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.6816,
+   "iranplate_conf": 0.7752,
+   "ground_truth": "۱۲د۶۷۴۱۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 210,
+   "iou": 0.827,
+   "current_crop": [
+    137.9,
+    58.6
+   ],
+   "iranplate_crop": [
+    140.1,
+    51.2
+   ],
+   "width_delta": 2.2,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "12d67413",
+   "iranplate_ocr": "12d67413",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.6739,
+   "iranplate_conf": 0.7759,
+   "ground_truth": "۱۲د۶۷۴۱۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 215,
+   "iou": 0.827,
+   "current_crop": [
+    137.8,
+    58.6
+   ],
+   "iranplate_crop": [
+    140.1,
+    51.2
+   ],
+   "width_delta": 2.3,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "12d67413",
+   "iranplate_ocr": "12d67413",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.6741,
+   "iranplate_conf": 0.7759,
+   "ground_truth": "۱۲د۶۷۴۱۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 220,
+   "iou": 0.83,
+   "current_crop": [
+    138.3,
+    58.3
+   ],
+   "iranplate_crop": [
+    140.0,
+    51.3
+   ],
+   "width_delta": 1.7,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "12d67413",
+   "iranplate_ocr": "12d67413",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.6839,
+   "iranplate_conf": 0.7746,
+   "ground_truth": "۱۲د۶۷۴۱۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 245,
+   "iou": 0.721,
+   "current_crop": [
+    227.8,
+    66.0
+   ],
+   "iranplate_crop": [
+    201.9,
+    53.7
+   ],
+   "width_delta": -25.9,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.7998,
+   "iranplate_conf": 0.8326,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 250,
+   "iou": 0.72,
+   "current_crop": [
+    228.4,
+    66.0
+   ],
+   "iranplate_crop": [
+    202.0,
+    53.7
+   ],
+   "width_delta": -26.4,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.7986,
+   "iranplate_conf": 0.831,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 255,
+   "iou": 0.715,
+   "current_crop": [
+    226.9,
+    66.2
+   ],
+   "iranplate_crop": [
+    201.8,
+    53.3
+   ],
+   "width_delta": -25.1,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.8007,
+   "iranplate_conf": 0.828,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 260,
+   "iou": 0.703,
+   "current_crop": [
+    230.4,
+    66.2
+   ],
+   "iranplate_crop": [
+    202.0,
+    53.1
+   ],
+   "width_delta": -28.4,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.7994,
+   "iranplate_conf": 0.8279,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 265,
+   "iou": 0.703,
+   "current_crop": [
+    230.0,
+    66.2
+   ],
+   "iranplate_crop": [
+    201.9,
+    53.0
+   ],
+   "width_delta": -28.1,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.8004,
+   "iranplate_conf": 0.8274,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 270,
+   "iou": 0.709,
+   "current_crop": [
+    228.9,
+    66.3
+   ],
+   "iranplate_crop": [
+    201.9,
+    53.3
+   ],
+   "width_delta": -27.0,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.8004,
+   "iranplate_conf": 0.8276,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 275,
+   "iou": 0.707,
+   "current_crop": [
+    229.2,
+    66.4
+   ],
+   "iranplate_crop": [
+    201.9,
+    53.3
+   ],
+   "width_delta": -27.3,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.8013,
+   "iranplate_conf": 0.8275,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 280,
+   "iou": 0.711,
+   "current_crop": [
+    228.6,
+    66.3
+   ],
+   "iranplate_crop": [
+    201.8,
+    53.4
+   ],
+   "width_delta": -26.8,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.7978,
+   "iranplate_conf": 0.8285,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 285,
+   "iou": 0.715,
+   "current_crop": [
+    227.3,
+    66.2
+   ],
+   "iranplate_crop": [
+    201.8,
+    53.4
+   ],
+   "width_delta": -25.5,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.7992,
+   "iranplate_conf": 0.8288,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 290,
+   "iou": 0.711,
+   "current_crop": [
+    228.6,
+    66.2
+   ],
+   "iranplate_crop": [
+    201.8,
+    53.3
+   ],
+   "width_delta": -26.8,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.7987,
+   "iranplate_conf": 0.8287,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 295,
+   "iou": 0.712,
+   "current_crop": [
+    228.8,
+    66.2
+   ],
+   "iranplate_crop": [
+    201.9,
+    53.4
+   ],
+   "width_delta": -26.9,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.7981,
+   "iranplate_conf": 0.8281,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 300,
+   "iou": 0.708,
+   "current_crop": [
+    229.0,
+    66.4
+   ],
+   "iranplate_crop": [
+    201.9,
+    53.3
+   ],
+   "width_delta": -27.1,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "28y68923",
+   "iranplate_ocr": "28y68923",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.8003,
+   "iranplate_conf": 0.8276,
+   "ground_truth": "۲۸ی۶۸۹۲۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 315,
+   "iou": 0.84,
+   "current_crop": [
+    138.3,
+    58.0
+   ],
+   "iranplate_crop": [
+    139.5,
+    50.9
+   ],
+   "width_delta": 1.2,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "12d67413",
+   "iranplate_ocr": "12d67413",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.6988,
+   "iranplate_conf": 0.786,
+   "ground_truth": "۱۲د۶۷۴۱۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 320,
+   "iou": 0.842,
+   "current_crop": [
+    138.2,
+    58.1
+   ],
+   "iranplate_crop": [
+    139.6,
+    50.8
+   ],
+   "width_delta": 1.4,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "12d67413",
+   "iranplate_ocr": "12d67413",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.7097,
+   "iranplate_conf": 0.782,
+   "ground_truth": "۱۲د۶۷۴۱۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 325,
+   "iou": 0.84,
+   "current_crop": [
+    138.1,
+    58.0
+   ],
+   "iranplate_crop": [
+    139.6,
+    50.7
+   ],
+   "width_delta": 1.5,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "12d67413",
+   "iranplate_ocr": "12d67413",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.6938,
+   "iranplate_conf": 0.7799,
+   "ground_truth": "۱۲د۶۷۴۱۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 330,
+   "iou": 0.827,
+   "current_crop": [
+    137.8,
+    58.6
+   ],
+   "iranplate_crop": [
+    140.1,
+    51.2
+   ],
+   "width_delta": 2.3,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "12d67413",
+   "iranplate_ocr": "12d67413",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.6742,
+   "iranplate_conf": 0.7759,
+   "ground_truth": "۱۲د۶۷۴۱۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 335,
+   "iou": 0.827,
+   "current_crop": [
+    137.8,
+    58.6
+   ],
+   "iranplate_crop": [
+    140.1,
+    51.2
+   ],
+   "width_delta": 2.3,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "12d67413",
+   "iranplate_ocr": "12d67413",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.6737,
+   "iranplate_conf": 0.7759,
+   "ground_truth": "۱۲د۶۷۴۱۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 340,
+   "iou": 0.832,
+   "current_crop": [
+    138.3,
+    58.3
+   ],
+   "iranplate_crop": [
+    139.9,
+    51.2
+   ],
+   "width_delta": 1.6,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "12d67413",
+   "iranplate_ocr": "12d67413",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.6841,
+   "iranplate_conf": 0.7746,
+   "ground_truth": "۱۲د۶۷۴۱۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 345,
+   "iou": 0.831,
+   "current_crop": [
+    138.0,
+    58.3
+   ],
+   "iranplate_crop": [
+    140.1,
+    51.2
+   ],
+   "width_delta": 2.1,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "12d67413",
+   "iranplate_ocr": "12d67413",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.683,
+   "iranplate_conf": 0.7749,
+   "ground_truth": "۱۲د۶۷۴۱۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 350,
+   "iou": 0.831,
+   "current_crop": [
+    138.3,
+    58.3
+   ],
+   "iranplate_crop": [
+    140.1,
+    51.1
+   ],
+   "width_delta": 1.8,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "12d67413",
+   "iranplate_ocr": "12d67413",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.6837,
+   "iranplate_conf": 0.7754,
+   "ground_truth": "۱۲د۶۷۴۱۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam1.mp4",
+   "frame": 355,
+   "iou": 0.831,
+   "current_crop": [
+    138.2,
+    58.3
+   ],
+   "iranplate_crop": [
+    140.0,
+    51.1
+   ],
+   "width_delta": 1.8,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "12d67413",
+   "iranplate_ocr": "12d67413",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.6827,
+   "iranplate_conf": 0.7752,
+   "ground_truth": "۱۲د۶۷۴۱۳",
+   "gt_status": "LABELED",
+   "current_result": true,
+   "iranplate_result": true,
+   "outcome": "BOTH_CORRECT"
+  },
+  {
+   "camera": "cam2.mp4",
+   "frame": 205,
+   "iou": 0.555,
+   "current_crop": [
+    88.0,
+    36.7
+   ],
+   "iranplate_crop": [
+    81.6,
+    25.8
+   ],
+   "width_delta": -6.4,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "991996956",
+   "iranplate_ocr": "919gh179256",
+   "current_ocr_valid": false,
+   "iranplate_ocr_valid": false,
+   "current_conf": 0.8224,
+   "iranplate_conf": 0.5054,
+   "ground_truth": null,
+   "gt_status": "UNLABELED",
+   "current_result": null,
+   "iranplate_result": null,
+   "outcome": "NEITHER_VALID"
+  },
+  {
+   "camera": "cam2.mp4",
+   "frame": 210,
+   "iou": 0.748,
+   "current_crop": [
+    112.5,
+    46.7
+   ],
+   "iranplate_crop": [
+    108.9,
+    36.1
+   ],
+   "width_delta": -3.6,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "919gh91996",
+   "iranplate_ocr": "99gh9169966",
+   "current_ocr_valid": false,
+   "iranplate_ocr_valid": false,
+   "current_conf": 0.9172,
+   "iranplate_conf": 0.7542,
+   "ground_truth": null,
+   "gt_status": "UNLABELED",
+   "current_result": null,
+   "iranplate_result": null,
+   "outcome": "NEITHER_VALID"
+  },
+  {
+   "camera": "cam2.mp4",
+   "frame": 215,
+   "iou": 0.813,
+   "current_crop": [
+    110.1,
+    38.1
+   ],
+   "iranplate_crop": [
+    119.2,
+    36.3
+   ],
+   "width_delta": 9.1,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "99999956",
+   "iranplate_ocr": "99999996",
+   "current_ocr_valid": false,
+   "iranplate_ocr_valid": false,
+   "current_conf": 0.5521,
+   "iranplate_conf": 0.7743,
+   "ground_truth": null,
+   "gt_status": "UNLABELED",
+   "current_result": null,
+   "iranplate_result": null,
+   "outcome": "NEITHER_VALID"
+  },
+  {
+   "camera": "cam2.mp4",
+   "frame": 510,
+   "iou": 0.747,
+   "current_crop": [
+    79.1,
+    38.0
+   ],
+   "iranplate_crop": [
+    79.9,
+    29.3
+   ],
+   "width_delta": 0.8,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "25h284919",
+   "iranplate_ocr": "25h284",
+   "current_ocr_valid": false,
+   "iranplate_ocr_valid": false,
+   "current_conf": 0.9448,
+   "iranplate_conf": 0.6178,
+   "ground_truth": null,
+   "gt_status": "UNLABELED",
+   "current_result": null,
+   "iranplate_result": null,
+   "outcome": "NEITHER_VALID"
+  },
+  {
+   "camera": "cam2.mp4",
+   "frame": 525,
+   "iou": 0.0,
+   "outcome": "INCOMPARABLE",
+   "note": "current detections unmatched by IranPlate-Vision"
+  },
+  {
+   "camera": "cam2.mp4",
+   "frame": 525,
+   "iou": 0.0,
+   "outcome": "INCOMPARABLE",
+   "note": "IranPlate-Vision detections unmatched by current"
+  },
+  {
+   "camera": "cam2.mp4",
+   "frame": 530,
+   "iou": 0.705,
+   "current_crop": [
+    69.7,
+    27.8
+   ],
+   "iranplate_crop": [
+    75.6,
+    26.3
+   ],
+   "width_delta": 5.9,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "25h98999",
+   "iranplate_ocr": "25hh28999",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": false,
+   "current_conf": 0.81,
+   "iranplate_conf": 0.7532,
+   "ground_truth": null,
+   "gt_status": "UNLABELED",
+   "current_result": null,
+   "iranplate_result": null,
+   "outcome": "CURRENT_ONLY_VALID"
+  },
+  {
+   "camera": "cam2.mp4",
+   "frame": 540,
+   "iou": 0.749,
+   "current_crop": [
+    100.1,
+    43.6
+   ],
+   "iranplate_crop": [
+    97.2,
+    33.6
+   ],
+   "width_delta": -2.9,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "325h48494",
+   "iranplate_ocr": "2h5h8329",
+   "current_ocr_valid": false,
+   "iranplate_ocr_valid": false,
+   "current_conf": 0.9375,
+   "iranplate_conf": 0.6786,
+   "ground_truth": null,
+   "gt_status": "UNLABELED",
+   "current_result": null,
+   "iranplate_result": null,
+   "outcome": "NEITHER_VALID"
+  },
+  {
+   "camera": "cam2.mp4",
+   "frame": 545,
+   "iou": 0.651,
+   "current_crop": [
+    88.5,
+    43.6
+   ],
+   "iranplate_crop": [
+    99.2,
+    30.9
+   ],
+   "width_delta": 10.7,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "925h989996",
+   "iranplate_ocr": "25h938499",
+   "current_ocr_valid": false,
+   "iranplate_ocr_valid": false,
+   "current_conf": 0.8363,
+   "iranplate_conf": 0.6041,
+   "ground_truth": null,
+   "gt_status": "UNLABELED",
+   "current_result": null,
+   "iranplate_result": null,
+   "outcome": "NEITHER_VALID"
+  },
+  {
+   "camera": "cam2.mp4",
+   "frame": 550,
+   "iou": 0.762,
+   "current_crop": [
+    92.5,
+    38.5
+   ],
+   "iranplate_crop": [
+    101.6,
+    37.1
+   ],
+   "width_delta": 9.1,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "25h989996",
+   "iranplate_ocr": "25h298999",
+   "current_ocr_valid": false,
+   "iranplate_ocr_valid": false,
+   "current_conf": 0.5416,
+   "iranplate_conf": 0.7656,
+   "ground_truth": null,
+   "gt_status": "UNLABELED",
+   "current_result": null,
+   "iranplate_result": null,
+   "outcome": "NEITHER_VALID"
+  },
+  {
+   "camera": "cam2.mp4",
+   "frame": 555,
+   "iou": 0.642,
+   "current_crop": [
+    119.5,
+    59.0
+   ],
+   "iranplate_crop": [
+    110.1,
+    41.1
+   ],
+   "width_delta": -9.4,
+   "current_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "iranplate_clipping": {
+    "clipped_left": false,
+    "clipped_right": false,
+    "clipped_top": false,
+    "clipped_bottom": false
+   },
+   "current_ocr": "25h28999",
+   "iranplate_ocr": "25h28999",
+   "current_ocr_valid": true,
+   "iranplate_ocr_valid": true,
+   "current_conf": 0.8589,
+   "iranplate_conf": 0.7554,
+   "ground_truth": null,
+   "gt_status": "UNLABELED",
+   "current_result": null,
+   "iranplate_result": null,
+   "outcome": "INCOMPARABLE"
+  }
+ ]
+}

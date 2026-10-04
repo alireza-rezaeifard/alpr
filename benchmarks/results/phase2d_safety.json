@@ -1,0 +1,283 @@
+{
+ "generated_for": "Phase 2D Step 11 safety analysis",
+ "clipping_frequency_real_data": {
+  "detector_a_current|trunc|cam1.mp4": {
+   "crops": 62,
+   "clipped": 0,
+   "rate": 0.0
+  },
+  "detector_a_current|trunc|cam2.mp4": {
+   "crops": 39,
+   "clipped": 0,
+   "rate": 0.0
+  },
+  "detector_a_current|floor|cam1.mp4": {
+   "crops": 62,
+   "clipped": 0,
+   "rate": 0.0
+  },
+  "detector_a_current|floor|cam2.mp4": {
+   "crops": 39,
+   "clipped": 0,
+   "rate": 0.0
+  },
+  "detector_a_current|round|cam1.mp4": {
+   "crops": 62,
+   "clipped": 0,
+   "rate": 0.0
+  },
+  "detector_a_current|round|cam2.mp4": {
+   "crops": 39,
+   "clipped": 0,
+   "rate": 0.0
+  },
+  "detector_a_current|ceil|cam1.mp4": {
+   "crops": 62,
+   "clipped": 0,
+   "rate": 0.0
+  },
+  "detector_a_current|ceil|cam2.mp4": {
+   "crops": 39,
+   "clipped": 0,
+   "rate": 0.0
+  },
+  "detector_b_iranplate|trunc|cam1.mp4": {
+   "crops": 72,
+   "clipped": 0,
+   "rate": 0.0
+  },
+  "detector_b_iranplate|trunc|cam2.mp4": {
+   "crops": 12,
+   "clipped": 0,
+   "rate": 0.0
+  },
+  "detector_b_iranplate|floor|cam1.mp4": {
+   "crops": 72,
+   "clipped": 0,
+   "rate": 0.0
+  },
+  "detector_b_iranplate|floor|cam2.mp4": {
+   "crops": 12,
+   "clipped": 0,
+   "rate": 0.0
+  },
+  "detector_b_iranplate|round|cam1.mp4": {
+   "crops": 72,
+   "clipped": 0,
+   "rate": 0.0
+  },
+  "detector_b_iranplate|round|cam2.mp4": {
+   "crops": 12,
+   "clipped": 0,
+   "rate": 0.0
+  },
+  "detector_b_iranplate|ceil|cam1.mp4": {
+   "crops": 72,
+   "clipped": 0,
+   "rate": 0.0
+  },
+  "detector_b_iranplate|ceil|cam2.mp4": {
+   "crops": 12,
+   "clipped": 0,
+   "rate": 0.0
+  }
+ },
+ "expansion_margin_analysis": {
+  "detector_a_current|1.00|cam1.mp4": {
+   "crops": 62,
+   "median_width": 227,
+   "area_fraction_outside_original_box": 0.0,
+   "linear_margin_per_side_px_at_median_width": 0.0
+  },
+  "detector_a_current|1.00|cam2.mp4": {
+   "crops": 39,
+   "median_width": 83,
+   "area_fraction_outside_original_box": 0.0,
+   "linear_margin_per_side_px_at_median_width": 0.0
+  },
+  "detector_a_current|1.01|cam1.mp4": {
+   "crops": 62,
+   "median_width": 230,
+   "area_fraction_outside_original_box": 0.0197,
+   "linear_margin_per_side_px_at_median_width": 1.15
+  },
+  "detector_a_current|1.01|cam2.mp4": {
+   "crops": 39,
+   "median_width": 84,
+   "area_fraction_outside_original_box": 0.0197,
+   "linear_margin_per_side_px_at_median_width": 0.42
+  },
+  "detector_a_current|1.02|cam1.mp4": {
+   "crops": 62,
+   "median_width": 232,
+   "area_fraction_outside_original_box": 0.0388,
+   "linear_margin_per_side_px_at_median_width": 2.32
+  },
+  "detector_a_current|1.02|cam2.mp4": {
+   "crops": 39,
+   "median_width": 84,
+   "area_fraction_outside_original_box": 0.0388,
+   "linear_margin_per_side_px_at_median_width": 0.84
+  },
+  "detector_a_current|1.03|cam1.mp4": {
+   "crops": 62,
+   "median_width": 235,
+   "area_fraction_outside_original_box": 0.0574,
+   "linear_margin_per_side_px_at_median_width": 3.53
+  },
+  "detector_a_current|1.03|cam2.mp4": {
+   "crops": 39,
+   "median_width": 86,
+   "area_fraction_outside_original_box": 0.0574,
+   "linear_margin_per_side_px_at_median_width": 1.29
+  },
+  "detector_a_current|1.05|cam1.mp4": {
+   "crops": 62,
+   "median_width": 239,
+   "area_fraction_outside_original_box": 0.093,
+   "linear_margin_per_side_px_at_median_width": 5.98
+  },
+  "detector_a_current|1.05|cam2.mp4": {
+   "crops": 39,
+   "median_width": 88,
+   "area_fraction_outside_original_box": 0.093,
+   "linear_margin_per_side_px_at_median_width": 2.2
+  },
+  "detector_a_current|1.07|cam1.mp4": {
+   "crops": 62,
+   "median_width": 243,
+   "area_fraction_outside_original_box": 0.1266,
+   "linear_margin_per_side_px_at_median_width": 8.51
+  },
+  "detector_a_current|1.07|cam2.mp4": {
+   "crops": 39,
+   "median_width": 88,
+   "area_fraction_outside_original_box": 0.1266,
+   "linear_margin_per_side_px_at_median_width": 3.08
+  },
+  "detector_a_current|1.10|cam1.mp4": {
+   "crops": 62,
+   "median_width": 251,
+   "area_fraction_outside_original_box": 0.1736,
+   "linear_margin_per_side_px_at_median_width": 12.55
+  },
+  "detector_a_current|1.10|cam2.mp4": {
+   "crops": 39,
+   "median_width": 92,
+   "area_fraction_outside_original_box": 0.1736,
+   "linear_margin_per_side_px_at_median_width": 4.6
+  },
+  "detector_b_iranplate|1.00|cam1.mp4": {
+   "crops": 72,
+   "median_width": 202,
+   "area_fraction_outside_original_box": 0.0,
+   "linear_margin_per_side_px_at_median_width": 0.0
+  },
+  "detector_b_iranplate|1.00|cam2.mp4": {
+   "crops": 12,
+   "median_width": 99,
+   "area_fraction_outside_original_box": 0.0,
+   "linear_margin_per_side_px_at_median_width": 0.0
+  },
+  "detector_b_iranplate|1.01|cam1.mp4": {
+   "crops": 72,
+   "median_width": 204,
+   "area_fraction_outside_original_box": 0.0197,
+   "linear_margin_per_side_px_at_median_width": 1.02
+  },
+  "detector_b_iranplate|1.01|cam2.mp4": {
+   "crops": 12,
+   "median_width": 100,
+   "area_fraction_outside_original_box": 0.0197,
+   "linear_margin_per_side_px_at_median_width": 0.5
+  },
+  "detector_b_iranplate|1.02|cam1.mp4": {
+   "crops": 72,
+   "median_width": 206,
+   "area_fraction_outside_original_box": 0.0388,
+   "linear_margin_per_side_px_at_median_width": 2.06
+  },
+  "detector_b_iranplate|1.02|cam2.mp4": {
+   "crops": 12,
+   "median_width": 101,
+   "area_fraction_outside_original_box": 0.0388,
+   "linear_margin_per_side_px_at_median_width": 1.01
+  },
+  "detector_b_iranplate|1.03|cam1.mp4": {
+   "crops": 72,
+   "median_width": 208,
+   "area_fraction_outside_original_box": 0.0574,
+   "linear_margin_per_side_px_at_median_width": 3.12
+  },
+  "detector_b_iranplate|1.03|cam2.mp4": {
+   "crops": 12,
+   "median_width": 102,
+   "area_fraction_outside_original_box": 0.0574,
+   "linear_margin_per_side_px_at_median_width": 1.53
+  },
+  "detector_b_iranplate|1.05|cam1.mp4": {
+   "crops": 72,
+   "median_width": 212,
+   "area_fraction_outside_original_box": 0.093,
+   "linear_margin_per_side_px_at_median_width": 5.3
+  },
+  "detector_b_iranplate|1.05|cam2.mp4": {
+   "crops": 12,
+   "median_width": 104,
+   "area_fraction_outside_original_box": 0.093,
+   "linear_margin_per_side_px_at_median_width": 2.6
+  },
+  "detector_b_iranplate|1.07|cam1.mp4": {
+   "crops": 72,
+   "median_width": 216,
+   "area_fraction_outside_original_box": 0.1266,
+   "linear_margin_per_side_px_at_median_width": 7.56
+  },
+  "detector_b_iranplate|1.07|cam2.mp4": {
+   "crops": 12,
+   "median_width": 106,
+   "area_fraction_outside_original_box": 0.1266,
+   "linear_margin_per_side_px_at_median_width": 3.71
+  },
+  "detector_b_iranplate|1.10|cam1.mp4": {
+   "crops": 72,
+   "median_width": 222,
+   "area_fraction_outside_original_box": 0.1736,
+   "linear_margin_per_side_px_at_median_width": 11.1
+  },
+  "detector_b_iranplate|1.10|cam2.mp4": {
+   "crops": 12,
+   "median_width": 109,
+   "area_fraction_outside_original_box": 0.1736,
+   "linear_margin_per_side_px_at_median_width": 5.45
+  }
+ },
+ "multi_box_frames_real_data": {
+  "detector_a_current|cam1.mp4": {
+   "frames": 62,
+   "multi_box_frames": 0,
+   "max_boxes_on_one_frame": 1
+  },
+  "detector_a_current|cam2.mp4": {
+   "frames": 39,
+   "multi_box_frames": 0,
+   "max_boxes_on_one_frame": 1
+  },
+  "detector_b_iranplate|cam1.mp4": {
+   "frames": 72,
+   "multi_box_frames": 0,
+   "max_boxes_on_one_frame": 1
+  },
+  "detector_b_iranplate|cam2.mp4": {
+   "frames": 12,
+   "multi_box_frames": 0,
+   "max_boxes_on_one_frame": 1
+  }
+ },
+ "candidate_strategy": {
+  "convention": "round",
+  "expansion": 1.0,
+  "added_margin_px": 0,
+  "note": "round with no expansion changes WHICH pixel rows are included (up to 1px per edge) but adds no margin beyond the detector box; contamination risk is limited to the 1-px quantization band, measured per-frame in phase2d_postfix_matrix.json"
+ }
+}

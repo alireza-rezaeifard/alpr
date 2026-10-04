@@ -1,0 +1,4480 @@
+{
+ "generated_at": "2026-09-30 11:29:09",
+ "note": "Combination matrix over identical frames; format-validity uses the unchanged production validator; no accuracy claims (UNLABELED data).",
+ "summary": {
+  "iranplate_vision_yolo+current_production": {
+   "classification": "DETECTOR_PLUS_OCR",
+   "n_crops": 43,
+   "n_nonempty": 43,
+   "n_valid_format": 34,
+   "invalid_format_rate": 0.209,
+   "latency_ms_median": 46.8,
+   "ground_truth": "NO_GROUND_TRUTH"
+  },
+  "iranplate_vision_yolo+hezar_crnn_v2": {
+   "classification": "DETECTOR_PLUS_OCR",
+   "n_crops": 43,
+   "n_nonempty": 43,
+   "n_valid_format": 31,
+   "invalid_format_rate": 0.279,
+   "latency_ms_median": 51.8,
+   "ground_truth": "NO_GROUND_TRUTH"
+  },
+  "iranplate_vision_yolo+plr_crnn": {
+   "classification": "DETECTOR_PLUS_OCR",
+   "n_crops": 43,
+   "n_nonempty": 43,
+   "n_valid_format": 26,
+   "invalid_format_rate": 0.395,
+   "latency_ms_median": 42.2,
+   "ground_truth": "NO_GROUND_TRUTH"
+  },
+  "iranplate_vision_yolo+persian_lpr_yolo11": {
+   "classification": "DETECTOR_PLUS_OCR",
+   "n_crops": 43,
+   "n_nonempty": 43,
+   "n_valid_format": 36,
+   "invalid_format_rate": 0.163,
+   "latency_ms_median": 66.8,
+   "ground_truth": "NO_GROUND_TRUTH"
+  },
+  "plr_yolo_plate+current_production": {
+   "classification": "DETECTOR_PLUS_OCR",
+   "n_crops": 63,
+   "n_nonempty": 63,
+   "n_valid_format": 46,
+   "invalid_format_rate": 0.27,
+   "latency_ms_median": 75.0,
+   "ground_truth": "NO_GROUND_TRUTH"
+  },
+  "plr_yolo_plate+hezar_crnn_v2": {
+   "classification": "DETECTOR_PLUS_OCR",
+   "n_crops": 63,
+   "n_nonempty": 63,
+   "n_valid_format": 46,
+   "invalid_format_rate": 0.27,
+   "latency_ms_median": 79.7,
+   "ground_truth": "NO_GROUND_TRUTH"
+  },
+  "plr_yolo_plate+plr_crnn": {
+   "classification": "DETECTOR_PLUS_OCR",
+   "n_crops": 63,
+   "n_nonempty": 63,
+   "n_valid_format": 28,
+   "invalid_format_rate": 0.556,
+   "latency_ms_median": 70.8,
+   "ground_truth": "NO_GROUND_TRUTH"
+  },
+  "plr_yolo_plate+persian_lpr_yolo11": {
+   "classification": "DETECTOR_PLUS_OCR",
+   "n_crops": 63,
+   "n_nonempty": 62,
+   "n_valid_format": 31,
+   "invalid_format_rate": 0.5,
+   "latency_ms_median": 93.1,
+   "ground_truth": "NO_GROUND_TRUTH"
+  },
+  "current_production_plate+current_production": {
+   "classification": "DETECTOR_PLUS_OCR",
+   "n_crops": 49,
+   "n_nonempty": 44,
+   "n_valid_format": 34,
+   "invalid_format_rate": 0.227,
+   "latency_ms_median": 32.8,
+   "ground_truth": "NO_GROUND_TRUTH"
+  },
+  "current_production_plate+hezar_crnn_v2": {
+   "classification": "DETECTOR_PLUS_OCR",
+   "n_crops": 49,
+   "n_nonempty": 45,
+   "n_valid_format": 27,
+   "invalid_format_rate": 0.4,
+   "latency_ms_median": 36.6,
+   "ground_truth": "NO_GROUND_TRUTH"
+  },
+  "current_production_plate+plr_crnn": {
+   "classification": "DETECTOR_PLUS_OCR",
+   "n_crops": 49,
+   "n_nonempty": 49,
+   "n_valid_format": 21,
+   "invalid_format_rate": 0.571,
+   "latency_ms_median": 27.6,
+   "ground_truth": "NO_GROUND_TRUTH"
+  },
+  "current_production_plate+persian_lpr_yolo11": {
+   "classification": "DETECTOR_PLUS_OCR",
+   "n_crops": 49,
+   "n_nonempty": 43,
+   "n_valid_format": 31,
+   "invalid_format_rate": 0.279,
+   "latency_ms_median": 56.6,
+   "ground_truth": "NO_GROUND_TRUTH"
+  }
+ },
+ "records": {
+  "iranplate_vision_yolo+current_production": [
+   {
+    "video": "cam1.mp4",
+    "frame": 0,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 10,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 20,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 30,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 40,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 50,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 60,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 70,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 80,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 90,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 100,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 110,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 120,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 130,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 140,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 150,
+    "text": "66N48313",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 160,
+    "text": "97V35353",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 170,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 180,
+    "text": "12D674913",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 190,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 200,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 210,
+    "text": "12D674913",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 220,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 230,
+    "text": "97V35353",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 240,
+    "text": "66N48313",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 250,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 260,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 270,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 280,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 290,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 300,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 310,
+    "text": "97V35353",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 320,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 330,
+    "text": "12D674913",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 340,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 350,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 210,
+    "text": "199GH1696",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 300,
+    "text": "325H989999",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 510,
+    "text": "25H284999",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 530,
+    "text": "2HH28999",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 540,
+    "text": "25H8239",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 550,
+    "text": "25H989999",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 560,
+    "text": "25H28999",
+    "valid_format": true,
+    "error": null
+   }
+  ],
+  "iranplate_vision_yolo+hezar_crnn_v2": [
+   {
+    "video": "cam1.mp4",
+    "frame": 0,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 10,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 20,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 30,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 40,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 50,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 60,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 70,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 80,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 90,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 100,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 110,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 120,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 130,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 140,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 150,
+    "text": "66ل48313",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 160,
+    "text": "97و35353",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 170,
+    "text": "12د6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 180,
+    "text": "12د6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 190,
+    "text": "12د6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 200,
+    "text": "12د6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 210,
+    "text": "12د6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 220,
+    "text": "12د6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 230,
+    "text": "97و35353",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 240,
+    "text": "66ل48313",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 250,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 260,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 270,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 280,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 290,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 300,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 310,
+    "text": "97و35353",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 320,
+    "text": "12د6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 330,
+    "text": "12د6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 340,
+    "text": "12د6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 350,
+    "text": "12د6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 210,
+    "text": "12ق1726",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 300,
+    "text": "25ه2849",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 510,
+    "text": "25ه28489",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 530,
+    "text": "25ه28499",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 540,
+    "text": "45ه48999",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 550,
+    "text": "25ه28499",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 560,
+    "text": "25ه28499",
+    "valid_format": true,
+    "error": null
+   }
+  ],
+  "iranplate_vision_yolo+plr_crnn": [
+   {
+    "video": "cam1.mp4",
+    "frame": 0,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 10,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 20,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 30,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 40,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 50,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 60,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 70,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 80,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 90,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 100,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 110,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 120,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 130,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 140,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 150,
+    "text": "66L48313",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 160,
+    "text": "97535353",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 170,
+    "text": "12W6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 180,
+    "text": "12D6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 190,
+    "text": "12D6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 200,
+    "text": "12D6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 210,
+    "text": "12D6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 220,
+    "text": "12D6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 230,
+    "text": "97535353",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 240,
+    "text": "66L48313",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 250,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 260,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 270,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 280,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 290,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 300,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 310,
+    "text": "97535353",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 320,
+    "text": "12W6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 330,
+    "text": "12D6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 340,
+    "text": "12D6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 350,
+    "text": "12D6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 210,
+    "text": "1251258",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 300,
+    "text": "3552889",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 510,
+    "text": "35578389",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 530,
+    "text": "35H28399",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 540,
+    "text": "355789",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 550,
+    "text": "25H28499",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 560,
+    "text": "25H28472",
+    "valid_format": true,
+    "error": null
+   }
+  ],
+  "iranplate_vision_yolo+persian_lpr_yolo11": [
+   {
+    "video": "cam1.mp4",
+    "frame": 0,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 10,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 20,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 30,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 40,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 50,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 60,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 70,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 80,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 90,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 100,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 110,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 120,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 130,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 140,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 150,
+    "text": "66L48313",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 160,
+    "text": "97V35353",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 170,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 180,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 190,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 200,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 210,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 220,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 230,
+    "text": "97V35353",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 240,
+    "text": "66L48313",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 250,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 260,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 270,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 280,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 290,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 300,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 310,
+    "text": "97V35353",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 320,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 330,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 340,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 350,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 210,
+    "text": "12J924",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 300,
+    "text": "295H",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 510,
+    "text": "25H28",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 530,
+    "text": "25H28",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 540,
+    "text": "25HH2824",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 550,
+    "text": "25H2894",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 560,
+    "text": "25H2844",
+    "valid_format": false,
+    "error": null
+   }
+  ],
+  "plr_yolo_plate+current_production": [
+   {
+    "video": "cam1.mp4",
+    "frame": 0,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 10,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 20,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 30,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 40,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 50,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 60,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 70,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 80,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 90,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 100,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 110,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 120,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 130,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 140,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 150,
+    "text": "66N48313",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 160,
+    "text": "97V35353",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 170,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 180,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 190,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 200,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 210,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 220,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 230,
+    "text": "97V35353",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 240,
+    "text": "66N48313",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 250,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 260,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 270,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 280,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 290,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 300,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 310,
+    "text": "97V35353",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 320,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 330,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 340,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 350,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 200,
+    "text": "GH97266",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 210,
+    "text": "11266",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 240,
+    "text": "9",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 300,
+    "text": "5H32899",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 330,
+    "text": "325H28999",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 340,
+    "text": "25H23899",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 350,
+    "text": "25H23899",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 360,
+    "text": "35H28949",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 370,
+    "text": "35H28949",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 380,
+    "text": "35H28949",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 390,
+    "text": "235H289499",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 400,
+    "text": "35H28949",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 410,
+    "text": "325H28949",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 420,
+    "text": "3HH3289499",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 430,
+    "text": "3HH3289499",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 440,
+    "text": "25H28949",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 450,
+    "text": "25H2899",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 460,
+    "text": "25H2899",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 470,
+    "text": "35H2899",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 480,
+    "text": "35H328499",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 490,
+    "text": "25HH28499",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 500,
+    "text": "25H28419",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 510,
+    "text": "25H2849",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 530,
+    "text": "325H38399",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 540,
+    "text": "25H42829",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 550,
+    "text": "25H98999",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 560,
+    "text": "25HTA289996",
+    "valid_format": false,
+    "error": null
+   }
+  ],
+  "plr_yolo_plate+hezar_crnn_v2": [
+   {
+    "video": "cam1.mp4",
+    "frame": 0,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 10,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 20,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 30,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 40,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 50,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 60,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 70,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 80,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 90,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 100,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 110,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 120,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 130,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 140,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 150,
+    "text": "66ل48313",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 160,
+    "text": "97و35353",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 170,
+    "text": "12د67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 180,
+    "text": "12د67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 190,
+    "text": "12د67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 200,
+    "text": "12د67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 210,
+    "text": "12د67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 220,
+    "text": "12د67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 230,
+    "text": "97و35353",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 240,
+    "text": "66ل48313",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 250,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 260,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 270,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 280,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 290,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 300,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 310,
+    "text": "97و35353",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 320,
+    "text": "12د67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 330,
+    "text": "12د67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 340,
+    "text": "12د67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 350,
+    "text": "12د67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 200,
+    "text": "12ق17266",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 210,
+    "text": "12ق726",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 240,
+    "text": "48",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 300,
+    "text": "25ه284",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 330,
+    "text": "25ه28499",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 340,
+    "text": "25ه28499",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 350,
+    "text": "25ه28499",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 360,
+    "text": "25ه2849",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 370,
+    "text": "25ه2849",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 380,
+    "text": "25ه2849",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 390,
+    "text": "25ه284",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 400,
+    "text": "25ه2849",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 410,
+    "text": "25ه2849",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 420,
+    "text": "35ه284",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 430,
+    "text": "35ه284",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 440,
+    "text": "25ه2849",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 450,
+    "text": "25ه28499",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 460,
+    "text": "25ه28499",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 470,
+    "text": "25ه284",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 480,
+    "text": "3552848",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 490,
+    "text": "35828499",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 500,
+    "text": "25ه28499",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 510,
+    "text": "35ه2849",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 530,
+    "text": "25ه28499",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 540,
+    "text": "3514899",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 550,
+    "text": "25ه28499",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 560,
+    "text": "25ه28499",
+    "valid_format": true,
+    "error": null
+   }
+  ],
+  "plr_yolo_plate+plr_crnn": [
+   {
+    "video": "cam1.mp4",
+    "frame": 0,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 10,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 20,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 30,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 40,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 50,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 60,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 70,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 80,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 90,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 100,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 110,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 120,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 130,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 140,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 150,
+    "text": "66L48312",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 160,
+    "text": "77535353",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 170,
+    "text": "12W6413",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 180,
+    "text": "12W6413",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 190,
+    "text": "12W67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 200,
+    "text": "12W6413",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 210,
+    "text": "12W6413",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 220,
+    "text": "12W67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 230,
+    "text": "77535353",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 240,
+    "text": "66L48312",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 250,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 260,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 270,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 280,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 290,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 300,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 310,
+    "text": "77535353",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 320,
+    "text": "12W6413",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 330,
+    "text": "12W6413",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 340,
+    "text": "12W67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 350,
+    "text": "12W6413",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 200,
+    "text": "12N1221",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 210,
+    "text": "12N1288",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 240,
+    "text": "83833",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 300,
+    "text": "35788",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 330,
+    "text": "3578111",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 340,
+    "text": "357881",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 350,
+    "text": "357881",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 360,
+    "text": "355288",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 370,
+    "text": "35528",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 380,
+    "text": "35528",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 390,
+    "text": "355288",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 400,
+    "text": "355288",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 410,
+    "text": "355288",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 420,
+    "text": "35588",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 430,
+    "text": "355788",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 440,
+    "text": "355238",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 450,
+    "text": "35528",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 460,
+    "text": "35528",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 470,
+    "text": "55788",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 480,
+    "text": "35538",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 490,
+    "text": "35781",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 500,
+    "text": "355788",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 510,
+    "text": "357188",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 530,
+    "text": "2552891",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 540,
+    "text": "555181",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 550,
+    "text": "25H28499",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 560,
+    "text": "25H28417",
+    "valid_format": true,
+    "error": null
+   }
+  ],
+  "plr_yolo_plate+persian_lpr_yolo11": [
+   {
+    "video": "cam1.mp4",
+    "frame": 0,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 10,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 20,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 30,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 40,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 50,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 60,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 70,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 80,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 90,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 100,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 110,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 120,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 130,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 140,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 150,
+    "text": "66L48313",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 160,
+    "text": "97V35353",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 170,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 180,
+    "text": "12D674134",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 190,
+    "text": "12D674134",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 200,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 210,
+    "text": "12D674134",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 220,
+    "text": "12D674134",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 230,
+    "text": "97V35353",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 240,
+    "text": "66L48313",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 250,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 260,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 270,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 280,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 290,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 300,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 310,
+    "text": "97V35353",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 320,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 330,
+    "text": "12D674134",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 340,
+    "text": "12D674134",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 350,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 200,
+    "text": "972",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 210,
+    "text": "12992",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 240,
+    "text": "",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 300,
+    "text": "25H28",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 330,
+    "text": "H28",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 340,
+    "text": "35H284",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 350,
+    "text": "35H284",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 360,
+    "text": "35H284",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 370,
+    "text": "35H284",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 380,
+    "text": "35H284",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 390,
+    "text": "35H284",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 400,
+    "text": "35H284",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 410,
+    "text": "35H284",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 420,
+    "text": "5H284",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 430,
+    "text": "5H284",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 440,
+    "text": "35H284",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 450,
+    "text": "5H28",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 460,
+    "text": "5H28",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 470,
+    "text": "5H384",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 480,
+    "text": "35H3844",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 490,
+    "text": "35H2844",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 500,
+    "text": "2H5H28",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 510,
+    "text": "25H32",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 530,
+    "text": "5H284",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 540,
+    "text": "25H28243",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 550,
+    "text": "25H2844",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 560,
+    "text": "25H2844",
+    "valid_format": false,
+    "error": null
+   }
+  ],
+  "current_production_plate+current_production": [
+   {
+    "video": "cam1.mp4",
+    "frame": 0,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 10,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 20,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 30,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 40,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 50,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 60,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 70,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 80,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 90,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 100,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 110,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 120,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 130,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 140,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 170,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 180,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 190,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 200,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 210,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 220,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 250,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 260,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 270,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 280,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 290,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 300,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 320,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 330,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 340,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 350,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 210,
+    "text": "99GH199696",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 220,
+    "text": "",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 250,
+    "text": "",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 290,
+    "text": "",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 300,
+    "text": "25H28999",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 320,
+    "text": "H285299",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 330,
+    "text": "35H2894399",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 340,
+    "text": "235H284999",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 350,
+    "text": "235H284999",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 480,
+    "text": "325H28499",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 490,
+    "text": "25H28499",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 500,
+    "text": "25HH28419",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 510,
+    "text": "25H2849",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 530,
+    "text": "2HH38999",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 540,
+    "text": "95H48249",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 550,
+    "text": "2H5H298999",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 580,
+    "text": "",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 590,
+    "text": "",
+    "valid_format": false,
+    "error": null
+   }
+  ],
+  "current_production_plate+hezar_crnn_v2": [
+   {
+    "video": "cam1.mp4",
+    "frame": 0,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 10,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 20,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 30,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 40,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 50,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 60,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 70,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 80,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 90,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 100,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 110,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 120,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 130,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 140,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 170,
+    "text": "12د6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 180,
+    "text": "12د6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 190,
+    "text": "12د6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 200,
+    "text": "12د6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 210,
+    "text": "12د6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 220,
+    "text": "12د6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 250,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 260,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 270,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 280,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 290,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 300,
+    "text": "28ی68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 320,
+    "text": "12د6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 330,
+    "text": "12د6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 340,
+    "text": "12د6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 350,
+    "text": "12د6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 210,
+    "text": "2ق9726",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 220,
+    "text": "6666",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 250,
+    "text": "",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 290,
+    "text": "",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 300,
+    "text": "25ه2849",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 320,
+    "text": "44ب",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 330,
+    "text": "25ه28499",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 340,
+    "text": "25ه28499",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 350,
+    "text": "25ه28499",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 480,
+    "text": "25ه28499",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 490,
+    "text": "35ه78499",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 500,
+    "text": "25ه28499",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 510,
+    "text": "35ه2849",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 530,
+    "text": "25ه2849",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 540,
+    "text": "5ه1899",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 550,
+    "text": "25ه2849",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 580,
+    "text": "",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 590,
+    "text": "",
+    "valid_format": false,
+    "error": null
+   }
+  ],
+  "current_production_plate+plr_crnn": [
+   {
+    "video": "cam1.mp4",
+    "frame": 0,
+    "text": "28Y6933",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 10,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 20,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 30,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 40,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 50,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 60,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 70,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 80,
+    "text": "28Y6933",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 90,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 100,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 110,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 120,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 130,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 140,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 170,
+    "text": "12H6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 180,
+    "text": "12H6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 190,
+    "text": "12H6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 200,
+    "text": "12H6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 210,
+    "text": "12H6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 220,
+    "text": "12H6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 250,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 260,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 270,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 280,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 290,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 300,
+    "text": "28Y68933",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 320,
+    "text": "12H6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 330,
+    "text": "12H6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 340,
+    "text": "12H6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 350,
+    "text": "12H6741",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 210,
+    "text": "125128",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 220,
+    "text": "66175",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 250,
+    "text": "113",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 290,
+    "text": "113",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 300,
+    "text": "257899",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 320,
+    "text": "157766",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 330,
+    "text": "35H7877",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 340,
+    "text": "35H789",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 350,
+    "text": "35H789",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 480,
+    "text": "35578999",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 490,
+    "text": "7578799",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 500,
+    "text": "25H789",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 510,
+    "text": "25H7889",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 530,
+    "text": "25H28499",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 540,
+    "text": "75589",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 550,
+    "text": "25H28499",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 580,
+    "text": "13",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 590,
+    "text": "13",
+    "valid_format": false,
+    "error": null
+   }
+  ],
+  "current_production_plate+persian_lpr_yolo11": [
+   {
+    "video": "cam1.mp4",
+    "frame": 0,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 10,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 20,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 30,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 40,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 50,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 60,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 70,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 80,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 90,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 100,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 110,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 120,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 130,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 140,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 170,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 180,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 190,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 200,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 210,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 220,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 250,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 260,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 270,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 280,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 290,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 300,
+    "text": "28Y68923",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 320,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 330,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 340,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam1.mp4",
+    "frame": 350,
+    "text": "12D67413",
+    "valid_format": true,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 210,
+    "text": "12",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 220,
+    "text": "",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 250,
+    "text": "",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 290,
+    "text": "",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 300,
+    "text": "25H28",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 320,
+    "text": "",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 330,
+    "text": "35H28",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 340,
+    "text": "325H284",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 350,
+    "text": "325H284",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 480,
+    "text": "25H284",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 490,
+    "text": "25H28",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 500,
+    "text": "25H2844",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 510,
+    "text": "25H2",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 530,
+    "text": "5H284",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 540,
+    "text": "25H2824",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 550,
+    "text": "25H289",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 580,
+    "text": "",
+    "valid_format": false,
+    "error": null
+   },
+   {
+    "video": "cam2.mp4",
+    "frame": 590,
+    "text": "",
+    "valid_format": false,
+    "error": null
+   }
+  ]
+ }
+}

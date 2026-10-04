@@ -1,0 +1,4365 @@
+{
+ "generated_at": "2026-10-04 11:31:19",
+ "protocol": {
+  "conf": 0.5,
+  "iou": 0.45,
+  "max_det": 12,
+  "imgsz": 640,
+  "agnostic_nms": false,
+  "half": false
+ },
+ "evaluation": {
+  "detector_a_current|trunc|1.00": {
+   "overall_cam1_verified": {
+    "label": "detector_a_current|trunc|1.00|cam1_verified",
+    "n_scored": 62,
+    "n_verified": 62,
+    "n_ocr_attempts": 62,
+    "exact": {
+     "numerator": 62,
+     "denominator": 62,
+     "value": 1.0
+    },
+    "char_accuracy": {
+     "numerator": 62.0,
+     "denominator": 62,
+     "value": 1.0
+    },
+    "mean_edit_distance": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "invalid": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "failed": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "exact_wilson95": {
+     "centre": 0.9708,
+     "lower": 0.9417,
+     "upper": 1.0,
+     "level": 0.95
+    }
+   },
+   "n_crops": 104,
+   "n_verified_crops": 62,
+   "n_unlabeled_crops": 42,
+   "by_camera": {
+    "cam1": {
+     "label": "detector_a_current|trunc|1.00|cam1",
+     "n_scored": 62,
+     "n_verified": 62,
+     "n_ocr_attempts": 62,
+     "exact": {
+      "numerator": 62,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 62.0,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9708,
+      "lower": 0.9417,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_instance": {
+    "cam1_s001_v001": {
+     "label": "detector_a_current|trunc|1.00|cam1_s001_v001",
+     "n_scored": 41,
+     "n_verified": 41,
+     "n_ocr_attempts": 41,
+     "exact": {
+      "numerator": 41,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 41.0,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9572,
+      "lower": 0.9143,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    },
+    "cam1_s001_v002": {
+     "label": "detector_a_current|trunc|1.00|cam1_s001_v002",
+     "n_scored": 21,
+     "n_verified": 21,
+     "n_ocr_attempts": 21,
+     "exact": {
+      "numerator": 21,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 21.0,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9227,
+      "lower": 0.8454,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_width": {
+    "128-192": {
+     "label": "detector_a_current|trunc|1.00|128-192",
+     "n_scored": 21,
+     "n_verified": 21,
+     "n_ocr_attempts": 21,
+     "exact": {
+      "numerator": 21,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 21.0,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9227,
+      "lower": 0.8454,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    },
+    "192-256": {
+     "label": "detector_a_current|trunc|1.00|192-256",
+     "n_scored": 41,
+     "n_verified": 41,
+     "n_ocr_attempts": 41,
+     "exact": {
+      "numerator": 41,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 41.0,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9572,
+      "lower": 0.9143,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_detector": {
+    "detector_a_current": {
+     "label": "detector_a_current|trunc|1.00|detector_a_current",
+     "n_scored": 62,
+     "n_verified": 62,
+     "n_ocr_attempts": 62,
+     "exact": {
+      "numerator": 62,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 62.0,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9708,
+      "lower": 0.9417,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   }
+  },
+  "detector_a_current|floor|1.00": {
+   "overall_cam1_verified": {
+    "label": "detector_a_current|floor|1.00|cam1_verified",
+    "n_scored": 62,
+    "n_verified": 62,
+    "n_ocr_attempts": 62,
+    "exact": {
+     "numerator": 62,
+     "denominator": 62,
+     "value": 1.0
+    },
+    "char_accuracy": {
+     "numerator": 62.0,
+     "denominator": 62,
+     "value": 1.0
+    },
+    "mean_edit_distance": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "invalid": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "failed": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "exact_wilson95": {
+     "centre": 0.9708,
+     "lower": 0.9417,
+     "upper": 1.0,
+     "level": 0.95
+    }
+   },
+   "n_crops": 104,
+   "n_verified_crops": 62,
+   "n_unlabeled_crops": 42,
+   "by_camera": {
+    "cam1": {
+     "label": "detector_a_current|floor|1.00|cam1",
+     "n_scored": 62,
+     "n_verified": 62,
+     "n_ocr_attempts": 62,
+     "exact": {
+      "numerator": 62,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 62.0,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9708,
+      "lower": 0.9417,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_instance": {
+    "cam1_s001_v001": {
+     "label": "detector_a_current|floor|1.00|cam1_s001_v001",
+     "n_scored": 41,
+     "n_verified": 41,
+     "n_ocr_attempts": 41,
+     "exact": {
+      "numerator": 41,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 41.0,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9572,
+      "lower": 0.9143,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    },
+    "cam1_s001_v002": {
+     "label": "detector_a_current|floor|1.00|cam1_s001_v002",
+     "n_scored": 21,
+     "n_verified": 21,
+     "n_ocr_attempts": 21,
+     "exact": {
+      "numerator": 21,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 21.0,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9227,
+      "lower": 0.8454,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_width": {
+    "128-192": {
+     "label": "detector_a_current|floor|1.00|128-192",
+     "n_scored": 21,
+     "n_verified": 21,
+     "n_ocr_attempts": 21,
+     "exact": {
+      "numerator": 21,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 21.0,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9227,
+      "lower": 0.8454,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    },
+    "192-256": {
+     "label": "detector_a_current|floor|1.00|192-256",
+     "n_scored": 41,
+     "n_verified": 41,
+     "n_ocr_attempts": 41,
+     "exact": {
+      "numerator": 41,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 41.0,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9572,
+      "lower": 0.9143,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_detector": {
+    "detector_a_current": {
+     "label": "detector_a_current|floor|1.00|detector_a_current",
+     "n_scored": 62,
+     "n_verified": 62,
+     "n_ocr_attempts": 62,
+     "exact": {
+      "numerator": 62,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 62.0,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9708,
+      "lower": 0.9417,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   }
+  },
+  "detector_a_current|round|1.00": {
+   "overall_cam1_verified": {
+    "label": "detector_a_current|round|1.00|cam1_verified",
+    "n_scored": 62,
+    "n_verified": 62,
+    "n_ocr_attempts": 62,
+    "exact": {
+     "numerator": 62,
+     "denominator": 62,
+     "value": 1.0
+    },
+    "char_accuracy": {
+     "numerator": 62.0,
+     "denominator": 62,
+     "value": 1.0
+    },
+    "mean_edit_distance": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "invalid": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "failed": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "exact_wilson95": {
+     "centre": 0.9708,
+     "lower": 0.9417,
+     "upper": 1.0,
+     "level": 0.95
+    }
+   },
+   "n_crops": 104,
+   "n_verified_crops": 62,
+   "n_unlabeled_crops": 42,
+   "by_camera": {
+    "cam1": {
+     "label": "detector_a_current|round|1.00|cam1",
+     "n_scored": 62,
+     "n_verified": 62,
+     "n_ocr_attempts": 62,
+     "exact": {
+      "numerator": 62,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 62.0,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9708,
+      "lower": 0.9417,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_instance": {
+    "cam1_s001_v001": {
+     "label": "detector_a_current|round|1.00|cam1_s001_v001",
+     "n_scored": 41,
+     "n_verified": 41,
+     "n_ocr_attempts": 41,
+     "exact": {
+      "numerator": 41,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 41.0,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9572,
+      "lower": 0.9143,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    },
+    "cam1_s001_v002": {
+     "label": "detector_a_current|round|1.00|cam1_s001_v002",
+     "n_scored": 21,
+     "n_verified": 21,
+     "n_ocr_attempts": 21,
+     "exact": {
+      "numerator": 21,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 21.0,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9227,
+      "lower": 0.8454,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_width": {
+    "128-192": {
+     "label": "detector_a_current|round|1.00|128-192",
+     "n_scored": 21,
+     "n_verified": 21,
+     "n_ocr_attempts": 21,
+     "exact": {
+      "numerator": 21,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 21.0,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9227,
+      "lower": 0.8454,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    },
+    "192-256": {
+     "label": "detector_a_current|round|1.00|192-256",
+     "n_scored": 41,
+     "n_verified": 41,
+     "n_ocr_attempts": 41,
+     "exact": {
+      "numerator": 41,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 41.0,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9572,
+      "lower": 0.9143,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_detector": {
+    "detector_a_current": {
+     "label": "detector_a_current|round|1.00|detector_a_current",
+     "n_scored": 62,
+     "n_verified": 62,
+     "n_ocr_attempts": 62,
+     "exact": {
+      "numerator": 62,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 62.0,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9708,
+      "lower": 0.9417,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   }
+  },
+  "detector_a_current|ceil|1.00": {
+   "overall_cam1_verified": {
+    "label": "detector_a_current|ceil|1.00|cam1_verified",
+    "n_scored": 62,
+    "n_verified": 62,
+    "n_ocr_attempts": 62,
+    "exact": {
+     "numerator": 62,
+     "denominator": 62,
+     "value": 1.0
+    },
+    "char_accuracy": {
+     "numerator": 62.0,
+     "denominator": 62,
+     "value": 1.0
+    },
+    "mean_edit_distance": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "invalid": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "failed": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "exact_wilson95": {
+     "centre": 0.9708,
+     "lower": 0.9417,
+     "upper": 1.0,
+     "level": 0.95
+    }
+   },
+   "n_crops": 104,
+   "n_verified_crops": 62,
+   "n_unlabeled_crops": 42,
+   "by_camera": {
+    "cam1": {
+     "label": "detector_a_current|ceil|1.00|cam1",
+     "n_scored": 62,
+     "n_verified": 62,
+     "n_ocr_attempts": 62,
+     "exact": {
+      "numerator": 62,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 62.0,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9708,
+      "lower": 0.9417,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_instance": {
+    "cam1_s001_v001": {
+     "label": "detector_a_current|ceil|1.00|cam1_s001_v001",
+     "n_scored": 41,
+     "n_verified": 41,
+     "n_ocr_attempts": 41,
+     "exact": {
+      "numerator": 41,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 41.0,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9572,
+      "lower": 0.9143,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    },
+    "cam1_s001_v002": {
+     "label": "detector_a_current|ceil|1.00|cam1_s001_v002",
+     "n_scored": 21,
+     "n_verified": 21,
+     "n_ocr_attempts": 21,
+     "exact": {
+      "numerator": 21,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 21.0,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9227,
+      "lower": 0.8454,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_width": {
+    "128-192": {
+     "label": "detector_a_current|ceil|1.00|128-192",
+     "n_scored": 21,
+     "n_verified": 21,
+     "n_ocr_attempts": 21,
+     "exact": {
+      "numerator": 21,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 21.0,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9227,
+      "lower": 0.8454,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    },
+    "192-256": {
+     "label": "detector_a_current|ceil|1.00|192-256",
+     "n_scored": 41,
+     "n_verified": 41,
+     "n_ocr_attempts": 41,
+     "exact": {
+      "numerator": 41,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 41.0,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9572,
+      "lower": 0.9143,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_detector": {
+    "detector_a_current": {
+     "label": "detector_a_current|ceil|1.00|detector_a_current",
+     "n_scored": 62,
+     "n_verified": 62,
+     "n_ocr_attempts": 62,
+     "exact": {
+      "numerator": 62,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 62.0,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9708,
+      "lower": 0.9417,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   }
+  },
+  "detector_a_current|trunc|1.03": {
+   "overall_cam1_verified": {
+    "label": "detector_a_current|trunc|1.03|cam1_verified",
+    "n_scored": 62,
+    "n_verified": 62,
+    "n_ocr_attempts": 62,
+    "exact": {
+     "numerator": 62,
+     "denominator": 62,
+     "value": 1.0
+    },
+    "char_accuracy": {
+     "numerator": 62.0,
+     "denominator": 62,
+     "value": 1.0
+    },
+    "mean_edit_distance": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "invalid": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "failed": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "exact_wilson95": {
+     "centre": 0.9708,
+     "lower": 0.9417,
+     "upper": 1.0,
+     "level": 0.95
+    }
+   },
+   "n_crops": 104,
+   "n_verified_crops": 62,
+   "n_unlabeled_crops": 42,
+   "by_camera": {
+    "cam1": {
+     "label": "detector_a_current|trunc|1.03|cam1",
+     "n_scored": 62,
+     "n_verified": 62,
+     "n_ocr_attempts": 62,
+     "exact": {
+      "numerator": 62,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 62.0,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9708,
+      "lower": 0.9417,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_instance": {
+    "cam1_s001_v001": {
+     "label": "detector_a_current|trunc|1.03|cam1_s001_v001",
+     "n_scored": 41,
+     "n_verified": 41,
+     "n_ocr_attempts": 41,
+     "exact": {
+      "numerator": 41,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 41.0,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9572,
+      "lower": 0.9143,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    },
+    "cam1_s001_v002": {
+     "label": "detector_a_current|trunc|1.03|cam1_s001_v002",
+     "n_scored": 21,
+     "n_verified": 21,
+     "n_ocr_attempts": 21,
+     "exact": {
+      "numerator": 21,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 21.0,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9227,
+      "lower": 0.8454,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_width": {
+    "128-192": {
+     "label": "detector_a_current|trunc|1.03|128-192",
+     "n_scored": 21,
+     "n_verified": 21,
+     "n_ocr_attempts": 21,
+     "exact": {
+      "numerator": 21,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 21.0,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9227,
+      "lower": 0.8454,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    },
+    "192-256": {
+     "label": "detector_a_current|trunc|1.03|192-256",
+     "n_scored": 41,
+     "n_verified": 41,
+     "n_ocr_attempts": 41,
+     "exact": {
+      "numerator": 41,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 41.0,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9572,
+      "lower": 0.9143,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_detector": {
+    "detector_a_current": {
+     "label": "detector_a_current|trunc|1.03|detector_a_current",
+     "n_scored": 62,
+     "n_verified": 62,
+     "n_ocr_attempts": 62,
+     "exact": {
+      "numerator": 62,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 62.0,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9708,
+      "lower": 0.9417,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   }
+  },
+  "detector_a_current|trunc|1.05": {
+   "overall_cam1_verified": {
+    "label": "detector_a_current|trunc|1.05|cam1_verified",
+    "n_scored": 62,
+    "n_verified": 62,
+    "n_ocr_attempts": 62,
+    "exact": {
+     "numerator": 32,
+     "denominator": 62,
+     "value": 0.5161
+    },
+    "char_accuracy": {
+     "numerator": 58.667,
+     "denominator": 62,
+     "value": 0.9462
+    },
+    "mean_edit_distance": {
+     "numerator": 30,
+     "denominator": 62,
+     "value": 0.4839
+    },
+    "invalid": {
+     "numerator": 30,
+     "denominator": 62,
+     "value": 0.4839
+    },
+    "failed": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "exact_wilson95": {
+     "centre": 0.5152,
+     "lower": 0.3945,
+     "upper": 0.6359,
+     "level": 0.95
+    }
+   },
+   "n_crops": 104,
+   "n_verified_crops": 62,
+   "n_unlabeled_crops": 42,
+   "by_camera": {
+    "cam1": {
+     "label": "detector_a_current|trunc|1.05|cam1",
+     "n_scored": 62,
+     "n_verified": 62,
+     "n_ocr_attempts": 62,
+     "exact": {
+      "numerator": 32,
+      "denominator": 62,
+      "value": 0.5161
+     },
+     "char_accuracy": {
+      "numerator": 58.667,
+      "denominator": 62,
+      "value": 0.9462
+     },
+     "mean_edit_distance": {
+      "numerator": 30,
+      "denominator": 62,
+      "value": 0.4839
+     },
+     "invalid": {
+      "numerator": 30,
+      "denominator": 62,
+      "value": 0.4839
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.5152,
+      "lower": 0.3945,
+      "upper": 0.6359,
+      "level": 0.95
+     }
+    }
+   },
+   "by_instance": {
+    "cam1_s001_v001": {
+     "label": "detector_a_current|trunc|1.05|cam1_s001_v001",
+     "n_scored": 41,
+     "n_verified": 41,
+     "n_ocr_attempts": 41,
+     "exact": {
+      "numerator": 11,
+      "denominator": 41,
+      "value": 0.2683
+     },
+     "char_accuracy": {
+      "numerator": 37.667,
+      "denominator": 41,
+      "value": 0.9187
+     },
+     "mean_edit_distance": {
+      "numerator": 30,
+      "denominator": 41,
+      "value": 0.7317
+     },
+     "invalid": {
+      "numerator": 30,
+      "denominator": 41,
+      "value": 0.7317
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.2881,
+      "lower": 0.1569,
+      "upper": 0.4193,
+      "level": 0.95
+     }
+    },
+    "cam1_s001_v002": {
+     "label": "detector_a_current|trunc|1.05|cam1_s001_v002",
+     "n_scored": 21,
+     "n_verified": 21,
+     "n_ocr_attempts": 21,
+     "exact": {
+      "numerator": 21,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 21.0,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9227,
+      "lower": 0.8454,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_width": {
+    "128-192": {
+     "label": "detector_a_current|trunc|1.05|128-192",
+     "n_scored": 21,
+     "n_verified": 21,
+     "n_ocr_attempts": 21,
+     "exact": {
+      "numerator": 21,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 21.0,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9227,
+      "lower": 0.8454,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    },
+    "192-256": {
+     "label": "detector_a_current|trunc|1.05|192-256",
+     "n_scored": 41,
+     "n_verified": 41,
+     "n_ocr_attempts": 41,
+     "exact": {
+      "numerator": 11,
+      "denominator": 41,
+      "value": 0.2683
+     },
+     "char_accuracy": {
+      "numerator": 37.667,
+      "denominator": 41,
+      "value": 0.9187
+     },
+     "mean_edit_distance": {
+      "numerator": 30,
+      "denominator": 41,
+      "value": 0.7317
+     },
+     "invalid": {
+      "numerator": 30,
+      "denominator": 41,
+      "value": 0.7317
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.2881,
+      "lower": 0.1569,
+      "upper": 0.4193,
+      "level": 0.95
+     }
+    }
+   },
+   "by_detector": {
+    "detector_a_current": {
+     "label": "detector_a_current|trunc|1.05|detector_a_current",
+     "n_scored": 62,
+     "n_verified": 62,
+     "n_ocr_attempts": 62,
+     "exact": {
+      "numerator": 32,
+      "denominator": 62,
+      "value": 0.5161
+     },
+     "char_accuracy": {
+      "numerator": 58.667,
+      "denominator": 62,
+      "value": 0.9462
+     },
+     "mean_edit_distance": {
+      "numerator": 30,
+      "denominator": 62,
+      "value": 0.4839
+     },
+     "invalid": {
+      "numerator": 30,
+      "denominator": 62,
+      "value": 0.4839
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.5152,
+      "lower": 0.3945,
+      "upper": 0.6359,
+      "level": 0.95
+     }
+    }
+   }
+  },
+  "detector_a_current|trunc|1.07": {
+   "overall_cam1_verified": {
+    "label": "detector_a_current|trunc|1.07|cam1_verified",
+    "n_scored": 62,
+    "n_verified": 62,
+    "n_ocr_attempts": 62,
+    "exact": {
+     "numerator": 60,
+     "denominator": 62,
+     "value": 0.9677
+    },
+    "char_accuracy": {
+     "numerator": 61.7778,
+     "denominator": 62,
+     "value": 0.9964
+    },
+    "mean_edit_distance": {
+     "numerator": 2,
+     "denominator": 62,
+     "value": 0.0323
+    },
+    "invalid": {
+     "numerator": 2,
+     "denominator": 62,
+     "value": 0.0323
+    },
+    "failed": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "exact_wilson95": {
+     "centre": 0.9405,
+     "lower": 0.8898,
+     "upper": 0.9911,
+     "level": 0.95
+    }
+   },
+   "n_crops": 104,
+   "n_verified_crops": 62,
+   "n_unlabeled_crops": 42,
+   "by_camera": {
+    "cam1": {
+     "label": "detector_a_current|trunc|1.07|cam1",
+     "n_scored": 62,
+     "n_verified": 62,
+     "n_ocr_attempts": 62,
+     "exact": {
+      "numerator": 60,
+      "denominator": 62,
+      "value": 0.9677
+     },
+     "char_accuracy": {
+      "numerator": 61.7778,
+      "denominator": 62,
+      "value": 0.9964
+     },
+     "mean_edit_distance": {
+      "numerator": 2,
+      "denominator": 62,
+      "value": 0.0323
+     },
+     "invalid": {
+      "numerator": 2,
+      "denominator": 62,
+      "value": 0.0323
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9405,
+      "lower": 0.8898,
+      "upper": 0.9911,
+      "level": 0.95
+     }
+    }
+   },
+   "by_instance": {
+    "cam1_s001_v001": {
+     "label": "detector_a_current|trunc|1.07|cam1_s001_v001",
+     "n_scored": 41,
+     "n_verified": 41,
+     "n_ocr_attempts": 41,
+     "exact": {
+      "numerator": 39,
+      "denominator": 41,
+      "value": 0.9512
+     },
+     "char_accuracy": {
+      "numerator": 40.7778,
+      "denominator": 41,
+      "value": 0.9946
+     },
+     "mean_edit_distance": {
+      "numerator": 2,
+      "denominator": 41,
+      "value": 0.0488
+     },
+     "invalid": {
+      "numerator": 2,
+      "denominator": 41,
+      "value": 0.0488
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9126,
+      "lower": 0.8386,
+      "upper": 0.9865,
+      "level": 0.95
+     }
+    },
+    "cam1_s001_v002": {
+     "label": "detector_a_current|trunc|1.07|cam1_s001_v002",
+     "n_scored": 21,
+     "n_verified": 21,
+     "n_ocr_attempts": 21,
+     "exact": {
+      "numerator": 21,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 21.0,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9227,
+      "lower": 0.8454,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_width": {
+    "128-192": {
+     "label": "detector_a_current|trunc|1.07|128-192",
+     "n_scored": 21,
+     "n_verified": 21,
+     "n_ocr_attempts": 21,
+     "exact": {
+      "numerator": 21,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 21.0,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9227,
+      "lower": 0.8454,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    },
+    "192-256": {
+     "label": "detector_a_current|trunc|1.07|192-256",
+     "n_scored": 41,
+     "n_verified": 41,
+     "n_ocr_attempts": 41,
+     "exact": {
+      "numerator": 39,
+      "denominator": 41,
+      "value": 0.9512
+     },
+     "char_accuracy": {
+      "numerator": 40.7778,
+      "denominator": 41,
+      "value": 0.9946
+     },
+     "mean_edit_distance": {
+      "numerator": 2,
+      "denominator": 41,
+      "value": 0.0488
+     },
+     "invalid": {
+      "numerator": 2,
+      "denominator": 41,
+      "value": 0.0488
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9126,
+      "lower": 0.8386,
+      "upper": 0.9865,
+      "level": 0.95
+     }
+    }
+   },
+   "by_detector": {
+    "detector_a_current": {
+     "label": "detector_a_current|trunc|1.07|detector_a_current",
+     "n_scored": 62,
+     "n_verified": 62,
+     "n_ocr_attempts": 62,
+     "exact": {
+      "numerator": 60,
+      "denominator": 62,
+      "value": 0.9677
+     },
+     "char_accuracy": {
+      "numerator": 61.7778,
+      "denominator": 62,
+      "value": 0.9964
+     },
+     "mean_edit_distance": {
+      "numerator": 2,
+      "denominator": 62,
+      "value": 0.0323
+     },
+     "invalid": {
+      "numerator": 2,
+      "denominator": 62,
+      "value": 0.0323
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9405,
+      "lower": 0.8898,
+      "upper": 0.9911,
+      "level": 0.95
+     }
+    }
+   }
+  },
+  "detector_a_current|trunc|1.10": {
+   "overall_cam1_verified": {
+    "label": "detector_a_current|trunc|1.10|cam1_verified",
+    "n_scored": 62,
+    "n_verified": 62,
+    "n_ocr_attempts": 62,
+    "exact": {
+     "numerator": 62,
+     "denominator": 62,
+     "value": 1.0
+    },
+    "char_accuracy": {
+     "numerator": 62.0,
+     "denominator": 62,
+     "value": 1.0
+    },
+    "mean_edit_distance": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "invalid": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "failed": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "exact_wilson95": {
+     "centre": 0.9708,
+     "lower": 0.9417,
+     "upper": 1.0,
+     "level": 0.95
+    }
+   },
+   "n_crops": 104,
+   "n_verified_crops": 62,
+   "n_unlabeled_crops": 42,
+   "by_camera": {
+    "cam1": {
+     "label": "detector_a_current|trunc|1.10|cam1",
+     "n_scored": 62,
+     "n_verified": 62,
+     "n_ocr_attempts": 62,
+     "exact": {
+      "numerator": 62,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 62.0,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9708,
+      "lower": 0.9417,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_instance": {
+    "cam1_s001_v001": {
+     "label": "detector_a_current|trunc|1.10|cam1_s001_v001",
+     "n_scored": 41,
+     "n_verified": 41,
+     "n_ocr_attempts": 41,
+     "exact": {
+      "numerator": 41,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 41.0,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9572,
+      "lower": 0.9143,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    },
+    "cam1_s001_v002": {
+     "label": "detector_a_current|trunc|1.10|cam1_s001_v002",
+     "n_scored": 21,
+     "n_verified": 21,
+     "n_ocr_attempts": 21,
+     "exact": {
+      "numerator": 21,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 21.0,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9227,
+      "lower": 0.8454,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_width": {
+    "128-192": {
+     "label": "detector_a_current|trunc|1.10|128-192",
+     "n_scored": 21,
+     "n_verified": 21,
+     "n_ocr_attempts": 21,
+     "exact": {
+      "numerator": 21,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 21.0,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9227,
+      "lower": 0.8454,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    },
+    "192-256": {
+     "label": "detector_a_current|trunc|1.10|192-256",
+     "n_scored": 41,
+     "n_verified": 41,
+     "n_ocr_attempts": 41,
+     "exact": {
+      "numerator": 41,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 41.0,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9572,
+      "lower": 0.9143,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_detector": {
+    "detector_a_current": {
+     "label": "detector_a_current|trunc|1.10|detector_a_current",
+     "n_scored": 62,
+     "n_verified": 62,
+     "n_ocr_attempts": 62,
+     "exact": {
+      "numerator": 62,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 62.0,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9708,
+      "lower": 0.9417,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   }
+  },
+  "detector_b_iranplate|trunc|1.00": {
+   "overall_cam1_verified": {
+    "label": "detector_b_iranplate|trunc|1.00|cam1_verified",
+    "n_scored": 62,
+    "n_verified": 62,
+    "n_ocr_attempts": 62,
+    "exact": {
+     "numerator": 56,
+     "denominator": 62,
+     "value": 0.9032
+    },
+    "char_accuracy": {
+     "numerator": 61.3334,
+     "denominator": 62,
+     "value": 0.9892
+    },
+    "mean_edit_distance": {
+     "numerator": 6,
+     "denominator": 62,
+     "value": 0.0968
+    },
+    "invalid": {
+     "numerator": 6,
+     "denominator": 62,
+     "value": 0.0968
+    },
+    "failed": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "exact_wilson95": {
+     "centre": 0.8797,
+     "lower": 0.8045,
+     "upper": 0.9549,
+     "level": 0.95
+    }
+   },
+   "n_crops": 84,
+   "n_verified_crops": 62,
+   "n_unlabeled_crops": 22,
+   "by_camera": {
+    "cam1": {
+     "label": "detector_b_iranplate|trunc|1.00|cam1",
+     "n_scored": 62,
+     "n_verified": 62,
+     "n_ocr_attempts": 62,
+     "exact": {
+      "numerator": 56,
+      "denominator": 62,
+      "value": 0.9032
+     },
+     "char_accuracy": {
+      "numerator": 61.3334,
+      "denominator": 62,
+      "value": 0.9892
+     },
+     "mean_edit_distance": {
+      "numerator": 6,
+      "denominator": 62,
+      "value": 0.0968
+     },
+     "invalid": {
+      "numerator": 6,
+      "denominator": 62,
+      "value": 0.0968
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.8797,
+      "lower": 0.8045,
+      "upper": 0.9549,
+      "level": 0.95
+     }
+    }
+   },
+   "by_instance": {
+    "cam1_s001_v001": {
+     "label": "detector_b_iranplate|trunc|1.00|cam1_s001_v001",
+     "n_scored": 41,
+     "n_verified": 41,
+     "n_ocr_attempts": 41,
+     "exact": {
+      "numerator": 41,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 41.0,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9572,
+      "lower": 0.9143,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    },
+    "cam1_s001_v002": {
+     "label": "detector_b_iranplate|trunc|1.00|cam1_s001_v002",
+     "n_scored": 21,
+     "n_verified": 21,
+     "n_ocr_attempts": 21,
+     "exact": {
+      "numerator": 15,
+      "denominator": 21,
+      "value": 0.7143
+     },
+     "char_accuracy": {
+      "numerator": 20.3334,
+      "denominator": 21,
+      "value": 0.9683
+     },
+     "mean_edit_distance": {
+      "numerator": 6,
+      "denominator": 21,
+      "value": 0.2857
+     },
+     "invalid": {
+      "numerator": 6,
+      "denominator": 21,
+      "value": 0.2857
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.6811,
+      "lower": 0.5004,
+      "upper": 0.8619,
+      "level": 0.95
+     }
+    }
+   },
+   "by_width": {
+    "128-192": {
+     "label": "detector_b_iranplate|trunc|1.00|128-192",
+     "n_scored": 21,
+     "n_verified": 21,
+     "n_ocr_attempts": 21,
+     "exact": {
+      "numerator": 15,
+      "denominator": 21,
+      "value": 0.7143
+     },
+     "char_accuracy": {
+      "numerator": 20.3334,
+      "denominator": 21,
+      "value": 0.9683
+     },
+     "mean_edit_distance": {
+      "numerator": 6,
+      "denominator": 21,
+      "value": 0.2857
+     },
+     "invalid": {
+      "numerator": 6,
+      "denominator": 21,
+      "value": 0.2857
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.6811,
+      "lower": 0.5004,
+      "upper": 0.8619,
+      "level": 0.95
+     }
+    },
+    "192-256": {
+     "label": "detector_b_iranplate|trunc|1.00|192-256",
+     "n_scored": 41,
+     "n_verified": 41,
+     "n_ocr_attempts": 41,
+     "exact": {
+      "numerator": 41,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 41.0,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9572,
+      "lower": 0.9143,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_detector": {
+    "detector_b_iranplate": {
+     "label": "detector_b_iranplate|trunc|1.00|detector_b_iranplate",
+     "n_scored": 62,
+     "n_verified": 62,
+     "n_ocr_attempts": 62,
+     "exact": {
+      "numerator": 56,
+      "denominator": 62,
+      "value": 0.9032
+     },
+     "char_accuracy": {
+      "numerator": 61.3334,
+      "denominator": 62,
+      "value": 0.9892
+     },
+     "mean_edit_distance": {
+      "numerator": 6,
+      "denominator": 62,
+      "value": 0.0968
+     },
+     "invalid": {
+      "numerator": 6,
+      "denominator": 62,
+      "value": 0.0968
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.8797,
+      "lower": 0.8045,
+      "upper": 0.9549,
+      "level": 0.95
+     }
+    }
+   }
+  },
+  "detector_b_iranplate|floor|1.00": {
+   "overall_cam1_verified": {
+    "label": "detector_b_iranplate|floor|1.00|cam1_verified",
+    "n_scored": 62,
+    "n_verified": 62,
+    "n_ocr_attempts": 62,
+    "exact": {
+     "numerator": 56,
+     "denominator": 62,
+     "value": 0.9032
+    },
+    "char_accuracy": {
+     "numerator": 61.3334,
+     "denominator": 62,
+     "value": 0.9892
+    },
+    "mean_edit_distance": {
+     "numerator": 6,
+     "denominator": 62,
+     "value": 0.0968
+    },
+    "invalid": {
+     "numerator": 6,
+     "denominator": 62,
+     "value": 0.0968
+    },
+    "failed": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "exact_wilson95": {
+     "centre": 0.8797,
+     "lower": 0.8045,
+     "upper": 0.9549,
+     "level": 0.95
+    }
+   },
+   "n_crops": 84,
+   "n_verified_crops": 62,
+   "n_unlabeled_crops": 22,
+   "by_camera": {
+    "cam1": {
+     "label": "detector_b_iranplate|floor|1.00|cam1",
+     "n_scored": 62,
+     "n_verified": 62,
+     "n_ocr_attempts": 62,
+     "exact": {
+      "numerator": 56,
+      "denominator": 62,
+      "value": 0.9032
+     },
+     "char_accuracy": {
+      "numerator": 61.3334,
+      "denominator": 62,
+      "value": 0.9892
+     },
+     "mean_edit_distance": {
+      "numerator": 6,
+      "denominator": 62,
+      "value": 0.0968
+     },
+     "invalid": {
+      "numerator": 6,
+      "denominator": 62,
+      "value": 0.0968
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.8797,
+      "lower": 0.8045,
+      "upper": 0.9549,
+      "level": 0.95
+     }
+    }
+   },
+   "by_instance": {
+    "cam1_s001_v001": {
+     "label": "detector_b_iranplate|floor|1.00|cam1_s001_v001",
+     "n_scored": 41,
+     "n_verified": 41,
+     "n_ocr_attempts": 41,
+     "exact": {
+      "numerator": 41,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 41.0,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9572,
+      "lower": 0.9143,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    },
+    "cam1_s001_v002": {
+     "label": "detector_b_iranplate|floor|1.00|cam1_s001_v002",
+     "n_scored": 21,
+     "n_verified": 21,
+     "n_ocr_attempts": 21,
+     "exact": {
+      "numerator": 15,
+      "denominator": 21,
+      "value": 0.7143
+     },
+     "char_accuracy": {
+      "numerator": 20.3334,
+      "denominator": 21,
+      "value": 0.9683
+     },
+     "mean_edit_distance": {
+      "numerator": 6,
+      "denominator": 21,
+      "value": 0.2857
+     },
+     "invalid": {
+      "numerator": 6,
+      "denominator": 21,
+      "value": 0.2857
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.6811,
+      "lower": 0.5004,
+      "upper": 0.8619,
+      "level": 0.95
+     }
+    }
+   },
+   "by_width": {
+    "128-192": {
+     "label": "detector_b_iranplate|floor|1.00|128-192",
+     "n_scored": 21,
+     "n_verified": 21,
+     "n_ocr_attempts": 21,
+     "exact": {
+      "numerator": 15,
+      "denominator": 21,
+      "value": 0.7143
+     },
+     "char_accuracy": {
+      "numerator": 20.3334,
+      "denominator": 21,
+      "value": 0.9683
+     },
+     "mean_edit_distance": {
+      "numerator": 6,
+      "denominator": 21,
+      "value": 0.2857
+     },
+     "invalid": {
+      "numerator": 6,
+      "denominator": 21,
+      "value": 0.2857
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.6811,
+      "lower": 0.5004,
+      "upper": 0.8619,
+      "level": 0.95
+     }
+    },
+    "192-256": {
+     "label": "detector_b_iranplate|floor|1.00|192-256",
+     "n_scored": 41,
+     "n_verified": 41,
+     "n_ocr_attempts": 41,
+     "exact": {
+      "numerator": 41,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 41.0,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9572,
+      "lower": 0.9143,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_detector": {
+    "detector_b_iranplate": {
+     "label": "detector_b_iranplate|floor|1.00|detector_b_iranplate",
+     "n_scored": 62,
+     "n_verified": 62,
+     "n_ocr_attempts": 62,
+     "exact": {
+      "numerator": 56,
+      "denominator": 62,
+      "value": 0.9032
+     },
+     "char_accuracy": {
+      "numerator": 61.3334,
+      "denominator": 62,
+      "value": 0.9892
+     },
+     "mean_edit_distance": {
+      "numerator": 6,
+      "denominator": 62,
+      "value": 0.0968
+     },
+     "invalid": {
+      "numerator": 6,
+      "denominator": 62,
+      "value": 0.0968
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.8797,
+      "lower": 0.8045,
+      "upper": 0.9549,
+      "level": 0.95
+     }
+    }
+   }
+  },
+  "detector_b_iranplate|round|1.00": {
+   "overall_cam1_verified": {
+    "label": "detector_b_iranplate|round|1.00|cam1_verified",
+    "n_scored": 62,
+    "n_verified": 62,
+    "n_ocr_attempts": 62,
+    "exact": {
+     "numerator": 62,
+     "denominator": 62,
+     "value": 1.0
+    },
+    "char_accuracy": {
+     "numerator": 62.0,
+     "denominator": 62,
+     "value": 1.0
+    },
+    "mean_edit_distance": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "invalid": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "failed": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "exact_wilson95": {
+     "centre": 0.9708,
+     "lower": 0.9417,
+     "upper": 1.0,
+     "level": 0.95
+    }
+   },
+   "n_crops": 84,
+   "n_verified_crops": 62,
+   "n_unlabeled_crops": 22,
+   "by_camera": {
+    "cam1": {
+     "label": "detector_b_iranplate|round|1.00|cam1",
+     "n_scored": 62,
+     "n_verified": 62,
+     "n_ocr_attempts": 62,
+     "exact": {
+      "numerator": 62,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 62.0,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9708,
+      "lower": 0.9417,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_instance": {
+    "cam1_s001_v001": {
+     "label": "detector_b_iranplate|round|1.00|cam1_s001_v001",
+     "n_scored": 41,
+     "n_verified": 41,
+     "n_ocr_attempts": 41,
+     "exact": {
+      "numerator": 41,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 41.0,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9572,
+      "lower": 0.9143,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    },
+    "cam1_s001_v002": {
+     "label": "detector_b_iranplate|round|1.00|cam1_s001_v002",
+     "n_scored": 21,
+     "n_verified": 21,
+     "n_ocr_attempts": 21,
+     "exact": {
+      "numerator": 21,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 21.0,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9227,
+      "lower": 0.8454,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_width": {
+    "128-192": {
+     "label": "detector_b_iranplate|round|1.00|128-192",
+     "n_scored": 21,
+     "n_verified": 21,
+     "n_ocr_attempts": 21,
+     "exact": {
+      "numerator": 21,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 21.0,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9227,
+      "lower": 0.8454,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    },
+    "192-256": {
+     "label": "detector_b_iranplate|round|1.00|192-256",
+     "n_scored": 41,
+     "n_verified": 41,
+     "n_ocr_attempts": 41,
+     "exact": {
+      "numerator": 41,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 41.0,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9572,
+      "lower": 0.9143,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_detector": {
+    "detector_b_iranplate": {
+     "label": "detector_b_iranplate|round|1.00|detector_b_iranplate",
+     "n_scored": 62,
+     "n_verified": 62,
+     "n_ocr_attempts": 62,
+     "exact": {
+      "numerator": 62,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 62.0,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9708,
+      "lower": 0.9417,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   }
+  },
+  "detector_b_iranplate|ceil|1.00": {
+   "overall_cam1_verified": {
+    "label": "detector_b_iranplate|ceil|1.00|cam1_verified",
+    "n_scored": 62,
+    "n_verified": 62,
+    "n_ocr_attempts": 62,
+    "exact": {
+     "numerator": 62,
+     "denominator": 62,
+     "value": 1.0
+    },
+    "char_accuracy": {
+     "numerator": 62.0,
+     "denominator": 62,
+     "value": 1.0
+    },
+    "mean_edit_distance": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "invalid": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "failed": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "exact_wilson95": {
+     "centre": 0.9708,
+     "lower": 0.9417,
+     "upper": 1.0,
+     "level": 0.95
+    }
+   },
+   "n_crops": 84,
+   "n_verified_crops": 62,
+   "n_unlabeled_crops": 22,
+   "by_camera": {
+    "cam1": {
+     "label": "detector_b_iranplate|ceil|1.00|cam1",
+     "n_scored": 62,
+     "n_verified": 62,
+     "n_ocr_attempts": 62,
+     "exact": {
+      "numerator": 62,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 62.0,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9708,
+      "lower": 0.9417,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_instance": {
+    "cam1_s001_v001": {
+     "label": "detector_b_iranplate|ceil|1.00|cam1_s001_v001",
+     "n_scored": 41,
+     "n_verified": 41,
+     "n_ocr_attempts": 41,
+     "exact": {
+      "numerator": 41,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 41.0,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9572,
+      "lower": 0.9143,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    },
+    "cam1_s001_v002": {
+     "label": "detector_b_iranplate|ceil|1.00|cam1_s001_v002",
+     "n_scored": 21,
+     "n_verified": 21,
+     "n_ocr_attempts": 21,
+     "exact": {
+      "numerator": 21,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 21.0,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9227,
+      "lower": 0.8454,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_width": {
+    "128-192": {
+     "label": "detector_b_iranplate|ceil|1.00|128-192",
+     "n_scored": 21,
+     "n_verified": 21,
+     "n_ocr_attempts": 21,
+     "exact": {
+      "numerator": 21,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 21.0,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9227,
+      "lower": 0.8454,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    },
+    "192-256": {
+     "label": "detector_b_iranplate|ceil|1.00|192-256",
+     "n_scored": 41,
+     "n_verified": 41,
+     "n_ocr_attempts": 41,
+     "exact": {
+      "numerator": 41,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 41.0,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9572,
+      "lower": 0.9143,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_detector": {
+    "detector_b_iranplate": {
+     "label": "detector_b_iranplate|ceil|1.00|detector_b_iranplate",
+     "n_scored": 62,
+     "n_verified": 62,
+     "n_ocr_attempts": 62,
+     "exact": {
+      "numerator": 62,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 62.0,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9708,
+      "lower": 0.9417,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   }
+  },
+  "detector_b_iranplate|trunc|1.03": {
+   "overall_cam1_verified": {
+    "label": "detector_b_iranplate|trunc|1.03|cam1_verified",
+    "n_scored": 62,
+    "n_verified": 62,
+    "n_ocr_attempts": 62,
+    "exact": {
+     "numerator": 62,
+     "denominator": 62,
+     "value": 1.0
+    },
+    "char_accuracy": {
+     "numerator": 62.0,
+     "denominator": 62,
+     "value": 1.0
+    },
+    "mean_edit_distance": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "invalid": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "failed": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "exact_wilson95": {
+     "centre": 0.9708,
+     "lower": 0.9417,
+     "upper": 1.0,
+     "level": 0.95
+    }
+   },
+   "n_crops": 84,
+   "n_verified_crops": 62,
+   "n_unlabeled_crops": 22,
+   "by_camera": {
+    "cam1": {
+     "label": "detector_b_iranplate|trunc|1.03|cam1",
+     "n_scored": 62,
+     "n_verified": 62,
+     "n_ocr_attempts": 62,
+     "exact": {
+      "numerator": 62,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 62.0,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9708,
+      "lower": 0.9417,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_instance": {
+    "cam1_s001_v001": {
+     "label": "detector_b_iranplate|trunc|1.03|cam1_s001_v001",
+     "n_scored": 41,
+     "n_verified": 41,
+     "n_ocr_attempts": 41,
+     "exact": {
+      "numerator": 41,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 41.0,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9572,
+      "lower": 0.9143,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    },
+    "cam1_s001_v002": {
+     "label": "detector_b_iranplate|trunc|1.03|cam1_s001_v002",
+     "n_scored": 21,
+     "n_verified": 21,
+     "n_ocr_attempts": 21,
+     "exact": {
+      "numerator": 21,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 21.0,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9227,
+      "lower": 0.8454,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_width": {
+    "128-192": {
+     "label": "detector_b_iranplate|trunc|1.03|128-192",
+     "n_scored": 21,
+     "n_verified": 21,
+     "n_ocr_attempts": 21,
+     "exact": {
+      "numerator": 21,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 21.0,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9227,
+      "lower": 0.8454,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    },
+    "192-256": {
+     "label": "detector_b_iranplate|trunc|1.03|192-256",
+     "n_scored": 41,
+     "n_verified": 41,
+     "n_ocr_attempts": 41,
+     "exact": {
+      "numerator": 41,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 41.0,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9572,
+      "lower": 0.9143,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_detector": {
+    "detector_b_iranplate": {
+     "label": "detector_b_iranplate|trunc|1.03|detector_b_iranplate",
+     "n_scored": 62,
+     "n_verified": 62,
+     "n_ocr_attempts": 62,
+     "exact": {
+      "numerator": 62,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 62.0,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9708,
+      "lower": 0.9417,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   }
+  },
+  "detector_b_iranplate|trunc|1.05": {
+   "overall_cam1_verified": {
+    "label": "detector_b_iranplate|trunc|1.05|cam1_verified",
+    "n_scored": 62,
+    "n_verified": 62,
+    "n_ocr_attempts": 62,
+    "exact": {
+     "numerator": 62,
+     "denominator": 62,
+     "value": 1.0
+    },
+    "char_accuracy": {
+     "numerator": 62.0,
+     "denominator": 62,
+     "value": 1.0
+    },
+    "mean_edit_distance": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "invalid": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "failed": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "exact_wilson95": {
+     "centre": 0.9708,
+     "lower": 0.9417,
+     "upper": 1.0,
+     "level": 0.95
+    }
+   },
+   "n_crops": 84,
+   "n_verified_crops": 62,
+   "n_unlabeled_crops": 22,
+   "by_camera": {
+    "cam1": {
+     "label": "detector_b_iranplate|trunc|1.05|cam1",
+     "n_scored": 62,
+     "n_verified": 62,
+     "n_ocr_attempts": 62,
+     "exact": {
+      "numerator": 62,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 62.0,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9708,
+      "lower": 0.9417,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_instance": {
+    "cam1_s001_v001": {
+     "label": "detector_b_iranplate|trunc|1.05|cam1_s001_v001",
+     "n_scored": 41,
+     "n_verified": 41,
+     "n_ocr_attempts": 41,
+     "exact": {
+      "numerator": 41,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 41.0,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9572,
+      "lower": 0.9143,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    },
+    "cam1_s001_v002": {
+     "label": "detector_b_iranplate|trunc|1.05|cam1_s001_v002",
+     "n_scored": 21,
+     "n_verified": 21,
+     "n_ocr_attempts": 21,
+     "exact": {
+      "numerator": 21,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 21.0,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9227,
+      "lower": 0.8454,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_width": {
+    "128-192": {
+     "label": "detector_b_iranplate|trunc|1.05|128-192",
+     "n_scored": 21,
+     "n_verified": 21,
+     "n_ocr_attempts": 21,
+     "exact": {
+      "numerator": 21,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 21.0,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9227,
+      "lower": 0.8454,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    },
+    "192-256": {
+     "label": "detector_b_iranplate|trunc|1.05|192-256",
+     "n_scored": 41,
+     "n_verified": 41,
+     "n_ocr_attempts": 41,
+     "exact": {
+      "numerator": 41,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 41.0,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9572,
+      "lower": 0.9143,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_detector": {
+    "detector_b_iranplate": {
+     "label": "detector_b_iranplate|trunc|1.05|detector_b_iranplate",
+     "n_scored": 62,
+     "n_verified": 62,
+     "n_ocr_attempts": 62,
+     "exact": {
+      "numerator": 62,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 62.0,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9708,
+      "lower": 0.9417,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   }
+  },
+  "detector_b_iranplate|trunc|1.07": {
+   "overall_cam1_verified": {
+    "label": "detector_b_iranplate|trunc|1.07|cam1_verified",
+    "n_scored": 62,
+    "n_verified": 62,
+    "n_ocr_attempts": 62,
+    "exact": {
+     "numerator": 62,
+     "denominator": 62,
+     "value": 1.0
+    },
+    "char_accuracy": {
+     "numerator": 62.0,
+     "denominator": 62,
+     "value": 1.0
+    },
+    "mean_edit_distance": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "invalid": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "failed": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "exact_wilson95": {
+     "centre": 0.9708,
+     "lower": 0.9417,
+     "upper": 1.0,
+     "level": 0.95
+    }
+   },
+   "n_crops": 84,
+   "n_verified_crops": 62,
+   "n_unlabeled_crops": 22,
+   "by_camera": {
+    "cam1": {
+     "label": "detector_b_iranplate|trunc|1.07|cam1",
+     "n_scored": 62,
+     "n_verified": 62,
+     "n_ocr_attempts": 62,
+     "exact": {
+      "numerator": 62,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 62.0,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9708,
+      "lower": 0.9417,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_instance": {
+    "cam1_s001_v001": {
+     "label": "detector_b_iranplate|trunc|1.07|cam1_s001_v001",
+     "n_scored": 41,
+     "n_verified": 41,
+     "n_ocr_attempts": 41,
+     "exact": {
+      "numerator": 41,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 41.0,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9572,
+      "lower": 0.9143,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    },
+    "cam1_s001_v002": {
+     "label": "detector_b_iranplate|trunc|1.07|cam1_s001_v002",
+     "n_scored": 21,
+     "n_verified": 21,
+     "n_ocr_attempts": 21,
+     "exact": {
+      "numerator": 21,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 21.0,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9227,
+      "lower": 0.8454,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_width": {
+    "128-192": {
+     "label": "detector_b_iranplate|trunc|1.07|128-192",
+     "n_scored": 21,
+     "n_verified": 21,
+     "n_ocr_attempts": 21,
+     "exact": {
+      "numerator": 21,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 21.0,
+      "denominator": 21,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9227,
+      "lower": 0.8454,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    },
+    "192-256": {
+     "label": "detector_b_iranplate|trunc|1.07|192-256",
+     "n_scored": 41,
+     "n_verified": 41,
+     "n_ocr_attempts": 41,
+     "exact": {
+      "numerator": 41,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 41.0,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9572,
+      "lower": 0.9143,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_detector": {
+    "detector_b_iranplate": {
+     "label": "detector_b_iranplate|trunc|1.07|detector_b_iranplate",
+     "n_scored": 62,
+     "n_verified": 62,
+     "n_ocr_attempts": 62,
+     "exact": {
+      "numerator": 62,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 62.0,
+      "denominator": 62,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9708,
+      "lower": 0.9417,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   }
+  },
+  "detector_b_iranplate|trunc|1.10": {
+   "overall_cam1_verified": {
+    "label": "detector_b_iranplate|trunc|1.10|cam1_verified",
+    "n_scored": 62,
+    "n_verified": 62,
+    "n_ocr_attempts": 62,
+    "exact": {
+     "numerator": 58,
+     "denominator": 62,
+     "value": 0.9355
+    },
+    "char_accuracy": {
+     "numerator": 61.5556,
+     "denominator": 62,
+     "value": 0.9928
+    },
+    "mean_edit_distance": {
+     "numerator": 4,
+     "denominator": 62,
+     "value": 0.0645
+    },
+    "invalid": {
+     "numerator": 4,
+     "denominator": 62,
+     "value": 0.0645
+    },
+    "failed": {
+     "numerator": 0,
+     "denominator": 62,
+     "value": 0.0
+    },
+    "exact_wilson95": {
+     "centre": 0.9101,
+     "lower": 0.8455,
+     "upper": 0.9746,
+     "level": 0.95
+    }
+   },
+   "n_crops": 84,
+   "n_verified_crops": 62,
+   "n_unlabeled_crops": 22,
+   "by_camera": {
+    "cam1": {
+     "label": "detector_b_iranplate|trunc|1.10|cam1",
+     "n_scored": 62,
+     "n_verified": 62,
+     "n_ocr_attempts": 62,
+     "exact": {
+      "numerator": 58,
+      "denominator": 62,
+      "value": 0.9355
+     },
+     "char_accuracy": {
+      "numerator": 61.5556,
+      "denominator": 62,
+      "value": 0.9928
+     },
+     "mean_edit_distance": {
+      "numerator": 4,
+      "denominator": 62,
+      "value": 0.0645
+     },
+     "invalid": {
+      "numerator": 4,
+      "denominator": 62,
+      "value": 0.0645
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9101,
+      "lower": 0.8455,
+      "upper": 0.9746,
+      "level": 0.95
+     }
+    }
+   },
+   "by_instance": {
+    "cam1_s001_v001": {
+     "label": "detector_b_iranplate|trunc|1.10|cam1_s001_v001",
+     "n_scored": 41,
+     "n_verified": 41,
+     "n_ocr_attempts": 41,
+     "exact": {
+      "numerator": 41,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 41.0,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9572,
+      "lower": 0.9143,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    },
+    "cam1_s001_v002": {
+     "label": "detector_b_iranplate|trunc|1.10|cam1_s001_v002",
+     "n_scored": 21,
+     "n_verified": 21,
+     "n_ocr_attempts": 21,
+     "exact": {
+      "numerator": 17,
+      "denominator": 21,
+      "value": 0.8095
+     },
+     "char_accuracy": {
+      "numerator": 20.5556,
+      "denominator": 21,
+      "value": 0.9788
+     },
+     "mean_edit_distance": {
+      "numerator": 4,
+      "denominator": 21,
+      "value": 0.1905
+     },
+     "invalid": {
+      "numerator": 4,
+      "denominator": 21,
+      "value": 0.1905
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.7617,
+      "lower": 0.6,
+      "upper": 0.9233,
+      "level": 0.95
+     }
+    }
+   },
+   "by_width": {
+    "128-192": {
+     "label": "detector_b_iranplate|trunc|1.10|128-192",
+     "n_scored": 21,
+     "n_verified": 21,
+     "n_ocr_attempts": 21,
+     "exact": {
+      "numerator": 17,
+      "denominator": 21,
+      "value": 0.8095
+     },
+     "char_accuracy": {
+      "numerator": 20.5556,
+      "denominator": 21,
+      "value": 0.9788
+     },
+     "mean_edit_distance": {
+      "numerator": 4,
+      "denominator": 21,
+      "value": 0.1905
+     },
+     "invalid": {
+      "numerator": 4,
+      "denominator": 21,
+      "value": 0.1905
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 21,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.7617,
+      "lower": 0.6,
+      "upper": 0.9233,
+      "level": 0.95
+     }
+    },
+    "192-256": {
+     "label": "detector_b_iranplate|trunc|1.10|192-256",
+     "n_scored": 41,
+     "n_verified": 41,
+     "n_ocr_attempts": 41,
+     "exact": {
+      "numerator": 41,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "char_accuracy": {
+      "numerator": 41.0,
+      "denominator": 41,
+      "value": 1.0
+     },
+     "mean_edit_distance": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "invalid": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 41,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9572,
+      "lower": 0.9143,
+      "upper": 1.0,
+      "level": 0.95
+     }
+    }
+   },
+   "by_detector": {
+    "detector_b_iranplate": {
+     "label": "detector_b_iranplate|trunc|1.10|detector_b_iranplate",
+     "n_scored": 62,
+     "n_verified": 62,
+     "n_ocr_attempts": 62,
+     "exact": {
+      "numerator": 58,
+      "denominator": 62,
+      "value": 0.9355
+     },
+     "char_accuracy": {
+      "numerator": 61.5556,
+      "denominator": 62,
+      "value": 0.9928
+     },
+     "mean_edit_distance": {
+      "numerator": 4,
+      "denominator": 62,
+      "value": 0.0645
+     },
+     "invalid": {
+      "numerator": 4,
+      "denominator": 62,
+      "value": 0.0645
+     },
+     "failed": {
+      "numerator": 0,
+      "denominator": 62,
+      "value": 0.0
+     },
+     "exact_wilson95": {
+      "centre": 0.9101,
+      "lower": 0.8455,
+      "upper": 0.9746,
+      "level": 0.95
+     }
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,35 @@
+{
+ "dataset": "phase3",
+ "dataset_version": "3.0.0",
+ "created_at": "2026-10-04 11:31:19",
+ "sampling": "interval_5",
+ "cameras": [
+  "cam1",
+  "cam2"
+ ],
+ "n_cameras": 2,
+ "sessions": [
+  "cam1_s001",
+  "cam2_s001"
+ ],
+ "n_sessions": 2,
+ "n_vehicle_instances": 11,
+ "n_verified_vehicle_instances": 2,
+ "n_annotations": 104,
+ "n_verified_text_annotations": 62,
+ "n_verified_box_annotations": 0,
+ "n_frames": 192,
+ "splits_strategy": "single_evaluation_set",
+ "splits_rationale": "only 2 verified vehicle instance(s) exist (need >= 5 for a statistically meaningful instance-level split); ALL verified instances are kept in the single evaluation (test) split and train/validation are left empty. No statistical significance is manufactured. Provisional (unverified) instances are listed in the test split as evaluation context only; they never enter accuracy metrics.",
+ "validation": {
+  "valid": true,
+  "n_records_with_errors": 0
+ },
+ "leakage": {
+  "leakage_free": true,
+  "violations": []
+ },
+ "gt_version": "phase2b_labels_v1+phase3_build_v1",
+ "box_gt_status": "PENDING_HUMAN_ANNOTATION",
+ "cam2_status": "STAGED_PENDING_HUMAN_REVIEW"
+}
