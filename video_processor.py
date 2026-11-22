@@ -358,7 +358,8 @@ class VideoProcessor:
     # record without spamming the same car/screen multiple times in 3 seconds.
     _DEDUP_WINDOW_SECONDS = 60.0
 
-    def __init__(self, engine, on_detection=None, camera_id=None, camera_name=None):
+    def __init__(self, engine, on_detection=None, camera_id=None, camera_name=None,
+                 session_id=None, source_file=None, source_instance_id=None):
         self.engine = engine
         self.on_detection = on_detection
         self.lock = threading.Lock()
@@ -370,7 +371,10 @@ class VideoProcessor:
                 from pipeline.integration import EventPipeline
                 self.event_pipeline = EventPipeline(source_type="video",
                                                     camera_id=camera_id,
-                                                    camera_name=camera_name)
+                                                    camera_name=camera_name,
+                                                    session_id=session_id,
+                                                    source_file=source_file,
+                                                    source_instance_id=source_instance_id)
             except Exception as exc:  # fail safe: legacy on any wiring error
                 logger.warning("Event pipeline disabled (init failed): %s", exc)
                 self.event_pipeline = None
@@ -409,6 +413,52 @@ class VideoProcessor:
             self.running = False
         if hasattr(self, 'thread') and self.thread and self.thread.is_alive():
             self.thread.join(timeout=3.0)
+
+    def _wait_for_retention_room(self) -> bool:
+        """Pause a file source until retention can accept the next frame.
+
+        A PENDING entry inside its retry interval is not terminal. Wait for
+        that retry instead of reporting terminal saturation. Return False only
+        when the source stops or terminal EXHAUSTED/CONFLICT work remains.
+        """
+        if self.event_pipeline is None:
+            return True
+        while self.running and self.event_pipeline.retention_free() <= 0:
+            self.event_pipeline.drain_retention()
+            if self.event_pipeline.retention_free() > 0:
+                return True
+            progress = self.event_pipeline.retention_progress_state()
+            if progress == "terminal":
+                logger.critical(
+                    "File processing blocked by terminal retention "
+                    "(free=%d, conflicts=%d, exhausted=%d)",
+                    self.event_pipeline.retention_free(),
+                    self.event_pipeline.retention_snapshot().get("conflicts", 0),
+                    self.event_pipeline.retention_snapshot().get("exhausted", 0),
+                )
+                with self.lock:
+                    self.status = "error: retention blocked"
+                    self.error = (
+                        "Event retention is saturated with terminal "
+                        "conflicts/exhausted events"
+                    )
+                    self.running = False
+                return False
+            if progress in ("due", "recoverable"):
+                # Recovery/retry can make progress without a frame.
+                time.sleep(0.01)
+                continue
+            delay = self.event_pipeline.retention_next_retry_delay()
+            if progress == "backoff" and delay > 0:
+                # Wait for the next retry, but remain interruptible.
+                end = time.monotonic() + min(delay, 0.5)
+                while self.running and time.monotonic() < end:
+                    time.sleep(0.02)
+                continue
+            # A stranded reservation is recovered by drain_retention on the
+            # next pass; avoid a hot loop while it ages out.
+            time.sleep(0.02)
+        return self.running
 
     def _run(self, input_path, skip_frames, fast_mode):
         with self.lock:
@@ -452,6 +502,11 @@ class VideoProcessor:
             frame_idx = 0
 
             while self.running:
+                # File sources can genuinely pause: do not advance the file
+                # position until retention has room. Draining is synchronous
+                # and runs on this same thread (no timer/background worker).
+                if not self._wait_for_retention_room():
+                    break
                 ret, frame = cap.read()
                 if not ret:
                     break
@@ -605,7 +660,15 @@ class VideoProcessor:
             with self.lock:
                 self.output_path = output_path
                 self.plate_log = plate_log
-                self.status = "done"
+                if (self.event_pipeline is not None
+                        and self.event_pipeline.retention_blocked()):
+                    self.status = "error: retention blocked"
+                    self.error = (
+                        "Event retention is saturated with terminal "
+                        "conflicts/exhausted events"
+                    )
+                else:
+                    self.status = "done"
                 self.processing = False
                 self.running = False
 
@@ -654,7 +717,8 @@ class RTSPStreamProcessor:
     def __init__(self, engine, source,
                  fast_mode=False, skip_frames=15, on_detection=None,
                  max_reconnect_attempts=3, reconnect_delay=2.0,
-                 camera_id=None, camera_name=None):
+                 camera_id=None, camera_name=None,
+                 session_id=None, source_file=None, source_instance_id=None):
         self.engine = engine
         self.source = source
         self.fast_mode = fast_mode
@@ -672,6 +736,9 @@ class RTSPStreamProcessor:
                 self.event_pipeline = EventPipeline(
                     source_type="rtsp", camera_id=camera_id,
                     camera_name=camera_name,
+                    session_id=session_id,
+                    source_file=source_file,
+                    source_instance_id=source_instance_id,
                 )
             except Exception as exc:  # fail safe: legacy on any wiring error
                 logger.warning("Event pipeline disabled (init failed): %s", exc)
@@ -690,13 +757,37 @@ class RTSPStreamProcessor:
         self.status = "initialized"
         self.lock = threading.Lock()
         self.thread = None
+        self._reader_thread = None
+        self._ml_thread = None
+        self._shutdown_flushed = False
+        self._shutdown_incomplete = False
+        # Serializes stop()/start() so two stop callers cannot double-flush
+        # and a start cannot replace worker references mid-shutdown (F-9).
+        # Workers never acquire this lock, so joining under it cannot deadlock.
+        self._stop_lock = threading.Lock()
         self._error_message = None  # Latest error for UI display
 
     def start(self):
-        self.running = True
-        self.thread = threading.Thread(target=self._run, daemon=True)
-        self.thread.start()
+        with self._stop_lock:
+            self.running = True
+            self._shutdown_flushed = False
+            self._shutdown_incomplete = False
+            self.thread = threading.Thread(target=self._run, daemon=True,
+                                           name="rtsp-main")
+            self.thread.start()
         return True
+
+    def shutdown_completed(self) -> bool:
+        """True when the last stop() verified worker termination and, when the
+        event pipeline is enabled, ran the final flush.
+
+        Callers (stop endpoints, camera watcher) must treat False as an
+        incomplete shutdown: the session must not be closed and the processor
+        must not be discarded in that state. A later stop() can retry and,
+        on success, clears the stale incomplete state.
+        """
+        return not self._shutdown_incomplete and (
+            self.event_pipeline is None or self._shutdown_flushed)
 
     def stop(self):
         # Signal both the main processing loop and the reader thread to exit.
@@ -704,16 +795,48 @@ class RTSPStreamProcessor:
         # capture and releases it when it exits; releasing it from another
         # thread while a cap.read() is in flight throws a native OpenCV C++
         # exception that aborts the whole process on Windows.
-        self.running = False
-        if hasattr(self, 'thread') and self.thread and self.thread.is_alive():
-            self.thread.join(timeout=3.0)
-        # Phase 1: flush open tracks so a stop/reconnect never loses a visit
-        # (§2.4 any→EXPIRED). Harmless no-op when the event pipeline is off.
-        if self.event_pipeline is not None:
-            try:
-                self.event_pipeline.expire("processor_stop")
-            except Exception as exc:
-                logger.warning("Event pipeline flush failed: %s", exc)
+        # The whole stop (join + verify + flush) is serialized by _stop_lock:
+        # concurrent stop callers cannot double-flush, and start() cannot
+        # replace worker references mid-shutdown (audit F-9). Workers never
+        # acquire _stop_lock, so joining under it cannot deadlock.
+        with self._stop_lock:
+            self.running = False
+            workers = [self.thread, self._reader_thread, self._ml_thread]
+            for worker in workers:
+                if worker is not None and worker is not threading.current_thread():
+                    if worker.is_alive():
+                        worker.join(timeout=3.0)
+            alive = [w.name for w in workers
+                     if w is not None and w.is_alive()
+                     and w is not threading.current_thread()]
+            if alive:
+                # A timeout is not proof of termination. Never flush while a
+                # worker can still mutate TrackManager; report incomplete
+                # shutdown so callers keep the session open and can retry.
+                self._shutdown_incomplete = True
+                with self.lock:
+                    self.status = "error: shutdown timeout"
+                    self._error_message = (
+                        "Worker shutdown timed out; final event flush was not run")
+                logger.critical(
+                    "RTSP shutdown incomplete; alive workers=%s; flush skipped",
+                    alive)
+                return
+            # Phase 1: flush open tracks so a stop/reconnect never loses a visit
+            # (§2.4 any→EXPIRED). Harmless no-op when the event pipeline is off.
+            if self.event_pipeline is not None and not self._shutdown_flushed:
+                try:
+                    self.event_pipeline.expire("processor_stop")
+                    self._shutdown_flushed = True
+                except Exception as exc:
+                    logger.warning("Event pipeline flush failed: %s", exc)
+            # A successful stop supersedes any earlier incomplete attempt.
+            self._shutdown_incomplete = False
+            if self._shutdown_flushed or self.event_pipeline is None:
+                with self.lock:
+                    if self.status == "error: shutdown timeout":
+                        self.status = "stopped"
+                        self._error_message = None
 
     def _run(self):
         from plate_validator import validate_iranian_plate, format_plate_persian as _format_persian
@@ -860,7 +983,8 @@ class RTSPStreamProcessor:
 
             return False
 
-        reader = threading.Thread(target=_reader, daemon=True)
+        reader = threading.Thread(target=_reader, daemon=True, name="rtsp-reader")
+        self._reader_thread = reader
         reader.start()
 
         last_seq = 0
@@ -996,7 +1120,8 @@ class RTSPStreamProcessor:
                     with _ml_lock:
                         _ml_busy["value"] = False
 
-        ml_thread = threading.Thread(target=_ml_worker, daemon=True)
+        ml_thread = threading.Thread(target=_ml_worker, daemon=True, name="rtsp-ml")
+        self._ml_thread = ml_thread
         ml_thread.start()
 
         try:

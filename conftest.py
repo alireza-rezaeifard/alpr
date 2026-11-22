@@ -2,6 +2,8 @@
 from hypothesis import settings, HealthCheck
 from datetime import timedelta
 
+from tests import isolation as _isolation
+
 # Third-party / vendored benchmark checkouts under bench/ contain scripts whose
 # filenames match pytest's default python_files patterns ("*_test.py", e.g.
 # scripts/smoke_test.py). Importing them at collection time executes module
@@ -15,9 +17,15 @@ collect_ignore = []
 
 
 def pytest_configure(config):
-    """Make the collected root explicit and robust against vendored trees."""
+    """Make the collected root explicit and install the DB safety boundary."""
     if not getattr(config.option, "testpaths", None):
         config.option.testpaths = ["tests"]
+    _isolation.install_guard(config)
+
+
+def pytest_unconfigure(config):
+    """Restore the SQLite/DB factories after the test session."""
+    _isolation.restore_guard(config)
 
 
 # CI profile: fast, strict deadlines, reduced examples

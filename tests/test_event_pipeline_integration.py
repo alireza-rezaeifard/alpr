@@ -39,6 +39,16 @@ class _FakeResult:
 W, H = 1280, 720
 
 
+@pytest.fixture(autouse=True)
+def _event_db_schema(tmp_path, monkeypatch):
+    """Every pipeline test gets an isolated DB with the event schema."""
+    import db
+
+    monkeypatch.setattr(db, "DB_PATH", str(tmp_path / "event_pipeline.db"))
+    db.init_db()
+    yield
+
+
 def _mk(source="rtsp", camera_id=1):
     return EventPipeline(source_type=source, camera_id=camera_id,
                          camera_name=f"cam-{camera_id}")
@@ -159,8 +169,12 @@ def test_repeated_finalization_idempotent_in_memory():
     from pipeline.types import EmissionRequest
     import time as _time
     req = EmissionRequest(track_key=key, action="emit", status="confirmed",
-                          reason="consensus_confirm")
-    repeat = ep._finalize(req, _time.monotonic(), closing=False)
+                          reason="consensus_confirm",
+                          event_uid=ep._lifecycle.get(key).event_uid)
+    token = ep._retention.reserve(
+        "confirm", key, "emit", "confirmed", False, "consensus_confirm",
+        event_uid=req.event_uid)
+    repeat = ep._finalize(req, _time.monotonic(), closing=False, token=token)
     assert repeat is None
     m = ep.get_metrics()
     assert m["duplicate_finalizations_suppressed"] >= 1
@@ -173,12 +187,11 @@ def test_repeated_finalization_idempotent_in_memory():
 
 @pytest.fixture()
 def temp_db(monkeypatch, tmp_path):
-    monkeypatch.setenv("ALPR_DB_PATH_CHECK", "1")
     import db
-    db.DB_PATH = str(tmp_path / "phase1.db")
+
+    monkeypatch.setattr(db, "DB_PATH", str(tmp_path / "phase1.db"))
     db.init_db()
     yield db
-    db.DB_PATH = os.path.join(os.path.dirname(db.__file__), "database", "plpr.db")
 
 
 def test_durable_upsert_idempotent_across_restart(temp_db):

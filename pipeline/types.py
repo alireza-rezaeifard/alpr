@@ -69,6 +69,7 @@ class Track:
     first_ts: float | None = None
     last_ts: float | None = None
     event_emitted: bool = False
+    event_uid: str | None = None
     merged_into: str | None = None
     observations: list = field(default_factory=list)  # PlateObservation list
 
@@ -182,6 +183,7 @@ class EmissionRequest:
     status: str = ""               # "confirmed" | "unconfirmed" | ""
     needs_review: bool = False
     reason: str = ""
+    event_uid: str | None = None
 
 
 @dataclass
@@ -223,6 +225,7 @@ class VehicleEvent:
     best_frame_frame_idx: int | None = None
     fragment_of_event_id: int | None = None
     alert_count: int = 0
+    event_uid: str | None = None
     camera_id: int | None = None
     camera_name: str | None = None
     session_id: int | None = None

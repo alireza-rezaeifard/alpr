@@ -78,6 +78,13 @@ class PipelineConfig:
     max_track_obs: int = 30
     max_persisted_obs: int = 20
 
+    # Unified retention (M0-A): requests and events share this budget.
+    retention_capacity: int = 192
+    retention_retry_interval_s: float = 5.0
+    retention_max_attempts: int = 3
+    retention_recovery_timeout_s: float = 5.0
+    retention_max_recovery_attempts: int = 3
+
     # Duplicate prevention (§2.5)
     reentry_cooldown_s: float = 15.0
     fragment_window_s: float = 3.0
@@ -124,7 +131,9 @@ class PipelineConfig:
                      "max_concurrent_inference", "max_video_tasks",
                      "frame_queue_depth", "history_limit", "confirm_min_obs",
                      "max_upgrades", "semaphore_stall_frames",
-                     "scene_reset_tracks", "plate_track_min_obs"):
+                     "scene_reset_tracks", "plate_track_min_obs",
+                     "retention_capacity", "retention_max_attempts",
+                     "retention_max_recovery_attempts"):
             if getattr(self, name) < 1:
                 errors.append(f"{name} must be >= 1")
         for name in ("track_expiry_s", "track_min_lifetime_s",
@@ -135,6 +144,10 @@ class PipelineConfig:
                      "display_fps_floor"):
             if getattr(self, name) <= 0:
                 errors.append(f"{name} must be > 0")
+        if self.retention_retry_interval_s < 0:
+            errors.append("retention_retry_interval_s must be >= 0")
+        if self.retention_recovery_timeout_s < 0:
+            errors.append("retention_recovery_timeout_s must be >= 0")
         if self.track_expiry_s <= self.track_min_lifetime_s:
             errors.append("track_expiry_s must exceed track_min_lifetime_s")
         if self.track_low_thresh > self.track_high_thresh:

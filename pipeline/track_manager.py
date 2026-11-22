@@ -12,6 +12,7 @@ requests are handed to EventBuilder (Phase 1); persistence is NOT done here.
 from __future__ import annotations
 
 import time
+import uuid
 
 from .config import PipelineConfig
 from .types import EmissionRequest, PlateRead, Track, TrackUpdate
@@ -57,14 +58,30 @@ class TrackManager:
     # -- tracker input -------------------------------------------------
     def apply_updates(self, updates: list[TrackUpdate], now: float | None = None
                       ) -> list[EmissionRequest]:
-        """Fold tracker output into lifecycle tracks; expire stale ones.
+        """Deprecated unadmitted entry point.
 
-        Returns emission requests for tracks that completed/expired with
-        evidence (§2.4 COMPLETED row). LOST updates keep the lifecycle state
-        (tracker resumes it on re-association, §2.4 LOST→resumed).
+        The admitted contract is structural: a close must reserve before the
+        lifecycle transition. Keeping a compatibility method that can close
+        without admission would leave a terminal Track with an unowned request.
         """
+        raise ValueError(
+            "apply_updates requires admission; use apply_updates_admitted"
+        )
+
+    def apply_updates_admitted(self, updates: list[TrackUpdate], now: float | None,
+                               admission) -> tuple[list[EmissionRequest], list]:
+        """Expiry variant that reserves a retention token before each close."""
+        return self._apply_updates(updates, now, admission)
+
+    def _apply_updates(self, updates: list[TrackUpdate], now: float | None,
+                       admission) -> tuple[list[EmissionRequest], list]:
+        if admission is None:
+            raise ValueError(
+                "apply_updates requires admission; use apply_updates_admitted"
+            )
         now = self._clock() if now is None else now
         requests: list[EmissionRequest] = []
+        tokens: list = []
         seen: set[str] = set()
         for update in updates:
             seen.add(update.track_key)
@@ -72,7 +89,7 @@ class TrackManager:
             if track is None:
                 track = Track(track_key=update.track_key, kind=update.kind,
                               state=NEW, first_ts=now, last_ts=now,
-                              box=update.box)
+                              box=update.box, event_uid=str(uuid.uuid4()))
                 self._tracks[update.track_key] = track
             track.box = update.box
             track.last_ts = now
@@ -92,8 +109,34 @@ class TrackManager:
             if track.state in (COMPLETED, EXPIRED):
                 continue
             if self._expired(track, now):
-                requests.extend(self._close_track(track, now))
-        return requests
+                usable = [r for r in track.observations
+                          if getattr(r, "usable", False)]
+                needs_event = (track.state != NEW and not track.event_emitted
+                               and bool(usable))
+                if not needs_event:
+                    # No Event payload for this close (NEW glint, already
+                    # emitted, or no usable evidence): take the lifecycle
+                    # transition directly without consuming a retention slot
+                    # (audit F-8). A full store must not block payload-less
+                    # tracks from terminalizing.
+                    self._close_track(track, now)
+                    continue
+                token = admission.reserve_close(
+                    track.track_key, event_uid=track.event_uid)
+                if token is None:
+                    # Deferred: the track stays non-terminal and re-fires later.
+                    continue
+                try:
+                    closed = self._close_track(track, now, admission, token)
+                except BaseException:
+                    admission.release(token)
+                    raise
+                if closed:
+                    requests.append(closed[0])
+                    tokens.append(token)
+                else:
+                    admission.release(token)
+        return requests, tokens
 
     def attach_read(self, track_key: str, read: PlateRead,
                     now: float | None = None) -> EmissionRequest | None:
@@ -113,19 +156,30 @@ class TrackManager:
             self._transition(track, PLATE_CAPTURED)
         return None
 
-    def mark_confirmed(self, track_key: str) -> EmissionRequest | None:
-        """Consensus CONFIRM rule fired (§4.6): emit once, then CONFIRMED."""
+    def mark_confirmed(self, track_key: str, admission, token
+                      ) -> EmissionRequest | None:
+        """Consensus CONFIRM rule fired (§4.6): emit once, then CONFIRMED.
+
+        The request is parked under the supplied reservation before the
+        lifecycle transition. The caller owns reservation and release on
+        failure.
+        """
+        if admission is None or token is None:
+            raise ValueError("mark_confirmed requires admission and a token")
         track = self._tracks.get(track_key)
         if track is None or track.state in (COMPLETED, EXPIRED):
             return None
         if track.event_emitted:
             self.double_emit_blocked += 1
             return None
+        request = EmissionRequest(track_key=track_key, action="emit",
+                                  status="confirmed", reason="consensus_confirm",
+                                  event_uid=track.event_uid)
+        admission.park_request(token, request)
         if track.state != CONFIRMED:
             self._transition(track, CONFIRMED)
         track.event_emitted = True
-        return EmissionRequest(track_key=track_key, action="emit",
-                               status="confirmed", reason="consensus_confirm")
+        return request
 
 
     # -- expiry / close --------------------------------------------------
@@ -140,8 +194,14 @@ class TrackManager:
             lifetime_ok or track.state == NEW
         )
 
-    def _close_track(self, track: Track, now: float) -> list[EmissionRequest]:
-        """COMPLETED path (§2.4): emit unconfirmed when evidence suffices."""
+    def _close_track(self, track: Track, now: float, admission=None,
+                     token=None) -> list[EmissionRequest]:
+        """COMPLETED path (§2.4): emit unconfirmed when evidence suffices.
+
+        When an admission token is supplied, the request is parked before the
+        terminal transition. The caller releases the token only if no request
+        is returned or the transition raises.
+        """
         usable = [r for r in track.observations if getattr(r, "usable", False)]
         if track.state == NEW:
             self.tracks_rejected_new += 1
@@ -154,26 +214,74 @@ class TrackManager:
             self.tracks_dropped_no_evidence += 1
             self._transition(track, COMPLETED)
             return []
+        request = EmissionRequest(track_key=track.track_key, action="emit",
+                                  status="unconfirmed", needs_review=True,
+                                  reason="force_at_close",
+                                  event_uid=track.event_uid)
+        if admission is not None and token is not None:
+            admission.park_request(token, request)
         self._transition(track, COMPLETED)
-        return [EmissionRequest(track_key=track.track_key, action="emit",
-                                status="unconfirmed", needs_review=True,
-                                reason="force_at_close")]
+        return [request]
 
-    def expire_all(self, reason: str = "shutdown") -> list[EmissionRequest]:
-        """any → EXPIRED flush on stop/reconnect/exception (§2.4)."""
+    def expire_all_admitted(self, reason: str, admission
+                            ) -> tuple[list[EmissionRequest], list]:
+        """Shutdown/stop flush with reservation before every terminal transition.
+
+        A track that needs an event is left non-terminal when the admission
+        store is full, so the caller can retry after capacity is reclaimed.
+        Tracks with no event payload are safe to expire without a slot.
+        Returns positionally aligned ``(requests, tokens)``.
+        """
         requests: list[EmissionRequest] = []
+        tokens: list = []
         for track in self._tracks.values():
             if track.state in (COMPLETED, EXPIRED):
                 continue
             usable = [r for r in track.observations if getattr(r, "usable", False)]
-            self._transition(track, EXPIRED)
+            request = None
             if track.event_emitted or usable:
                 status = "confirmed" if track.event_emitted else "unconfirmed"
-                requests.append(EmissionRequest(
+                request = EmissionRequest(
                     track_key=track.track_key, action="emit", status=status,
-                    needs_review=not track.event_emitted, reason=reason))
+                    needs_review=not track.event_emitted, reason=reason,
+                    event_uid=track.event_uid)
+            token = None
+            if request is not None:
+                token = admission.reserve(
+                    "close", track.track_key, request.action, request.status,
+                    request.needs_review, request.reason,
+                    event_uid=request.event_uid)
+                if token is None:
+                    # Keep the track recoverable; do not consume the terminal
+                    # transition until a slot owns the generated request.
+                    continue
+            try:
+                if request is not None:
+                    admission.park_request(token, request)
+                self._transition(track, EXPIRED)
+            except BaseException:
+                if token is not None:
+                    admission.release(token)
+                raise
+            if request is not None:
+                requests.append(request)
+                tokens.append(token)
             else:
                 self.tracks_dropped_no_evidence += 1
+        return requests, tokens
+
+    def expire_all(self, reason: str = "shutdown", admission=None
+                   ) -> list[EmissionRequest]:
+        """Compatibility wrapper; production callers must provide admission.
+
+        The old unadmitted form is intentionally no longer allowed: shutdown
+        must not transition a track to EXPIRED before its request has a home.
+        """
+        if admission is None:
+            raise ValueError(
+                "expire_all requires an admission store; use expire_all_admitted"
+            )
+        requests, _tokens = self.expire_all_admitted(reason, admission)
         return requests
 
     # -- duplicate-prevention helpers (§2.5) -------------------------------

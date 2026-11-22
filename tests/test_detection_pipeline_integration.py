@@ -25,7 +25,22 @@ import cv2
 import numpy as np
 import pytest
 
-import api
+# api imports CameraManager, whose constructor reads the concurrency limit
+# from SQLite during module import. The repository-wide production guard
+# refuses that read while db.DB_PATH still points at the production default,
+# so the import is bracketed by a transient temporary-DB redirect that is
+# restored in a finally block — the process-global DB_PATH mutation no longer
+# leaks past this import (audit F-11).
+import db as _bootstrap_db
+_ORIGINAL_DB_PATH = _bootstrap_db.DB_PATH
+_BOOTSTRAP_DB = os.path.join(
+    tempfile.mkdtemp(prefix="alpr_detection_import_"), "bootstrap.db")
+_bootstrap_db.DB_PATH = _BOOTSTRAP_DB
+try:
+    _bootstrap_db.init_db()
+    import api
+finally:
+    _bootstrap_db.DB_PATH = _ORIGINAL_DB_PATH
 from db import get_conn, init_db
 from video_processor import RTSPStreamProcessor
 
@@ -45,11 +60,14 @@ def reset_detection_state():
 
 
 @pytest.fixture
-def temp_db():
-    """Create a temporary database for tests."""
+def temp_db(tmp_path, monkeypatch):
+    """Create an isolated temporary database for tests."""
+    import db
+
+    monkeypatch.setattr(db, "DB_PATH", str(tmp_path / "detection_pipeline.db"))
     init_db()
     yield
-    # Cleanup happens in teardown
+    # tmp_path cleanup handles the database file and WAL sidecars
 
 
 def _create_valid_image_bytes():
@@ -122,7 +140,7 @@ class TestImageDetectionWiring:
             
             # Mock a detection result
             annotated_img = np.zeros((100, 100, 3), dtype=np.uint8)
-            plates = [{"bbox": (10, 10, 50, 50), "confidence": 0.85}]
+            plates = [{"bbox": (10, 10, 50, 50), "confidence": 0.85, "plate_text": "12b34511"}]
             dtrb_results = [("12b34511", 0.9)]
             mock_process.return_value = (annotated_img, plates, dtrb_results)
             
@@ -210,7 +228,7 @@ class TestImageDetectionWiring:
 class TestAtomicStorageFailure:
     """Test detection storage failure scenarios."""
 
-    def test_detection_storage_failure_propagates_error(self):
+    def test_detection_storage_failure_propagates_error(self, temp_db):
         """If save_detection fails, the error should be handled appropriately."""
         with patch.object(api, '_ensure_models') as mock_models, \
              patch('video_processor.process_frame') as mock_process, \
@@ -223,7 +241,7 @@ class TestAtomicStorageFailure:
             
             # Mock detection result
             annotated_img = np.zeros((100, 100, 3), dtype=np.uint8)
-            plates = [{"bbox": (10, 10, 50, 50), "confidence": 0.85}]
+            plates = [{"bbox": (10, 10, 50, 50), "confidence": 0.85, "plate_text": "12b34511"}]
             dtrb_results = [("12b34511", 0.9)]
             mock_process.return_value = (annotated_img, plates, dtrb_results)
             
@@ -471,7 +489,7 @@ class TestRTSPTaskLifecycle:
         assert result["status"] == "running"
         assert len(result["history"]) == 2
         assert result["history"][0]["dtrb_text"] == "12b34511"
-        assert "annotated" in result
+        assert "pipeline" in result
 
     def test_rtsp_stop_closes_session_and_stops_processor(self, temp_db):
         """Stopping RTSP task closes session and stops processor (Req 10.3)."""

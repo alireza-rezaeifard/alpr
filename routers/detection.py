@@ -36,8 +36,10 @@ Requirements: 8.1, 8.2, 8.4, 9.1, 9.2, 9.3, 9.4, 9.5, 9.6, 10.1, 10.2, 10.3
 from __future__ import annotations
 
 import base64
+import logging
 import os
 import threading
+import time
 import uuid
 from pathlib import Path
 
@@ -68,12 +70,134 @@ router = APIRouter(
 # ---------------------------------------------------------------------------
 # Error helpers — every error uses the { error, code } envelope
 # ---------------------------------------------------------------------------
+logger = logging.getLogger(__name__)
+
+# Bounded wait for a cancelled video worker to terminate and complete its
+# permitted final flush (F-3). The wait is backed by the processor's own
+# processing/status flags, not by arbitrary ordering sleeps.
+_VIDEO_CANCEL_TIMEOUT_S = 10.0
+_VIDEO_CANCEL_POLL_S = 0.1
+
+
 def _envelope(message: str, code: ErrorCode) -> dict:
     return {"error": message, "code": code.value}
 
 
 def _not_found(message: str = "Task not found") -> JSONResponse:
     return JSONResponse(_envelope(message, ErrorCode.NOT_FOUND), status_code=404)
+
+
+def _close_video_session(session_id, state, terminal_status):
+    """Close one uploaded-video session idempotently with terminal status."""
+    plate_log = state.get("plate_log", [])
+    unique = len(set(e["dtrb_text"] for e in plate_log))
+    end_session(
+        session_id, state.get("total_frames", 0), len(plate_log), unique,
+        status=terminal_status,
+    )
+
+
+def _await_processor_termination(vp, timeout_s: float = _VIDEO_CANCEL_TIMEOUT_S,
+                                 interval_s: float = _VIDEO_CANCEL_POLL_S) -> bool:
+    """Wait until a VideoProcessor worker has terminated and completed its
+    permitted final flush.
+
+    The worker sets ``processing=False`` (under its lock) only after the
+    end-of-video ``expire()`` flush and the terminal status update, so
+    ``not processing`` + terminal status is the reliable shutdown-complete
+    signal (F-3). Returns False on timeout: the shutdown is INCOMPLETE and
+    callers must not close the session or discard the processor.
+    """
+    deadline = time.monotonic() + timeout_s
+    while time.monotonic() < deadline:
+        state = vp.get_state()
+        status = str(state.get("status", ""))
+        if not state.get("processing", False) and (
+                status in ("done", "error") or status.startswith("error:")):
+            return True
+        threading.Event().wait(interval_s)
+    return False
+
+
+def _finalize_video_session(entry: dict, state: dict, close_video_session
+                            ) -> None:
+    """Post-loop session triage for one uploaded-video task (F-3).
+
+    An incomplete shutdown (cancellation wait timed out) deliberately leaves
+    the session open and keeps the processor reference: a timeout never
+    proves a safe shutdown. Otherwise the terminal status determines the
+    session's closing status.
+    """
+    if entry.get("stop_incomplete"):
+        return
+    if state["status"] == "done":
+        close_video_session(state, "done")
+    elif state["status"].startswith("error"):
+        # Terminal retention/shutdown failure: close the managed session so
+        # it cannot remain running forever. The task state retains the
+        # diagnostic reason (for example "error: retention blocked").
+        close_video_session(state, "error")
+    else:
+        close_video_session(state, "cancelled")
+
+
+def _cancel_video_task(task_id: str, vp,
+                       timeout_s: float = _VIDEO_CANCEL_TIMEOUT_S) -> None:
+    """Cancel a video task without racing its final flush (F-3).
+
+    Signals cancellation, requests processor stop, then waits for verified
+    worker termination. On timeout the session is deliberately LEFT OPEN and
+    the processor reference retained: a timeout never proves a safe shutdown,
+    and the incomplete state is surfaced through the task entry so a caller
+    can observe and retry it.
+    """
+    import api
+
+    vp.stop()
+    completed = _await_processor_termination(vp, timeout_s=timeout_s)
+    state = vp.get_state()
+    with api._tasks_lock:
+        entry = api._tasks.get(task_id)
+        if entry is not None:
+            # Preserve user-facing cancellation semantics.
+            entry["status"] = "cancelled"
+            if not completed:
+                entry["stop_incomplete"] = True
+    if not completed:
+        logger.warning(
+            "video task %s cancellation timed out: worker still active; "
+            "session left open and processor retained for a later safe retry",
+            task_id)
+    return
+
+
+def _stop_rtsp_task_entry(entry: dict) -> dict:
+    """Stop an RTSP processor; close its session only after verified
+    shutdown and final flush (F-2).
+
+    Returns a status dict. When shutdown is incomplete, the session stays
+    open, the processor reference is retained in the entry, and the
+    incomplete state is observable to the caller so a later stop can retry.
+    """
+    processor = entry.get("processor")
+    if not processor:
+        return {"status": "stopped", "shutdown_completed": True}
+    processor.stop()
+    if not processor.shutdown_completed():
+        # A timeout is not proof of termination: do not claim a flush that
+        # never ran, do not close the session, do not discard the processor.
+        logger.warning(
+            "RTSP stop incomplete; session kept open and processor retained "
+            "for a later safe retry")
+        return {"status": "stop_incomplete", "shutdown_completed": False}
+    state = processor.get_state()
+    if entry.get("session_id"):
+        history = state.get("history", [])
+        end_session(
+            entry["session_id"], 0, len(history),
+            len({p["dtrb_text"] for p in history}),
+        )
+    return {"status": "stopped", "shutdown_completed": True}
 
 
 # ---------------------------------------------------------------------------
@@ -201,26 +325,42 @@ async def detect_video(
     def run_video(task_id, sid, inp, skip, fast):
         def on_det(src, text, conf, sf, frame, ftime):
             save_detection(sid, src, text, format_plate_persian(text), conf, sf, frame, ftime)
-        vp = VideoProcessor(engine, on_detection=on_det)
+        # Uploaded video is an unmanaged source: no synthetic camera_id is
+        # invented. The session id scopes the event key; source_file supplies
+        # display context.
+        vp = VideoProcessor(engine, on_detection=on_det,
+                            session_id=sid, source_file=os.path.basename(inp))
         with api._tasks_lock:
             api._tasks[task_id]["processor"] = vp
         vp.process_video(inp, skip_frames=skip, fast_mode=fast)
+        session_closed = False
+
+        def close_video_session(state, terminal_status):
+            nonlocal session_closed
+            if session_closed:
+                return
+            _close_video_session(sid, state, terminal_status)
+            session_closed = True
+
         # Wait for completion
+        state = vp.get_state()
         while True:
             # Check if cancelled externally
             with api._tasks_lock:
                 if api._tasks.get(task_id, {}).get("status") == "cancelled":
-                    vp.stop()
+                    _cancel_video_task(task_id, vp)
+                    state = vp.get_state()
                     break
             state = vp.get_state()
             with api._tasks_lock:
-                api._tasks[task_id].update(state)
-            if state["status"] in ("done", "error"):
+                if task_id in api._tasks:
+                    api._tasks[task_id].update(state)
+            if state["status"] in ("done", "error") or state["status"].startswith("error:"):
                 break
             threading.Event().wait(0.5)
-        if state["status"] == "done":
-            unique = len(set(e["dtrb_text"] for e in state["plate_log"]))
-            end_session(sid, state["total_frames"], len(state["plate_log"]), unique)
+        with api._tasks_lock:
+            entry = api._tasks.get(task_id) or {}
+        _finalize_video_session(entry, state, close_video_session)
 
     with api._tasks_lock:
         api._tasks[task_id] = {"status": "queued", "session_id": session_id}
@@ -310,9 +450,13 @@ def detect_rtsp(
     def on_det(src, text, conf, sf, frame, ftime):
         save_detection(session_id, src, text, format_plate_persian(text), conf, sf, frame, ftime)
 
+    # Ad-hoc RTSP has no managed camera row; do not invent a camera_id. The
+    # session id is the source-instance identity and the URL is the display
+    # context.
     processor = RTSPStreamProcessor(engine, url,
                                      fast_mode=fast_mode, skip_frames=skip_frames,
-                                     on_detection=on_det)
+                                     on_detection=on_det,
+                                     session_id=session_id, source_file=url)
     processor.start()
 
     with api._tasks_lock:
@@ -451,13 +595,14 @@ def stop_rtsp_task(task_id: str):
         entry = api._tasks.get(task_id)
     if entry is None:
         return _not_found()
-    processor = entry.get("processor")
-    if processor:
-        state = processor.get_state()
-        if entry.get("session_id"):
-            end_session(entry["session_id"], 0, len(state.get("history", [])),
-                        len(set(p["dtrb_text"] for p in state.get("history", []))))
-        processor.stop()
-    with api._tasks_lock:
-        api._tasks[task_id]["status"] = "stopped"
-    return {"status": "stopped"}
+    result = _stop_rtsp_task_entry(entry)
+    if result["shutdown_completed"]:
+        with api._tasks_lock:
+            api._tasks[task_id]["status"] = "stopped"
+    else:
+        # Incomplete shutdown: keep the session open and the processor
+        # reference; surface the incomplete state so a later stop can retry.
+        with api._tasks_lock:
+            api._tasks[task_id]["status"] = "stop_incomplete"
+            api._tasks[task_id]["shutdown_completed"] = False
+    return result

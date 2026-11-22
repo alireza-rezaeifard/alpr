@@ -167,6 +167,7 @@ def analyze(out_dir: Path) -> dict:
         "events": [
             {
                 "event_id": e["event_key"],
+                "event_uid": e.get("event_uid"),
                 "camera_id": e.get("camera_id"),
                 "track_id": e["track_id"],
                 "plate": e["plate_number"],

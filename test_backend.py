@@ -17,6 +17,9 @@ os.environ.setdefault("PLPR_DB_PATH", _TEST_DB)
 # Patch DB_PATH before importing anything that reads it
 import db as _db
 _db.DB_PATH = _TEST_DB
+assert os.path.realpath(_db.DB_PATH) != os.path.realpath(
+    os.path.join(os.path.dirname(_db.__file__), "database", "plpr.db")
+), "test_backend must never point at the production database"
 
 # Re-init the DB at the temp path so all helpers use it
 from db import init_db

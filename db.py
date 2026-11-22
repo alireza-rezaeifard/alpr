@@ -1,14 +1,20 @@
 import sqlite3
 import os
+import uuid
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "database", "plpr.db")
+
+# Fixed namespace for deterministic UUID5 backfill of legacy event rows.
+EVENT_UID_NAMESPACE = uuid.UUID("7c9e6679-7425-40de-944b-e07fc1f90ae7")
 
 
 def get_conn():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA journal_mode=WAL")
+    conn.execute("PRAGMA busy_timeout=5000")
     return conn
 
 
@@ -19,7 +25,49 @@ def _ensure_column(conn, table, column, ddl):
         conn.execute(f"ALTER TABLE {table} ADD COLUMN {ddl}")
 
 
-def init_db():
+def _backfill_event_uids(conn) -> None:
+    """Assign deterministic UUID5 values only to rows missing an event_uid.
+
+    M0-A migration policy (audit F-7): this is a DATA backfill. It is gated
+    behind ``init_db(run_migrations=True)`` and never runs from ordinary
+    application startup. Authorized operator procedure (requires explicit
+    owner approval before execution):
+
+        1. Stop the backend (or ensure no writer holds the DB).
+        2. Run a maintenance invocation that calls
+           ``import db; db.init_db(run_migrations=True)`` with ``db.DB_PATH``
+           pointing at the target database file.
+        3. Verify ``SELECT COUNT(*) FROM vehicle_events WHERE event_uid IS NULL``
+           returns 0.
+
+    The backfill is idempotent and deterministic (fixed UUID5 namespace), so
+    re-running it after authorization is safe. Ordinary startup still performs
+    additive, idempotent schema-consistency steps (CREATE TABLE IF NOT EXISTS,
+    ADD COLUMN, CREATE INDEX IF NOT EXISTS) because the persistence layer
+    writes the event_uid column; those steps never rewrite existing rows.
+    """
+    rows = conn.execute(
+        "SELECT id, event_key FROM vehicle_events WHERE event_uid IS NULL"
+    ).fetchall()
+    for row in rows:
+        uid = str(uuid.uuid5(EVENT_UID_NAMESPACE, f"alpr:event:{row['event_key']}"))
+        conn.execute(
+            "UPDATE vehicle_events SET event_uid = ? WHERE id = ? AND event_uid IS NULL",
+            (uid, row["id"]),
+        )
+
+
+def init_db(run_migrations: bool = False):
+    """Create/verify the schema.
+
+    Ordinary application startup calls ``init_db()`` (default):
+    idempotent, additive schema consistency only — no data rewrite.
+
+    The deterministic ``event_uid`` backfill of legacy rows is a data
+    migration and runs ONLY with the explicit authorization flag
+    ``init_db(run_migrations=True)`` (see ``_backfill_event_uids`` for the
+    operator procedure). Startup never enables it implicitly (audit F-7).
+    """
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
     conn = get_conn()
     conn.executescript("""
@@ -120,6 +168,7 @@ def init_db():
         CREATE TABLE IF NOT EXISTS vehicle_events (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             event_key TEXT NOT NULL UNIQUE,
+            event_uid TEXT,
             track_id TEXT NOT NULL,
             camera_id INTEGER,
             camera_name TEXT,
@@ -145,6 +194,16 @@ def init_db():
         CREATE INDEX IF NOT EXISTS idx_events_camera_time ON vehicle_events(camera_id, last_seen DESC);
         CREATE INDEX IF NOT EXISTS idx_events_plate_norm ON vehicle_events(plate_norm, last_seen DESC);
     """)
+    # Backward-compatible additive schema consistency for databases that
+    # already have events. No data is rewritten here.
+    _ensure_column(conn, "vehicle_events", "event_uid", "event_uid TEXT")
+    conn.execute(
+        "CREATE UNIQUE INDEX IF NOT EXISTS idx_events_uid "
+        "ON vehicle_events(event_uid) WHERE event_uid IS NOT NULL"
+    )
+    if run_migrations:
+        # Explicitly authorized data migration (default: OFF at startup).
+        _backfill_event_uids(conn)
     # Migrate existing detections table – safe to re-run on any database version
     _ensure_column(conn, "detections", "camera_id",   "camera_id INTEGER")
     _ensure_column(conn, "detections", "camera_name", "camera_name TEXT")
@@ -219,96 +278,185 @@ def save_detection(session_id, source_type, plate_dtrb, plate_persian, confidenc
 
 
 # ---------------------------------------------------------------------------
-# Phase 1: durable vehicle-event persistence (idempotent upsert boundary)
+# Phase 1: durable vehicle-event persistence (identity-safe transaction)
 # ---------------------------------------------------------------------------
-_UPSERT_EVENT_SQL = """
+_INSERT_EVENT_SQL = """
 INSERT INTO vehicle_events (
-    event_key, track_id, camera_id, camera_name, session_id, source_type,
-    source_file, first_seen, last_seen, duration_ms, frame_count,
+    event_key, event_uid, track_id, camera_id, camera_name, session_id,
+    source_type, source_file, first_seen, last_seen, duration_ms, frame_count,
     observation_count, plate_number, plate_norm, confidence, agreement_ratio,
     status, needs_review, finalize_reason, plate_valid, created_at, updated_at
-) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-ON CONFLICT(event_key) DO UPDATE SET
-    last_seen = excluded.last_seen,
-    duration_ms = excluded.duration_ms,
-    frame_count = excluded.frame_count,
-    observation_count = excluded.observation_count,
-    plate_number = excluded.plate_number,
-    plate_norm = excluded.plate_norm,
-    confidence = excluded.confidence,
-    agreement_ratio = excluded.agreement_ratio,
-    status = excluded.status,
-    needs_review = excluded.needs_review,
-    finalize_reason = excluded.finalize_reason,
-    updated_at = excluded.updated_at
+) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+"""
+
+_UPDATE_EVENT_SQL = """
+UPDATE vehicle_events SET
+    last_seen = ?, duration_ms = ?, frame_count = ?, observation_count = ?,
+    plate_number = ?, plate_norm = ?, confidence = ?, agreement_ratio = ?,
+    status = ?, needs_review = ?, finalize_reason = ?, plate_valid = ?,
+    updated_at = ?
+WHERE id = ?
 """
 
 
-def upsert_vehicle_event(event) -> tuple[int, bool]:
-    """Durably persist one finalized vehicle event, idempotently.
-
-    ``event`` is a ``pipeline.types.VehicleEvent`` (duck-typed: only the
-    attributes written to the table are read — keeps db.py decoupled from the
-    pipeline package).
-
-    The UNIQUE constraint on ``vehicle_events.event_key`` is the persistence
-    boundary: repeated finalization of the same track — including after a
-    process restart — updates the existing row instead of creating one.
-
-    Returns ``(event_row_id, created)`` where ``created`` is True only when a
-    new row was inserted (False when an existing event was updated/suppressed).
+class EventPersistenceError(RuntimeError):
+    """Raised by :func:`upsert_vehicle_event` when persistence failed and the
+    row is NOT durable (persist_failure). ``result`` carries the structured
+    :class:`EventPersistResult`.
     """
+
+    def __init__(self, message: str, result: "EventPersistResult") -> None:
+        super().__init__(message)
+        self.result = result
+
+
+class EventIdentityConflict(EventPersistenceError):
+    """Raised by :func:`upsert_vehicle_event` when an existing Event identity
+    contradicts the incoming one (identity_conflict). The existing row is
+    never overwritten; ``result`` carries the structured outcome.
+    """
+
+
+@dataclass(frozen=True)
+class EventPersistResult:
+    """Structured persistence outcome (approved M0-A contract)."""
+
+    outcome: str                 # created | updated | identity_conflict | persist_failure
+    event_row_id: int | None = None
+    event_uid: str | None = None
+    detail: str | None = None
+
+
+def _metadata_conflict(row, event) -> str | None:
+    """Return the first incompatible immutable identity field, if any."""
+    for field in ("session_id", "camera_id", "source_type", "source_file"):
+        if row[field] != getattr(event, field, None):
+            return field
+    return None
+
+
+def _is_identity_integrity_error(exc: sqlite3.IntegrityError) -> bool:
+    """True only for uniqueness failures on the two Event identity columns.
+
+    Other integrity errors (NOT NULL, foreign keys, unrelated constraints)
+    are persistence failures, not evidence that an Event identity conflicts.
+    """
+    message = str(exc).lower()
+    return ("unique constraint failed" in message
+            and ("event_key" in message or "event_uid" in message))
+
+
+def persist_event(event) -> EventPersistResult:
+    """Persist one event atomically with identity-conflict rejection.
+
+    ``BEGIN IMMEDIATE`` serializes writers before the identity read, so the
+    created/updated/conflict decision cannot race. Same key + same uid updates;
+    same key or uid with a different identity returns ``identity_conflict`` and
+    never mutates the existing row.
+    """
+    event_uid = getattr(event, "event_uid", None)
+    if not event_uid:
+        event_uid = str(uuid.uuid4())
+        event.event_uid = event_uid
+
     now = datetime.now().isoformat()
-    conn = get_conn()
+    conn = None
     try:
-        # Existence check first (fast path); the UNIQUE constraint plus the
-        # IntegrityError handler below still covers concurrent races.
-        existing = conn.execute(
-            "SELECT id FROM vehicle_events WHERE event_key = ?", (event.event_key,)
+        conn = get_conn()
+        conn.isolation_level = None
+        conn.execute("BEGIN IMMEDIATE")
+        by_key = conn.execute(
+            "SELECT * FROM vehicle_events WHERE event_key = ?", (event.event_key,)
         ).fetchone()
-        conn.execute(
-            _UPSERT_EVENT_SQL,
-            (
-                event.event_key,
-                event.track_id,
-                event.camera_id,
-                event.camera_name,
-                event.session_id,
-                event.source_type,
-                event.source_file,
-                event.first_seen,
-                event.last_seen,
-                event.duration_ms,
-                event.frame_count,
-                event.observation_count,
-                event.plate_number,
-                event.plate_norm,
-                event.confidence,
-                event.agreement_ratio,
-                event.status,
+        by_uid = conn.execute(
+            "SELECT * FROM vehicle_events WHERE event_uid = ?", (event_uid,)
+        ).fetchone()
+
+        if by_key is not None and by_key["event_uid"] != event_uid:
+            conn.rollback()
+            return EventPersistResult("identity_conflict", by_key["id"], event_uid,
+                                      "event_key belongs to a different event_uid")
+        if by_uid is not None and by_uid["event_key"] != event.event_key:
+            conn.rollback()
+            return EventPersistResult("identity_conflict", by_uid["id"], event_uid,
+                                      "event_uid belongs to a different event_key")
+
+        if by_key is None and by_uid is None:
+            cur = conn.execute(_INSERT_EVENT_SQL, (
+                event.event_key, event_uid, event.track_id, event.camera_id,
+                event.camera_name, event.session_id, event.source_type,
+                event.source_file, event.first_seen, event.last_seen,
+                event.duration_ms, event.frame_count, event.observation_count,
+                event.plate_number, event.plate_norm, event.confidence,
+                event.agreement_ratio, event.status,
                 1 if event.needs_review else 0,
                 getattr(event, "finalize_reason", None),
-                1 if event.plate_valid else 0,
-                now,
-                now,
-            ),
-        )
+                1 if event.plate_valid else 0, now, now,
+            ))
+            row_id = int(cur.lastrowid)
+            conn.commit()
+            return EventPersistResult("created", row_id, event_uid)
+
+        row = by_key if by_key is not None else by_uid
+        conflict = _metadata_conflict(row, event)
+        if conflict is not None:
+            conn.rollback()
+            return EventPersistResult("identity_conflict", row["id"], event_uid,
+                                      f"immutable metadata mismatch: {conflict}")
+
+        conn.execute(_UPDATE_EVENT_SQL, (
+            event.last_seen, event.duration_ms, event.frame_count,
+            event.observation_count, event.plate_number, event.plate_norm,
+            event.confidence, event.agreement_ratio, event.status,
+            1 if event.needs_review else 0,
+            getattr(event, "finalize_reason", None),
+            1 if event.plate_valid else 0, now, row["id"],
+        ))
         conn.commit()
-        row = conn.execute(
-            "SELECT id FROM vehicle_events WHERE event_key = ?", (event.event_key,)
-        ).fetchone()
-        row_id = int(row["id"]) if row else 0
-        return row_id, existing is None
-    except sqlite3.IntegrityError:
-        # Raced with another writer on the same event_key: the row exists, so
-        # this call is a suppressed duplicate at the persistence boundary.
-        conn.rollback()
-        row = conn.execute(
-            "SELECT id FROM vehicle_events WHERE event_key = ?", (event.event_key,)
-        ).fetchone()
-        return (int(row["id"]), False) if row else (0, False)
+        return EventPersistResult("updated", int(row["id"]), event_uid)
+    except sqlite3.IntegrityError as exc:
+        if conn is not None:
+            try:
+                conn.rollback()
+            except Exception:
+                pass
+        if _is_identity_integrity_error(exc):
+            return EventPersistResult("identity_conflict", None, event_uid, str(exc))
+        return EventPersistResult("persist_failure", None, event_uid, str(exc))
+    except Exception as exc:  # surfaced as a result, never reported as success
+        if conn is not None:
+            try:
+                conn.rollback()
+            except Exception:
+                pass
+        return EventPersistResult("persist_failure", None, event_uid, str(exc))
     finally:
-        conn.close()
+        if conn is not None:
+            conn.close()
+
+
+def upsert_vehicle_event(event) -> tuple[int, bool]:
+    """Backward-compatible wrapper around :func:`persist_event`.
+
+    Compatibility contract (audit F-10): ``(row_id, created)`` is returned
+    ONLY for the ordinary outcomes ``created``/``updated``. Exceptional
+    outcomes are raised explicitly instead of being silently collapsed into
+    ``(0, False)``:
+
+    * ``identity_conflict`` → :class:`EventIdentityConflict`
+    * ``persist_failure``   → :class:`EventPersistenceError`
+
+    No caller inside this repository relies on the old silent collapse (the
+    production pipeline uses :func:`persist_event` directly); external
+    callers that prefer the structured result should call
+    :func:`persist_event` instead.
+    """
+    result = persist_event(event)
+    if result.outcome == "identity_conflict":
+        raise EventIdentityConflict(result.detail or "identity conflict", result)
+    if result.outcome == "persist_failure":
+        raise EventPersistenceError(result.detail or "persist failure", result)
+    return (result.event_row_id or 0, result.outcome == "created")
 
 
 def get_vehicle_event_stats() -> dict:

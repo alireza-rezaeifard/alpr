@@ -90,12 +90,14 @@ def build_event(event_key: str, result: ConsensusResult, *, track_kind: str,
                 first_seen: str, last_seen: str, frame_count: int,
                 observation_count: int, duration_ms: int,
                 plate_valid: bool, status: str = STATUS_CONFIRMED,
-                needs_review: bool = False) -> VehicleEvent:
+                needs_review: bool = False,
+                event_uid: str | None = None) -> VehicleEvent:
     """Assemble a VehicleEvent from a ConsensusResult (§3.2 field subset)."""
     plate_text = result.plate
     return VehicleEvent(
         event_key=event_key,
         track_id=event_key,
+        event_uid=event_uid,
         track_kind=track_kind,
         first_seen=first_seen,
         last_seen=last_seen,

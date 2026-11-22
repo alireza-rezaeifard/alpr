@@ -7,6 +7,7 @@ import pytest
 from pipeline import track_manager as tm
 from pipeline.config import PipelineConfig
 from pipeline.track_manager import InvalidTransition, TrackManager
+from pipeline.retention import UnifiedRetentionStore
 from pipeline.types import Box, PlateRead, Track, TrackUpdate
 
 CFG = PipelineConfig()
@@ -30,8 +31,9 @@ def usable_read(frame_idx=0, weight=0.5):
 
 def make_tracked_manager(now=0.0) -> tuple:
     m = TrackManager(CFG)
-    m.apply_updates([update(hits=1)], now=now)      # NEW (hits=1 < min 2)
-    m.apply_updates([update(hits=2)], now=now + 0.125)  # NEW -> TRACKING
+    store = UnifiedRetentionStore(capacity=8)
+    m.apply_updates_admitted([update(hits=1)], now, store)  # NEW
+    m.apply_updates_admitted([update(hits=2)], now + 0.125, store)
     assert m.get("1:1:1").state == tm.TRACKING
     return m, now + 0.125
 
@@ -50,22 +52,34 @@ def test_tracking_to_plate_captured():
 def test_plate_captured_to_confirmed_emits_once():
     m, now = make_tracked_manager()
     m.attach_read("1:1:1", usable_read(), now=now)
-    req = m.mark_confirmed("1:1:1")
+    store = UnifiedRetentionStore(capacity=8)
+    token = store.reserve("confirm", "1:1:1", "emit", "confirmed", False,
+                         "consensus_confirm",
+                         event_uid=m.get("1:1:1").event_uid)
+    req = m.mark_confirmed("1:1:1", store, token)
     assert req is not None
     assert req.action == "emit"
     assert req.status == "confirmed"
     assert m.get("1:1:1").state == tm.CONFIRMED
     # Explicit EVENT_EMITTED flag: second emission refused (§2.5 rule 2).
-    assert m.mark_confirmed("1:1:1") is None
+    token2 = store.reserve("confirm", "1:1:1", "emit", "confirmed", False,
+                          "consensus_confirm",
+                          event_uid=m.get("1:1:1").event_uid)
+    assert m.mark_confirmed("1:1:1", store, token2) is None
+    store.release(token2)
     assert m.double_emit_blocked == 1
 
 
 def test_confirmed_to_completed_on_expiry():
     m, now = make_tracked_manager()
     m.attach_read("1:1:1", usable_read(), now=now)
-    m.mark_confirmed("1:1:1")
+    store = UnifiedRetentionStore(capacity=8)
+    token = store.reserve("confirm", "1:1:1", "emit", "confirmed", False,
+                         "consensus_confirm",
+                         event_uid=m.get("1:1:1").event_uid)
+    m.mark_confirmed("1:1:1", store, token)
     # No association for > track_expiry_s (2.0 s at 8 fps).
-    m.apply_updates([], now=now + 10.0)
+    m.apply_updates_admitted([], now + 10.0, store)
     track = m.get("1:1:1")
     assert track.state == tm.COMPLETED
 
@@ -73,7 +87,8 @@ def test_confirmed_to_completed_on_expiry():
 def test_tracking_to_completed_with_evidence_requests_force_emit():
     m, now = make_tracked_manager()
     m.attach_read("1:1:1", usable_read(), now=now)   # PLATE_CAPTURED, not confirmed
-    requests = m.apply_updates([], now=now + 10.0)
+    requests, _tokens = m.apply_updates_admitted(
+        [], now + 10.0, UnifiedRetentionStore(capacity=8))
     assert [r.action for r in requests] == ["emit"]
     assert requests[0].status == "unconfirmed"
     assert requests[0].needs_review is True         # §4.6 FORCE_AT_CLOSE
@@ -83,7 +98,8 @@ def test_tracking_to_completed_with_evidence_requests_force_emit():
 
 def test_tracking_to_completed_without_evidence_dropped():
     m, now = make_tracked_manager()
-    requests = m.apply_updates([], now=now + 10.0)
+    requests, _tokens = m.apply_updates_admitted(
+        [], now + 10.0, UnifiedRetentionStore(capacity=8))
     assert requests == []
     assert m.tracks_dropped_no_evidence == 1
     assert m.get("1:1:1").state == tm.COMPLETED
@@ -92,8 +108,9 @@ def test_tracking_to_completed_without_evidence_dropped():
 def test_new_to_expired_on_glint():
     """A never-confirmed one-hit track expires without an event (§2.4 NEW→EXPIRED)."""
     m = TrackManager(CFG)
-    m.apply_updates([update(hits=1)], now=0.0)     # stays NEW
-    requests = m.apply_updates([], now=10.0)
+    store = UnifiedRetentionStore(capacity=8)
+    m.apply_updates_admitted([update(hits=1)], 0.0, store)  # stays NEW
+    requests, _tokens = m.apply_updates_admitted([], 10.0, store)
     assert requests == []
     assert m.tracks_rejected_new == 1
     assert m.get("1:1:1").state == tm.EXPIRED
@@ -102,20 +119,24 @@ def test_new_to_expired_on_glint():
 def test_any_to_expired_flush_keeps_evidence():
     m, now = make_tracked_manager()
     m.attach_read("1:1:1", usable_read(), now=now)
-    requests = m.expire_all(reason="shutdown")
+    store = UnifiedRetentionStore(capacity=2)
+    requests = m.expire_all(reason="shutdown", admission=store)
     assert len(requests) == 1
     assert requests[0].status == "unconfirmed"
     assert m.get("1:1:1").state == tm.EXPIRED
     # Terminal: nothing else can move it.
-    assert m.expire_all() == []
+    assert m.expire_all(admission=store) == []
 
 
 def test_lost_then_resume_keeps_lifecycle_state():
     m, now = make_tracked_manager()
     m.attach_read("1:1:1", usable_read(), now=now)
-    m.apply_updates([update(state="LOST", hits=3, tsi=1)], now=now + 0.125)
+    store = UnifiedRetentionStore(capacity=8)
+    m.apply_updates_admitted([update(state="LOST", hits=3, tsi=1)],
+                             now + 0.125, store)
     assert m.get("1:1:1").state == tm.PLATE_CAPTURED   # LOST does not regress
-    m.apply_updates([update(state="TRACKED", hits=4, tsi=0)], now=now + 0.250)
+    m.apply_updates_admitted([update(state="TRACKED", hits=4, tsi=0)],
+                             now + 0.250, store)
     assert m.get("1:1:1").state == tm.PLATE_CAPTURED
 
 

@@ -33,6 +33,9 @@ class CameraRuntime:
     task_id: Optional[str] = None
     session_id: Optional[int] = None
     processor: object = None    # RTSPStreamProcessor instance
+    # Bounded stop retries the watcher may attempt while a processor's
+    # shutdown is incomplete (audit F-4). Never reset to unbounded looping.
+    shutdown_stop_attempts: int = 0
 
 
 class CameraManager:
@@ -294,6 +297,7 @@ class CameraManager:
             fast_mode=False, skip_frames=rt.skip_frames,
             on_detection=on_det,
             camera_id=camera_id, camera_name=camera_name,
+            session_id=session_id, source_file=rt.url,
         )
         processor.start()
 
@@ -356,25 +360,15 @@ class CameraManager:
                 rt = self._cameras[camera_id]
 
                 if proc_status.startswith("error"):
-                    if rt.status not in ("stopped", "error"):
-                        rt.status = "error"
-                        if rt.session_id:
-                            try:
-                                history = []
-                                with processor.lock:
-                                    history = list(processor.plate_history)
-                                end_session(
-                                    rt.session_id,
-                                    0,
-                                    len(history),
-                                    len({p["dtrb_text"] for p in history}),
-                                    status="error",
-                                )
-                            except Exception:
-                                pass
-                        rt.processor = None
-                        self._promote_from_queue()
-                    return
+                    keep_watching = self._handle_processor_error_locked(
+                        rt, processor)
+                    if not keep_watching:
+                        return
+                    # Incomplete shutdown: keep polling so a later successful
+                    # stop (watcher retry or API) finishes the flush and the
+                    # session closure. Never abandon the processor while
+                    # workers/flushes are unresolved (audit F-4).
+                    continue
 
                 if proc_status in ("done", "stopped"):
                     if rt.status != "stopped":
@@ -391,6 +385,71 @@ class CameraManager:
                 else:
                     rt.status = "streaming"  # Default to streaming if frames are flowing
 
+    # Bounded number of stop attempts the watcher makes for one incomplete
+    # shutdown before falling back to passive polling (audit F-4: no
+    # unbounded stop loops).
+    _MAX_SHUTDOWN_STOP_RETRIES = 3
+
+    def _handle_processor_error_locked(self, rt: CameraRuntime,
+                                       processor) -> bool:
+        """Resolve an errored processor under the manager lock (audit F-4).
+
+        Distinguishes a verified terminal error (workers terminated, final
+        flush completed) from an incomplete shutdown such as
+        ``error: shutdown timeout``. Incomplete shutdown NEVER abandons the
+        processor or closes the session: up to ``_MAX_SHUTDOWN_STOP_RETRIES``
+        bounded stop attempts are made here, after which ownership and the
+        open session are retained and the watcher keeps polling so a later
+        successful stop can finish the flush and the closure.
+
+        Returns True when the watcher must keep polling; False when the
+        processor lifecycle is fully resolved (session closed, reference
+        released, queue promoted).
+        """
+        try:
+            completed = bool(processor.shutdown_completed())
+        except Exception:
+            completed = False
+        if (not completed
+                and rt.shutdown_stop_attempts < self._MAX_SHUTDOWN_STOP_RETRIES):
+            rt.shutdown_stop_attempts += 1
+            try:
+                processor.stop()
+            except Exception:
+                pass
+            try:
+                completed = bool(processor.shutdown_completed())
+            except Exception:
+                completed = False
+        if not completed:
+            # Keep the processor reference and the open session; free the
+            # concurrency slot by marking the camera errored. Diagnostics
+            # stay observable via the processor's own status/error fields.
+            if rt.status != "error":
+                rt.status = "error"
+            return True
+        # Verified shutdown: close the session, release the processor.
+        if rt.status not in ("stopped", "error"):
+            rt.status = "error"
+        if rt.session_id:
+            try:
+                history = []
+                with processor.lock:
+                    history = list(processor.plate_history)
+                end_session(
+                    rt.session_id,
+                    0,
+                    len(history),
+                    len({p["dtrb_text"] for p in history}),
+                    status="error",
+                )
+            except Exception:
+                pass
+        rt.processor = None
+        rt.shutdown_stop_attempts = 0
+        self._promote_from_queue()
+        return False
+
     def _stop_camera_locked(self, camera_id: int, end_sess: bool) -> None:
         """Stop the processor for *camera_id* and optionally close its session.
 
@@ -401,22 +460,36 @@ class CameraManager:
             return
         if rt.processor is not None:
             try:
-                state = rt.processor.get_state()
                 rt.processor.stop()
-                if end_sess and rt.session_id:
-                    history = state.get("history", [])
-                    end_session(
-                        rt.session_id,
-                        0,
-                        len(history),
-                        len({p["dtrb_text"] for p in history}),
-                    )
+                completed = bool(rt.processor.shutdown_completed())
             except Exception:
-                pass  # Error isolation: failure here must not cascade (Req 12.4)
-            rt.processor = None
+                completed = False
+            if completed:
+                if end_sess and rt.session_id:
+                    try:
+                        state = rt.processor.get_state()
+                        history = state.get("history", [])
+                        end_session(
+                            rt.session_id,
+                            0,
+                            len(history),
+                            len({p["dtrb_text"] for p in history}),
+                        )
+                    except Exception:
+                        pass  # Error isolation: failure here must not cascade (Req 12.4)
+                rt.processor = None
+                rt.shutdown_stop_attempts = 0
+            else:
+                # Incomplete shutdown (audit F-4): retain the processor
+                # reference and the open session so the watcher (or a later
+                # stop) can finish the flush and closure. Frees the
+                # concurrency slot without discarding unflushed work.
+                rt.status = "error"
+                return
         rt.status = "stopped"
         rt.task_id = None
         rt.session_id = None
+        rt.shutdown_stop_attempts = 0
 
     def _promote_from_queue(self) -> None:
         """Start the earliest-queued camera whenever a concurrency slot is free.
