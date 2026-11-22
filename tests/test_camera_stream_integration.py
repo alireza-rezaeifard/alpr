@@ -88,6 +88,15 @@ class FakeProcessor:
             self.status = "stopped"
             self.stop_count += 1
 
+    def shutdown_completed(self):
+        # Deterministic stand-in for the verified shutdown contract: a stop()
+        # or a terminal error status means workers terminated and the final
+        # flush ran.
+        with self.lock:
+            return (not self.running
+                    and (self.status == "stopped"
+                         or self.status.startswith("error")))
+
     def get_state(self):
         with self.lock:
             return {
@@ -158,7 +167,8 @@ def test_delete_running_camera_stops_processor_closes_session_removes_record(cm_
     removed = mgr.remove_camera(cam_id)
 
     # Delete reports success and the processor was stopped (Req 4.5).
-    assert removed is True
+    # Remediation 4 (F-15): the manager returns a structured result.
+    assert removed["removed"] is True
     assert processor.stop_count == 1
 
     # The session is closed (Req 4.5).
@@ -176,8 +186,8 @@ def test_delete_running_camera_stops_processor_closes_session_removes_record(cm_
 def test_delete_and_stop_unknown_camera_report_not_found(cm_env):
     mgr = CameraManager(ensure_models_fn=lambda: (None, None, None))
 
-    # remove_camera on an unknown id returns False (router maps this to 404).
-    assert mgr.remove_camera(999_999) is False
+    # remove_camera on an unknown id reports not_found (router maps this to 404).
+    assert mgr.remove_camera(999_999)["reason"] == "not_found"
 
     # stop_camera on an unknown id reports the not_found sentinel (router 404).
     assert mgr.stop_camera(999_999) == {"status": "not_found"}

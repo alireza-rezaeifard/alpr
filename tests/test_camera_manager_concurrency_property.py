@@ -65,6 +65,15 @@ class FakeProcessor:
             self.running = False
             self.status = "stopped"
 
+    def shutdown_completed(self):
+        # Deterministic stand-in for the verified shutdown contract (R4 F-14):
+        # a stop() or terminal error status means workers terminated and the
+        # final flush ran.
+        with self.lock:
+            return (not self.running
+                    and (self.status == "stopped"
+                         or self.status.startswith("error")))
+
     def get_state(self):
         with self.lock:
             return {

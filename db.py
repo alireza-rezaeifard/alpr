@@ -1,8 +1,15 @@
+import hashlib
+import logging
+import shutil
 import sqlite3
 import os
+import tempfile
+import time
 import uuid
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+
+logger = logging.getLogger(__name__)
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "database", "plpr.db")
 
@@ -11,6 +18,10 @@ EVENT_UID_NAMESPACE = uuid.UUID("7c9e6679-7425-40de-944b-e07fc1f90ae7")
 
 
 def get_conn():
+    # NOTE (R5 D-1): this connection sets the PERSISTENT journal mode (WAL is
+    # recorded in the database header) and is therefore NOT read-only. It is
+    # used by runtime writes, schema creation, and the authorized offline
+    # migration — never by startup schema validation (see _validate_schema_at).
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA journal_mode=WAL")
@@ -57,161 +68,648 @@ def _backfill_event_uids(conn) -> None:
         )
 
 
-def init_db(run_migrations: bool = False):
-    """Create/verify the schema.
+# ---------------------------------------------------------------------------
+# Schema definition + startup validation (audit F-7, Remediation 4).
+#
+# Normal production startup performs READ-ONLY schema validation and never
+# mutates schema or data. Schema DDL and the event_uid backfill run only
+# through explicit creation (``init_db(create=True)`` / ``migrate_database()``
+# / ``python -m db migrate``), which must be aimed at a test or explicitly
+# owner-authorized target database.
+# ---------------------------------------------------------------------------
+_SCHEMA_DDL = """
+    CREATE TABLE IF NOT EXISTS sessions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        source_type TEXT NOT NULL,
+        source_file TEXT,
+        started_at TEXT NOT NULL,
+        ended_at TEXT,
+        total_frames INTEGER DEFAULT 0,
+        total_plates INTEGER DEFAULT 0,
+        unique_plates INTEGER DEFAULT 0,
+        status TEXT DEFAULT 'running'
+    );
+    CREATE TABLE IF NOT EXISTS detections (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        session_id INTEGER REFERENCES sessions(id),
+        timestamp TEXT NOT NULL,
+        source_type TEXT NOT NULL,
+        source_file TEXT,
+        plate_dtrb TEXT,
+        plate_persian TEXT,
+        confidence REAL,
+        frame_number INTEGER DEFAULT 0,
+        frame_time TEXT
+    );
+    CREATE TABLE IF NOT EXISTS cameras (
+        id          INTEGER PRIMARY KEY AUTOINCREMENT,
+        name        TEXT NOT NULL DEFAULT '',
+        url         TEXT NOT NULL,
+        skip_frames INTEGER NOT NULL DEFAULT 15,
+        created_at  TEXT NOT NULL,
+        updated_at  TEXT
+    );
+    CREATE TABLE IF NOT EXISTS app_config (
+        key   TEXT PRIMARY KEY,
+        value TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT NOT NULL UNIQUE,
+        password_hash TEXT NOT NULL,
+        role TEXT NOT NULL DEFAULT 'Viewer',
+        disabled INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS revoked_tokens (
+        jti TEXT PRIMARY KEY,
+        exp INTEGER NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS licenses (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        key TEXT NOT NULL,
+        active INTEGER NOT NULL DEFAULT 0,
+        expiry TEXT NOT NULL,
+        camera_limit INTEGER NOT NULL,
+        activated_at TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS watchlists (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        list_type TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS watchlist_entries (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        watchlist_id INTEGER NOT NULL REFERENCES watchlists(id),
+        plate_raw TEXT NOT NULL,
+        plate_norm TEXT NOT NULL,
+        label TEXT,
+        reason TEXT,
+        created_at TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS alerts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        detection_id INTEGER NOT NULL REFERENCES detections(id),
+        entry_id INTEGER NOT NULL REFERENCES watchlist_entries(id),
+        plate_value TEXT NOT NULL,
+        created_at TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS audit_log (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT,
+        action TEXT NOT NULL,
+        resource TEXT,
+        outcome TEXT NOT NULL,
+        timestamp TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_detections_ts ON detections(timestamp);
+    CREATE INDEX IF NOT EXISTS idx_detections_session ON detections(session_id);
+    CREATE INDEX IF NOT EXISTS idx_alerts_created ON alerts(created_at);
+    CREATE INDEX IF NOT EXISTS idx_audit_ts ON audit_log(timestamp);
+    CREATE INDEX IF NOT EXISTS idx_wl_entries_norm ON watchlist_entries(plate_norm);
+    -- Phase 1 (M1, minimal): one durable row per finalized vehicle visit.
+    -- UNIQUE(event_key) is the persistence-boundary idempotency guarantee:
+    -- "INSERT ... ON CONFLICT(event_key) DO UPDATE" can never create a second
+    -- row for the same track lifetime, even across process restarts.
+    CREATE TABLE IF NOT EXISTS vehicle_events (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        event_key TEXT NOT NULL UNIQUE,
+        event_uid TEXT,
+        track_id TEXT NOT NULL,
+        camera_id INTEGER,
+        camera_name TEXT,
+        session_id INTEGER,
+        source_type TEXT NOT NULL DEFAULT 'rtsp',
+        source_file TEXT,
+        first_seen TEXT NOT NULL,
+        last_seen TEXT NOT NULL,
+        duration_ms INTEGER NOT NULL DEFAULT 0,
+        frame_count INTEGER NOT NULL DEFAULT 0,
+        observation_count INTEGER NOT NULL DEFAULT 0,
+        plate_number TEXT NOT NULL,
+        plate_norm TEXT NOT NULL,
+        confidence REAL NOT NULL DEFAULT 0,
+        agreement_ratio REAL NOT NULL DEFAULT 0,
+        status TEXT NOT NULL DEFAULT 'confirmed',
+        needs_review INTEGER NOT NULL DEFAULT 0,
+        finalize_reason TEXT,
+        plate_valid INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_events_camera_time ON vehicle_events(camera_id, last_seen DESC);
+    CREATE INDEX IF NOT EXISTS idx_events_plate_norm ON vehicle_events(plate_norm, last_seen DESC);
+"""
 
-    Ordinary application startup calls ``init_db()`` (default):
-    idempotent, additive schema consistency only — no data rewrite.
+# Columns the runtime persistence/query paths depend on. Validation is strict:
+# any missing column makes Event persistence or the detection/session flows
+# silently degrade, so startup must reject the schema instead.
+_REQUIRED_SCHEMA = {
+    "sessions": (
+        "id", "source_type", "source_file", "started_at", "ended_at",
+        "total_frames", "total_plates", "unique_plates", "status",
+    ),
+    "detections": (
+        "id", "session_id", "timestamp", "source_type", "source_file",
+        "plate_dtrb", "plate_persian", "confidence", "frame_number",
+        "frame_time", "camera_id", "camera_name", "event_key",
+    ),
+    "cameras": ("id", "name", "url", "skip_frames", "created_at", "updated_at"),
+    "app_config": ("key", "value"),
+    "users": ("id", "username", "password_hash", "role", "disabled", "created_at"),
+    "revoked_tokens": ("jti", "exp"),
+    "licenses": ("id", "key", "active", "expiry", "camera_limit", "activated_at"),
+    "watchlists": ("id", "name", "list_type", "created_at"),
+    "watchlist_entries": (
+        "id", "watchlist_id", "plate_raw", "plate_norm", "label", "reason",
+        "created_at",
+    ),
+    "alerts": ("id", "detection_id", "entry_id", "plate_value", "created_at"),
+    "audit_log": ("id", "username", "action", "resource", "outcome", "timestamp"),
+    "vehicle_events": (
+        "id", "event_key", "event_uid", "track_id", "camera_id",
+        "camera_name", "session_id", "source_type", "source_file",
+        "first_seen", "last_seen", "duration_ms", "frame_count",
+        "observation_count", "plate_number", "plate_norm", "confidence",
+        "agreement_ratio", "status", "needs_review", "finalize_reason",
+        "plate_valid", "created_at", "updated_at",
+    ),
+}
 
-    The deterministic ``event_uid`` backfill of legacy rows is a data
-    migration and runs ONLY with the explicit authorization flag
-    ``init_db(run_migrations=True)`` (see ``_backfill_event_uids`` for the
-    operator procedure). Startup never enables it implicitly (audit F-7).
+# The configured default production database. ``db.DB_PATH`` may be reassigned
+# (tests redirect it); this constant anchors the production path so the
+# validate-only startup default cannot be weakened by reassignment.
+_PRODUCTION_DB_PATH = os.path.join(os.path.dirname(__file__), "database", "plpr.db")
+
+
+class SchemaValidationError(RuntimeError):
+    """Raised when normal startup validation finds the schema incompatible.
+
+    The message lists every missing table/column/index and states that an
+    explicit offline migration is required. Startup never attempts to repair
+    the schema; Event persistence would silently fail (persist_failure →
+    EXHAUSTED) on an incompatible schema, so the process must not serve
+    requests in that state.
     """
+
+
+class SchemaValidationUnavailable(RuntimeError):
+    """Raised when the schema cannot be inspected reliably at all.
+
+    Distinct from :class:`SchemaValidationError`: the database may be
+    perfectly compatible, but no strictly read-only inspection (direct or
+    through a disposable snapshot) could be performed — for example the file
+    is locked, unreadable, or its WAL state cannot be captured. Startup must
+    fail closed either way; the original SQLite/OS error is preserved as
+    ``__cause__``.
+    """
+
+
+def _same_existing_file(path_a: str, path_b: str) -> bool | None:
+    """File-identity comparison of two EXISTING paths (R5 D-2).
+
+    Returns True when the two paths refer to the same file (verified via
+    ``(st_dev, st_ino)``), False when both exist and provably differ, and
+    ``None`` when the comparison is inconclusive (filesystem without inode
+    identity, or stat failure). Windows: ``st_ino`` is the NTFS file index
+    and is meaningful on NTFS; it may be 0 on FAT/exFAT, which yields
+    ``None`` (fail closed upstream).
+    """
+    try:
+        stat_a, stat_b = os.stat(path_a), os.stat(path_b)
+    except OSError:
+        return None
+    if stat_a.st_ino == 0 or stat_b.st_ino == 0:
+        return None  # filesystem without reliable inode identity
+    return (stat_a.st_dev, stat_a.st_ino) == (stat_b.st_dev, stat_b.st_ino)
+
+
+def _is_production_db_path() -> bool:
+    """True when the configured ``DB_PATH`` refers to the production database.
+
+    Identity is established in layers (R5 D-2):
+
+    1. ``normcase(abspath(...))`` — fast path for identical spellings
+       (handles Windows case and separator differences and CWD-relative
+       forms, but NOT aliases).
+    2. ``normcase(realpath(...))`` — resolves symlinks, NTFS junctions and
+       substituted drives where the platform supports it. Hard-link aliases
+       are NOT resolved here.
+    3. ``(st_dev, st_ino)`` file identity via :func:`_same_existing_file` —
+       catches hard-link aliases of two existing files.
+
+    Fail-closed semantics: when the paths spell different canonical names,
+    both files exist, and file identity CANNOT be established (stat failure
+    or a filesystem without inode identity), the configured path is treated
+    as PRODUCTION (validate-only). Identity checking must never downgrade to
+    implicit schema creation. Reassigning ``db.DB_PATH`` to any alias of the
+    production database must not bypass startup protection.
+    """
+    current = os.path.abspath(DB_PATH)
+    production = os.path.abspath(_PRODUCTION_DB_PATH)
+    if os.path.normcase(current) == os.path.normcase(production):
+        return True
+    try:
+        current_real = os.path.normcase(os.path.realpath(current))
+        production_real = os.path.normcase(os.path.realpath(production))
+    except (OSError, ValueError):
+        return True  # cannot canonicalize: fail closed
+    if current_real == production_real:
+        return True
+    if os.path.exists(current) and os.path.exists(production):
+        identity = _same_existing_file(current, production)
+        if identity is None:
+            return True  # inconclusive identity: fail closed
+        return identity
+    return False
+
+
+def _connect_readonly(path: str):
+    """Open *path* strictly read-only (no journal-mode or other PRAGMA writes)."""
+    import urllib.parse
+    abs_posix = os.path.abspath(path).replace("\\", "/")
+    uri = "file:" + urllib.parse.quote(abs_posix, safe="/:") + "?mode=ro"
+    conn = sqlite3.connect(uri, uri=True, timeout=5.0)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+def _validate_vehicle_events_unique_indexes(conn) -> list[str]:
+    """Check the UNIQUE index semantics the Event persistence path relies on.
+
+    ``event_key`` must carry a UNIQUE index (``INSERT ... ON CONFLICT(event_key)``
+    idempotency) and ``event_uid`` must carry a PARTIAL unique index
+    (``WHERE event_uid IS NOT NULL``) so legacy NULL-uid rows remain allowed.
+    Index identity is checked semantically (columns + uniqueness + partial
+    WHERE clause), not by index name.
+    """
+    problems: list[str] = []
+    indexes = conn.execute("PRAGMA index_list(vehicle_events)").fetchall()
+
+    def _cols(name: str) -> list[str]:
+        return [r["name"] for r in conn.execute(f"PRAGMA index_info({name})")]
+
+    unique_column_sets = [_cols(idx["name"]) for idx in indexes if idx["unique"]]
+    if ["event_key"] not in unique_column_sets:
+        problems.append(
+            "vehicle_events: missing UNIQUE index on event_key "
+            "(persistence idempotency)")
+
+    uid_partial_unique = False
+    for idx in indexes:
+        if not idx["unique"] or _cols(idx["name"]) != ["event_uid"]:
+            continue
+        row = conn.execute(
+            "SELECT sql FROM sqlite_master WHERE type='index' AND name=?",
+            (idx["name"],),
+        ).fetchone()
+        sql = (row["sql"] or "").upper() if row else ""
+        if "IS NOT NULL" in sql:
+            uid_partial_unique = True
+    if not uid_partial_unique:
+        problems.append(
+            "vehicle_events: missing partial UNIQUE index on event_uid "
+            "(WHERE event_uid IS NOT NULL)")
+    return problems
+
+
+def _snapshot_for_validation(path: str) -> str:
+    """Capture a STABILITY-VERIFIED disposable snapshot of *path* (R6 D-1).
+
+    Protocol (bounded retries):
+
+    1. Fingerprint the source DB and, when present, its ``-wal`` sidecar:
+       ``(st_dev, st_ino, size, sha256)`` — content, not size alone.
+    2. Copy the DB and the WAL into a private temp directory.
+    3. Re-fingerprint both source files and re-check WAL presence.
+    4. Fingerprint the copied files and require them to equal the stable
+       source fingerprints.
+
+    Any mismatch between the pre-copy, post-copy, and copied fingerprints —
+    including size-preserving content changes, WAL appends, checkpoints,
+    WAL reset/replacement, or file replacement — means the source changed
+    during the capture and the attempt is discarded and retried up to
+    ``_SNAPSHOT_ATTEMPTS`` times. Retry exhaustion raises
+    :class:`SchemaValidationUnavailable` (fail closed); a stale-but-valid
+    snapshot is never accepted as the current schema.
+
+    Coherence argument: any SQLite state transition between the two
+    fingerprint checkpoints necessarily modifies the DB or WAL bytes (a
+    checkpoint writes DB pages, a commit appends WAL frames, a WAL reset
+    rewrites the WAL header), so verified byte-stability of both files
+    across the window means the copied pair represents one coherent source
+    state. The ``-shm`` is transient cache and deliberately not copied.
+
+    Residual limitation: a change that completes and reverts to byte-identical
+    content entirely inside the capture window is indistinguishable from no
+    change — but then the observed state is byte-identical anyway, so the
+    snapshot still faithfully represents that state.
+
+    Raises ``SchemaValidationUnavailable`` (cause preserved) when the source
+    cannot be read, a copy fails, or stability cannot be established.
+    """
+    wal = path + "-wal"
+    last_instability = "source changed during capture"
+    for attempt in range(1, _SNAPSHOT_ATTEMPTS + 1):
+        if attempt > 1:
+            time.sleep(_SNAPSHOT_RETRY_BACKOFF_S * (attempt - 1))
+        # 1. Pre-copy fingerprints (read failures fail closed immediately:
+        # an unreadable source cannot yield a trustworthy snapshot).
+        try:
+            db_pre = _file_fingerprint(path)
+            wal_present = os.path.exists(wal)
+            wal_pre = _file_fingerprint(wal) if wal_present else None
+        except OSError as exc:
+            raise _validation_unavailable(
+                path, f"source database/WAL could not be read ({exc})", exc)
+        # 2. Copy.
+        tmp_dir = tempfile.mkdtemp(prefix="alpr_schema_validation_")
+        snap = os.path.join(tmp_dir, "snapshot.db")
+        try:
+            shutil.copyfile(path, snap)
+            if wal_present:
+                shutil.copyfile(wal, snap + "-wal")
+        except FileNotFoundError as exc:
+            # WAL vanished between the existence check and its copy (or the
+            # DB vanished): treat as source instability and retry.
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+            last_instability = f"source file disappeared during copy ({exc})"
+            continue
+        except OSError as exc:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+            raise _validation_unavailable(
+                path, f"snapshot copy failed ({exc})", exc)
+        # 3./4. Post-copy verification of source stability and copy integrity.
+        try:
+            db_post = _file_fingerprint(path)
+            wal_now_present = os.path.exists(wal)
+            wal_post = (_file_fingerprint(wal)
+                        if wal_now_present else None)
+            copied_db = _file_fingerprint(snap)
+            copied_wal = (_file_fingerprint(snap + "-wal")
+                          if wal_present else None)
+        except OSError as exc:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+            last_instability = f"verification read failed ({exc})"
+            continue
+        if wal_now_present != wal_present:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+            last_instability = "WAL presence changed during capture"
+            continue
+        if db_post != db_pre or (wal_pre is not None and wal_post != wal_pre):
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+            last_instability = "source changed during capture"
+            continue
+        # Copied bytes must equal the stable source CONTENT (size + sha256);
+        # st_dev/st_ino are identity of the source files and necessarily
+        # differ for the copies.
+        if copied_db[2:] != db_pre[2:] or (
+                wal_pre is not None and copied_wal[2:] != wal_pre[2:]):
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+            last_instability = "copied bytes do not match the stable source"
+            continue
+        return snap
+    raise _validation_unavailable(
+        path,
+        f"source stability could not be established across "
+        f"{_SNAPSHOT_ATTEMPTS} attempts (last reason: {last_instability}); "
+        "refusing to validate a possibly stale or mixed snapshot",
+        None)
+
+
+def _validation_unavailable(path: str, reason: str, cause
+                            ) -> SchemaValidationUnavailable:
+    """Build the typed fail-closed diagnostic, preserving *cause*."""
+    error = SchemaValidationUnavailable(
+        f"schema validation unavailable for {path}: {reason}; "
+        "startup fails closed rather than validating an unverified "
+        "snapshot or opening a write-capable connection to the target "
+        "database")
+    if cause is not None:
+        error.__cause__ = cause
+    return error
+
+
+# Snapshot capture tuning (module-level so tests can adjust deterministically).
+_SNAPSHOT_ATTEMPTS = 3
+_SNAPSHOT_RETRY_BACKOFF_S = 0.05
+
+
+def _file_fingerprint(path: str) -> tuple:
+    """Content fingerprint ``(st_dev, st_ino, size, sha256)`` of *path*.
+
+    Content-based (not size/mtime alone), so size-preserving writes are
+    detected. Raises ``OSError`` when the file cannot be read or stated.
+    """
+    digest = hashlib.sha256()
+    size = 0
+    with open(path, "rb") as fh:
+        for chunk in iter(lambda: fh.read(1 << 20), b""):
+            digest.update(chunk)
+            size += len(chunk)
+    st = os.stat(path)
+    return (st.st_dev, st.st_ino, size, digest.hexdigest())
+
+
+def _inspect_schema_problems(conn) -> list[str]:
+    """Collect schema-compatibility problems from an open connection.
+
+    Performs metadata inspection only (sqlite_master, PRAGMA table_info,
+    index_list/index_info) — no DDL, no DML, no journal-mode changes.
+    """
+    problems: list[str] = []
+    tables = {
+        r["name"]
+        for r in conn.execute(
+            "SELECT name FROM sqlite_master WHERE type='table'")
+    }
+    for table, columns in _REQUIRED_SCHEMA.items():
+        if table not in tables:
+            problems.append(f"{table}: missing table")
+            continue
+        present = {
+            r["name"] for r in conn.execute(f"PRAGMA table_info({table})")
+        }
+        missing = [c for c in columns if c not in present]
+        if missing:
+            problems.append(
+                f"{table}: missing column(s) {', '.join(missing)}")
+    if "vehicle_events" in tables:
+        problems.extend(_validate_vehicle_events_unique_indexes(conn))
+    return problems
+
+
+def _validate_schema_at(path: str) -> None:
+    """Strictly read-only schema validation of the database at *path* (R5 D-1).
+
+    First attempts a direct read-only URI connection (no DDL, no DML, no
+    journal-mode change, no file creation, no checkpoint). WAL states can
+    make that attempt impossible (missing/stale ``-shm``, or committed
+    content still in ``-wal`` that requires recovery): in that case the
+    database and its ``-wal`` are copied to a disposable snapshot which is
+    inspected instead, so committed WAL contents are observed correctly and
+    the original is never opened for writing. This fallback is logged, never
+    silent, and the fallback connection only ever touches the snapshot.
+
+    Raises :class:`SchemaValidationError` listing every incompatible element
+    when required tables, columns, or unique-index semantics are missing, or
+    :class:`SchemaValidationUnavailable` (original error preserved as
+    ``__cause__``) when no reliable inspection is possible. Startup fails
+    closed in both cases.
+    """
+    if not os.path.exists(path):
+        raise SchemaValidationError(
+            f"offline migration required: database file does not exist: {path}; "
+            "run the explicit offline migration (python -m db migrate) against "
+            "an owner-authorized target")
+    try:
+        conn = _connect_readonly(path)
+    except sqlite3.Error as exc:
+        _validate_via_snapshot(path, exc)
+        return
+    try:
+        problems = _inspect_schema_problems(conn)
+    except sqlite3.Error as exc:
+        # The open succeeded but inspection failed (typical WAL recovery
+        # failure on a read-only connection). Retry on a snapshot.
+        _validate_via_snapshot(path, exc)
+        return
+    finally:
+        conn.close()
+    if problems:
+        raise SchemaValidationError(
+            "offline migration required: incompatible schema ("
+            + "; ".join(problems)
+            + "); normal startup never repairs the schema")
+
+
+def _validate_via_snapshot(path: str, original: Exception) -> None:
+    """Validate through a disposable snapshot; fail closed if impossible.
+
+    The fallback is logged (never silent); the failure chain preserves the
+    first SQLite error as ``__cause__``.
+    """
+    logger.warning(
+        "schema validation via read-only connection failed for %s (%s); "
+        "retrying against a disposable snapshot copy (the original database "
+        "is never opened for writing)", path, original)
+    try:
+        snap = _snapshot_for_validation(path)
+    except SchemaValidationUnavailable:
+        raise  # already typed by the capture protocol; cause preserved
+    except OSError as snap_exc:
+        # Compatibility: a capture helper that fails with a plain OSError
+        # (e.g., monkeypatched in tests) is converted fail-closed as well.
+        raise _validation_unavailable(
+            path,
+            f"read-only inspection failed ({original}) and a disposable "
+            f"snapshot could not be taken ({snap_exc}); refusing to fall "
+            "back to a write-capable connection on the target database",
+            original)
+    try:
+        conn = sqlite3.connect(snap, timeout=5.0)
+        conn.row_factory = sqlite3.Row
+        try:
+            problems = _inspect_schema_problems(conn)
+        finally:
+            # Close performs WAL recovery/checkpoint on the SNAPSHOT only.
+            conn.close()
+    except sqlite3.Error as exc:
+        raise SchemaValidationUnavailable(
+            f"schema validation unavailable for {path}: neither a read-only "
+            f"connection ({original}) nor a snapshot copy ({exc}) could be "
+            "inspected; startup fails closed rather than opening a "
+            "write-capable connection to the target database"
+        ) from original
+    finally:
+        shutil.rmtree(os.path.dirname(snap), ignore_errors=True)
+    if problems:
+        raise SchemaValidationError(
+            "offline migration required: incompatible schema ("
+            + "; ".join(problems)
+            + "); normal startup never repairs the schema")
+
+
+def init_db(run_migrations: bool = False, create: bool | None = None):
+    """Create/verify the schema (audit F-7, Remediation 4).
+
+    Mode resolution:
+
+    * ``create=True`` — full schema creation (DDL) plus the additive column
+      consistency steps and the partial unique index. Used by tests on
+      isolated temporary databases and by :func:`migrate_database`.
+    * ``create=False`` — read-only schema validation only, on any path.
+    * default (``create=None``) — convenience creation ONLY when the
+      configured ``DB_PATH`` is NOT the production database path (this keeps
+      temporary test databases convenient). On the production path normal
+      startup validates read-only and never mutates schema or data.
+
+    ``run_migrations=True`` forces the creation mode everywhere and additionally
+    runs the deterministic ``event_uid`` backfill; it is an explicitly
+    authorized operator action and must never be invoked by api.py, ui.py,
+    or any import-time path.
+    """
+    if create is None:
+        create = bool(run_migrations) or not _is_production_db_path()
+    if not create:
+        _validate_schema_at(DB_PATH)
+        return
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
     conn = get_conn()
-    conn.executescript("""
-        CREATE TABLE IF NOT EXISTS sessions (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            source_type TEXT NOT NULL,
-            source_file TEXT,
-            started_at TEXT NOT NULL,
-            ended_at TEXT,
-            total_frames INTEGER DEFAULT 0,
-            total_plates INTEGER DEFAULT 0,
-            unique_plates INTEGER DEFAULT 0,
-            status TEXT DEFAULT 'running'
-        );
-        CREATE TABLE IF NOT EXISTS detections (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            session_id INTEGER REFERENCES sessions(id),
-            timestamp TEXT NOT NULL,
-            source_type TEXT NOT NULL,
-            source_file TEXT,
-            plate_dtrb TEXT,
-            plate_persian TEXT,
-            confidence REAL,
-            frame_number INTEGER DEFAULT 0,
-            frame_time TEXT
-        );
-        CREATE TABLE IF NOT EXISTS cameras (
-            id          INTEGER PRIMARY KEY AUTOINCREMENT,
-            name        TEXT NOT NULL DEFAULT '',
-            url         TEXT NOT NULL,
-            skip_frames INTEGER NOT NULL DEFAULT 15,
-            created_at  TEXT NOT NULL,
-            updated_at  TEXT
-        );
-        CREATE TABLE IF NOT EXISTS app_config (
-            key   TEXT PRIMARY KEY,
-            value TEXT NOT NULL
-        );
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT NOT NULL UNIQUE,
-            password_hash TEXT NOT NULL,
-            role TEXT NOT NULL DEFAULT 'Viewer',
-            disabled INTEGER NOT NULL DEFAULT 0,
-            created_at TEXT NOT NULL
-        );
-        CREATE TABLE IF NOT EXISTS revoked_tokens (
-            jti TEXT PRIMARY KEY,
-            exp INTEGER NOT NULL
-        );
-        CREATE TABLE IF NOT EXISTS licenses (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            key TEXT NOT NULL,
-            active INTEGER NOT NULL DEFAULT 0,
-            expiry TEXT NOT NULL,
-            camera_limit INTEGER NOT NULL,
-            activated_at TEXT NOT NULL
-        );
-        CREATE TABLE IF NOT EXISTS watchlists (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            list_type TEXT NOT NULL,
-            created_at TEXT NOT NULL
-        );
-        CREATE TABLE IF NOT EXISTS watchlist_entries (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            watchlist_id INTEGER NOT NULL REFERENCES watchlists(id),
-            plate_raw TEXT NOT NULL,
-            plate_norm TEXT NOT NULL,
-            label TEXT,
-            reason TEXT,
-            created_at TEXT NOT NULL
-        );
-        CREATE TABLE IF NOT EXISTS alerts (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            detection_id INTEGER NOT NULL REFERENCES detections(id),
-            entry_id INTEGER NOT NULL REFERENCES watchlist_entries(id),
-            plate_value TEXT NOT NULL,
-            created_at TEXT NOT NULL
-        );
-        CREATE TABLE IF NOT EXISTS audit_log (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT,
-            action TEXT NOT NULL,
-            resource TEXT,
-            outcome TEXT NOT NULL,
-            timestamp TEXT NOT NULL
-        );
-        CREATE INDEX IF NOT EXISTS idx_detections_ts ON detections(timestamp);
-        CREATE INDEX IF NOT EXISTS idx_detections_session ON detections(session_id);
-        CREATE INDEX IF NOT EXISTS idx_alerts_created ON alerts(created_at);
-        CREATE INDEX IF NOT EXISTS idx_audit_ts ON audit_log(timestamp);
-        CREATE INDEX IF NOT EXISTS idx_wl_entries_norm ON watchlist_entries(plate_norm);
-        -- Phase 1 (M1, minimal): one durable row per finalized vehicle visit.
-        -- UNIQUE(event_key) is the persistence-boundary idempotency guarantee:
-        -- "INSERT ... ON CONFLICT(event_key) DO UPDATE" can never create a second
-        -- row for the same track lifetime, even across process restarts.
-        CREATE TABLE IF NOT EXISTS vehicle_events (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            event_key TEXT NOT NULL UNIQUE,
-            event_uid TEXT,
-            track_id TEXT NOT NULL,
-            camera_id INTEGER,
-            camera_name TEXT,
-            session_id INTEGER,
-            source_type TEXT NOT NULL DEFAULT 'rtsp',
-            source_file TEXT,
-            first_seen TEXT NOT NULL,
-            last_seen TEXT NOT NULL,
-            duration_ms INTEGER NOT NULL DEFAULT 0,
-            frame_count INTEGER NOT NULL DEFAULT 0,
-            observation_count INTEGER NOT NULL DEFAULT 0,
-            plate_number TEXT NOT NULL,
-            plate_norm TEXT NOT NULL,
-            confidence REAL NOT NULL DEFAULT 0,
-            agreement_ratio REAL NOT NULL DEFAULT 0,
-            status TEXT NOT NULL DEFAULT 'confirmed',
-            needs_review INTEGER NOT NULL DEFAULT 0,
-            finalize_reason TEXT,
-            plate_valid INTEGER NOT NULL DEFAULT 0,
-            created_at TEXT NOT NULL,
-            updated_at TEXT NOT NULL
-        );
-        CREATE INDEX IF NOT EXISTS idx_events_camera_time ON vehicle_events(camera_id, last_seen DESC);
-        CREATE INDEX IF NOT EXISTS idx_events_plate_norm ON vehicle_events(plate_norm, last_seen DESC);
-    """)
-    # Backward-compatible additive schema consistency for databases that
-    # already have events. No data is rewritten here.
-    _ensure_column(conn, "vehicle_events", "event_uid", "event_uid TEXT")
-    conn.execute(
-        "CREATE UNIQUE INDEX IF NOT EXISTS idx_events_uid "
-        "ON vehicle_events(event_uid) WHERE event_uid IS NOT NULL"
-    )
-    if run_migrations:
-        # Explicitly authorized data migration (default: OFF at startup).
-        _backfill_event_uids(conn)
-    # Migrate existing detections table – safe to re-run on any database version
-    _ensure_column(conn, "detections", "camera_id",   "camera_id INTEGER")
-    _ensure_column(conn, "detections", "camera_name", "camera_name TEXT")
-    # Phase 1 (M2, minimal): link legacy rows to the event that emitted them
-    # (NULL for all legacy rows — no backfill, nothing breaks).
-    _ensure_column(conn, "detections", "event_key",   "event_key TEXT")
-    conn.commit()
-    conn.close()
+    try:
+        conn.executescript(_SCHEMA_DDL)
+        # Backward-compatible additive schema consistency for databases that
+        # already have events. No data is rewritten here.
+        _ensure_column(conn, "vehicle_events", "event_uid", "event_uid TEXT")
+        conn.execute(
+            "CREATE UNIQUE INDEX IF NOT EXISTS idx_events_uid "
+            "ON vehicle_events(event_uid) WHERE event_uid IS NOT NULL"
+        )
+        if run_migrations:
+            # Explicitly authorized data migration (default: OFF at startup).
+            _backfill_event_uids(conn)
+        # Migrate existing detections table – safe to re-run on any database version
+        _ensure_column(conn, "detections", "camera_id",   "camera_id INTEGER")
+        _ensure_column(conn, "detections", "camera_name", "camera_name TEXT")
+        # Phase 1 (M2, minimal): link legacy rows to the event that emitted them
+        # (NULL for all legacy rows — no backfill, nothing breaks).
+        _ensure_column(conn, "detections", "event_key",   "event_key TEXT")
+        conn.commit()
+    finally:
+        conn.close()
+    # Confirm the created/updated schema satisfies the persistence path.
+    _validate_schema_at(DB_PATH)
+
+
+def migrate_database() -> dict:
+    """Explicit offline schema migration + backfill (operator action only).
+
+    Performs the complete schema preparation (DDL, additive columns, partial
+    unique index) AND the deterministic ``event_uid`` backfill in one
+    authorized step. This is the ONLY entry point that may migrate a
+    production database, and only after explicit owner authorization:
+
+        1. Stop the backend (or ensure no writer holds the DB).
+        2. Point ``db.DB_PATH`` at the target database file.
+        3. Run ``python -m db migrate`` (or ``import db; db.migrate_database()``).
+        4. Verify the returned ``remaining_null_event_uid`` is 0.
+
+    Normal startup (api.py / ui.py) never calls this function.
+    """
+    init_db(run_migrations=True, create=True)
+    # Trailing verification goes through the SAME connection mechanism the
+    # migration itself used (R5 D-1 §3.4): a second strictly read-only
+    # connection could fail on WAL states even though the migration fully
+    # succeeded, which must never turn a successful migration into a failure.
+    conn = get_conn()
+    try:
+        pending = conn.execute(
+            "SELECT COUNT(*) AS n FROM vehicle_events WHERE event_uid IS NULL"
+        ).fetchone()["n"]
+    finally:
+        conn.close()
+    return {"db_path": DB_PATH, "remaining_null_event_uid": int(pending)}
 
 
 def start_session(source_type, source_file=None):
@@ -1226,3 +1724,21 @@ def insert_alert(detection_id: int, entry_id: int, plate_value: str) -> dict:
         "plate_value": plate_value,
         "created_at": now,
     }
+
+
+if __name__ == "__main__":  # operator entry point; never invoked by app startup
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="ALPR database maintenance (audit F-7)")
+    parser.add_argument(
+        "command", choices=("migrate", "validate"),
+        help="migrate: explicit offline schema migration + backfill (requires "
+             "owner authorization; point db.DB_PATH at the target first). "
+             "validate: read-only schema validation, no mutation.")
+    args = parser.parse_args()
+    if args.command == "migrate":
+        print(migrate_database())
+    else:
+        init_db(create=False)
+        print(f"schema OK: {DB_PATH}")

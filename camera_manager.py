@@ -5,6 +5,7 @@ configurable concurrency limit. Thread-safe via RLock.
 Requirements: 11.1, 11.4, 11.8, 12.1, 12.3, 12.4, 12.5, 12.6, 12.7, 12.9, 13.9
 """
 from __future__ import annotations
+import logging
 import uuid
 import threading
 from collections import deque
@@ -20,6 +21,26 @@ from error_handler import (
     report_error, report_exception,
     ErrorCategory, ErrorSeverity,
 )
+
+logger = logging.getLogger(__name__)
+
+
+class CameraShutdownIncomplete(RuntimeError):
+    """Raised when a camera still owns a processor whose shutdown is incomplete.
+
+    Remediation 4 (audit F-14): no replacement processor may be constructed or
+    assigned while the retained processor's shutdown/flush is unverified, so
+    ``_start_processor_locked`` refuses before any session, model, or
+    task-registry work happens. The caller preserves the runtime so a later
+    safe retry (watcher stop retries or ``stop_camera``) can complete the
+    shutdown.
+    """
+
+    def __init__(self, camera_id: int):
+        super().__init__(
+            f"camera {camera_id}: retained processor shutdown incomplete; "
+            "refusing to construct a replacement processor")
+        self.camera_id = camera_id
 
 
 @dataclass
@@ -112,15 +133,39 @@ class CameraManager:
                     rt.skip_frames = skip_frames
         return self._to_view(camera_id)
 
-    def remove_camera(self, camera_id: int) -> bool:
+    def remove_camera(self, camera_id: int) -> dict:
         """Stop any running processor, end the session, remove from queue and map, then delete from DB.
+
+        Removal is conditional on verified shutdown completion (audit F-15):
+        ``_stop_camera_locked`` retains the processor, its open session and all
+        pending work when shutdown is incomplete, in which case the runtime and
+        the DB camera row are NOT removed and the failure is reported
+        explicitly. A later removal attempt can succeed once
+        ``shutdown_completed()`` verifies termination and the final flush.
+
+        Returns ``{'removed': bool, 'reason': str | None, 'camera_id': int}``
+        (``reason`` is ``None`` on success, ``'not_found'`` for an unknown id,
+        or ``'shutdown_incomplete'``).
 
         Requirements: 11.4, 11.8
         """
         with self._lock:
             if camera_id not in self._cameras:
-                return False
+                return {"removed": False, "reason": "not_found",
+                        "camera_id": camera_id}
             self._stop_camera_locked(camera_id, end_sess=True)
+            rt = self._cameras[camera_id]
+            if rt.processor is not None:
+                # _stop_camera_locked retained ownership: the shutdown is
+                # incomplete. Do not delete the runtime or the DB record; keep
+                # the exact processor object, session reference, and pending
+                # work for a later safe retry.
+                logger.warning(
+                    "camera %s removal deferred: processor shutdown "
+                    "incomplete; runtime, session and pending work retained",
+                    camera_id)
+                return {"removed": False, "reason": "shutdown_incomplete",
+                        "camera_id": camera_id}
             # Remove from queue if present
             try:
                 self._queue.remove(camera_id)
@@ -128,7 +173,7 @@ class CameraManager:
                 pass
             del self._cameras[camera_id]
         delete_camera(camera_id)
-        return True
+        return {"removed": True, "reason": None, "camera_id": camera_id}
 
     # ------------------------------------------------------------------
     # Lifecycle
@@ -153,7 +198,18 @@ class CameraManager:
                 return {"camera_id": camera_id, "status": "queued", "task_id": None}
             running_count = self._running_count()
             if running_count < self._concurrency_limit:
-                self._start_processor_locked(rt)
+                try:
+                    self._start_processor_locked(rt)
+                except CameraShutdownIncomplete as exc:
+                    # F-14: the retained processor keeps ownership (its
+                    # shutdown is incomplete). Nothing was replaced; the
+                    # failure is observable and a later safe retry (watcher
+                    # stop retries or stop_camera) can complete the shutdown.
+                    logger.warning(
+                        "camera %s start refused: %s; runtime preserved for a "
+                        "later safe retry", camera_id, exc)
+                    return {"camera_id": camera_id, "status": "error",
+                            "task_id": None, "error": "shutdown_incomplete"}
                 return {"camera_id": camera_id, "status": "running", "task_id": rt.task_id}
             else:
                 if camera_id not in self._queue:
@@ -264,6 +320,21 @@ class CameraManager:
             if r.status in ("connecting", "connected", "streaming")
         )
 
+    def _shutdown_incomplete(self, processor) -> bool:
+        """True when *processor* is retained but its shutdown is not verified
+        complete (audit F-14).
+
+        Uses the established authoritative shutdown contract
+        (``shutdown_completed()``), never status strings or worker flags. An
+        inaccessible processor is treated as incomplete (conservative).
+        """
+        if processor is None:
+            return False
+        try:
+            return not bool(processor.shutdown_completed())
+        except Exception:
+            return True
+
     def _start_processor_locked(self, rt: CameraRuntime) -> None:
         """Instantiate and start an RTSPStreamProcessor for *rt* (must hold _lock).
 
@@ -271,8 +342,31 @@ class CameraManager:
         that stores detections attributed to this camera, and launches a watcher daemon thread
         that updates the camera status as the processor transitions through its states.
 
+        Raises :class:`CameraShutdownIncomplete` — before ANY session, model, or
+        task-registry work — when *rt* still owns a processor whose shutdown is
+        incomplete (audit F-14). The caller must preserve the runtime for a
+        later safe retry.
+
         Requirements: 12.5, 13.9
         """
+        if self._shutdown_incomplete(rt.processor):
+            # F-14: never overwrite a retained processor that has not verified
+            # worker termination + final flush; doing so would abandon its
+            # EventPipeline, pending retention work, and open session.
+            raise CameraShutdownIncomplete(rt.camera_id)
+        if rt.processor is not None and rt.session_id:
+            # F-14: a retained processor with a VERIFIED complete shutdown must
+            # not leak its open session when replaced. All in-repo completion
+            # paths already finalize the session; this covers direct callers.
+            try:
+                state = rt.processor.get_state()
+                history = state.get("history", [])
+                end_session(
+                    rt.session_id, 0, len(history),
+                    len({p["dtrb_text"] for p in history}),
+                )
+            except Exception:
+                pass  # error isolation: finalization failure must not block start
         from video_processor import RTSPStreamProcessor
         from video_processor import format_plate_persian
         from db import save_detection
@@ -496,10 +590,20 @@ class CameraManager:
 
         This is the single choke-point for FIFO promotion (Req 12.9). Must be called
         while holding _lock.
+
+        F-14: a queued camera that still owns an incompletely stopped processor
+        is re-queued (queue membership preserved, no replacement constructed)
+        and will be retried on the next promotion event after the watcher's
+        bounded stop retries or a later stop complete the shutdown. No busy
+        retry loop is introduced: promotion stays event-driven.
         """
         running = self._running_count()
-        while running < self._concurrency_limit and self._queue:
-            next_id = self._queue.popleft()
+        pending = list(self._queue)
+        self._queue.clear()
+        for next_id in pending:
+            if running >= self._concurrency_limit:
+                self._queue.append(next_id)
+                continue
             if next_id not in self._cameras:
                 continue  # Camera was removed while queued
             rt = self._cameras[next_id]
@@ -507,6 +611,10 @@ class CameraManager:
                 try:
                     self._start_processor_locked(rt)
                     running += 1
+                except CameraShutdownIncomplete:
+                    # Ownership of the retained processor is preserved and the
+                    # camera keeps its queue membership.
+                    self._queue.append(next_id)
                 except Exception as e:
                     # Error isolation: a start failure must not block later queue entries
                     report_exception(e, ErrorCategory.CAMERA,

@@ -218,10 +218,22 @@ def delete_camera(
 
     Returns ``404 not_found`` for an unknown id (Requirement 4.4). The manager's
     ``remove_camera`` performs the stop-and-close side-effects (Requirement 4.5).
+    When the processor's shutdown is incomplete the removal is refused with
+    ``409 conflict`` (audit F-15): the runtime, processor, open session and all
+    pending work are retained; the client can retry after shutdown completes.
     Logs the camera deletion (Requirement 15.2).
     """
-    removed = get_camera_manager().remove_camera(camera_id)
+    result = get_camera_manager().remove_camera(camera_id)
+    removed = (bool(result.get("removed")) if isinstance(result, dict)
+               else bool(result))
     if not removed:
+        if isinstance(result, dict) and result.get("reason") == "shutdown_incomplete":
+            raise _http_error(
+                status.HTTP_409_CONFLICT,
+                f"camera {camera_id} shutdown incomplete; processor, session and "
+                "pending work retained — retry after shutdown completes",
+                ErrorCode.CONFLICT,
+            )
         raise _not_found(camera_id)
     write_audit(user.username, "delete_camera", f"camera:{camera_id}", "success")
     return {"status": "deleted", "id": camera_id}

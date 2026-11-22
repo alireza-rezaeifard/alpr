@@ -288,8 +288,18 @@ def update_camera_api(camera_id: int, body: CameraUpdate):
 
 @app.delete("/api/cameras/{camera_id}")
 def delete_camera_api(camera_id: int):
-    removed = _camera_manager.remove_camera(camera_id)
+    result = _camera_manager.remove_camera(camera_id)
+    removed = (bool(result.get("removed")) if isinstance(result, dict)
+               else bool(result))
     if not removed:
+        if isinstance(result, dict) and result.get("reason") == "shutdown_incomplete":
+            # F-15: shutdown incomplete — runtime, processor, session and
+            # pending work retained; retry after shutdown completes.
+            return JSONResponse(
+                {"error": "Camera shutdown incomplete; processor, session and "
+                          "pending work retained — retry after shutdown "
+                          "completes", "code": "conflict"},
+                status_code=409)
         return JSONResponse({"error": "Camera not found"}, status_code=404)
     return {"status": "deleted"}
 
@@ -298,6 +308,14 @@ def delete_camera_api(camera_id: int):
 def start_camera_api(camera_id: int):
     result = _camera_manager.start_camera(camera_id)
     if result.get("status") == "error":
+        if result.get("error") == "shutdown_incomplete":
+            # F-14: the retained processor keeps ownership; nothing was
+            # replaced. Observable refusal, retry after shutdown completes.
+            return JSONResponse(
+                {"error": "Camera start refused: processor shutdown "
+                          "incomplete; runtime preserved for a later safe "
+                          "retry", "code": "conflict"},
+                status_code=409)
         return JSONResponse({"error": "Camera not found"}, status_code=404)
     return result
 
